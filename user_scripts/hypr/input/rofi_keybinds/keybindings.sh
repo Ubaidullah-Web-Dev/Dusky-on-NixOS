@@ -252,7 +252,9 @@ main() {
     mapfile -t records <<< "$data"
 
     local script_path="${HOME}/user_scripts/hypr/input/keybinds_cheatsheet.py"
-    local cheatsheet_cmd="kitty --class DuskyKeybindsCheatsheet --title \"Dusky Keybinds Cheatsheet\" -e python3.14 ${script_path}"
+    local py_bin="python3"
+    command -v python3.14 >/dev/null 2>&1 && py_bin="python3.14"
+    local cheatsheet_cmd="kitty --class DuskyKeybindsCheatsheet --title \"Dusky Keybinds Cheatsheet\" -e ${py_bin} ${script_path}"
     local cheatsheet_row="󰌌  <span background=\"#fab387\" foreground=\"#11111b\" weight=\"bold\"> CHEATSHEET </span> <span weight=\"bold\">Dusky Keybinds Cheatsheet</span>${DELIM}exec${DELIM}${cheatsheet_cmd}"
     records=("$cheatsheet_row" "${records[@]}")
 
