@@ -17,8 +17,8 @@
 
 # Directories to search for scripts (in order — first match wins)
 SCRIPT_SEARCH_DIRS=(
-    "${HOME}/user_scripts/arch_setup_scripts/scripts"
-    "${HOME}/user_scripts/arch_setup_scripts"
+    "${HOME}/user_scripts/nix_setup_scripts/scripts"
+    "${HOME}/user_scripts/nix_setup_scripts"
     "${HOME}/user_scripts/rofi"
     "${HOME}/user_scripts/images"
     "${HOME}/user_scripts/theme_matugen"

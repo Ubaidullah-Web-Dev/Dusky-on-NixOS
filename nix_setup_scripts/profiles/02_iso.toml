@@ -21,8 +21,8 @@ remote = "origin"
 
 [search_dirs]
 dirs = [
-    "~/user_scripts/arch_setup_scripts/scripts",
-    "~/user_scripts/arch_setup_scripts",
+    "~/user_scripts/nix_setup_scripts/scripts",
+    "~/user_scripts/nix_setup_scripts",
     "~/user_scripts/rofi",
     "~/user_scripts/images",
     "~/user_scripts/cursor/color",
