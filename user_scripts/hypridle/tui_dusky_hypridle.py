@@ -147,6 +147,6 @@ if __name__ == "__main__":
     import subprocess
     main_script = _DUSKY_TUI_ROOT / "python" / "main" / "main.py"
     if main_script.exists():
-        subprocess.run([sys.executable, str(main_script), str(Path(__file__).resolve())])
+        subprocess.run([sys.executable, str(main_script), str(Path(__file__).resolve()), *sys.argv[1:]])
     else:
         print(f"[-] Error: Could not find router at {main_script}")

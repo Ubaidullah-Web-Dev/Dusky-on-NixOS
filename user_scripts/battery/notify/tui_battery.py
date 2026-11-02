@@ -255,7 +255,7 @@ if __name__ == "__main__":
     import subprocess
     main_script = _DUSKY_TUI_ROOT / "python" / "main" / "main.py"
     if main_script.exists():
-        raise SystemExit(subprocess.run([sys.executable, str(main_script), str(Path(__file__).resolve())]).returncode)
+        raise SystemExit(subprocess.run([sys.executable, str(main_script), str(Path(__file__).resolve()), *sys.argv[1:]]).returncode)
     else:
         print(f"[-] Error: Could not find router at {main_script}", file=sys.stderr)
         raise SystemExit(1)
