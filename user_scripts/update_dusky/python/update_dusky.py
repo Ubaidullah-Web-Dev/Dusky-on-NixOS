@@ -137,7 +137,7 @@ def _normalize_global_config(raw: dict[str, Any]) -> dict[str, Any]:
             "env_inject": {"GIT_TERMINAL_PROMPT": "0", "GIT_SSH_COMMAND": "ssh -o BatchMode=yes", "GIT_PAGER": "cat", "PAGER": "cat", "GIT_OPTIONAL_LOCKS": "0"},
         },
         "conditions": {
-            "package_check_cmd": ["pacman", "-Qq"],
+            "package_check_cmd": ["which"],
             "service_active_cmd": ["systemctl", "is-active", "--quiet"],
             "user_service_active_cmd": ["systemctl", "--user", "is-active", "--quiet"],
         },
@@ -1868,13 +1868,7 @@ class ConditionEvaluator:
         return False
 
     def _package_installed(self, name: str) -> bool:
-        pkg_cmd = GLOBAL_CONFIG.get("conditions", {}).get(
-            "package_check_cmd",
-            ["pacman", "-Qq"],
-        )
-        if not pkg_cmd or not shutil.which(pkg_cmd[0]):
-            return False
-        return self._run(pkg_cmd + [name])
+        return shutil.which(name) is not None
 
     def _user_in_group(self, group: str) -> bool:
         user = target_user_pw().pw_name
@@ -4241,20 +4235,8 @@ def resolve_and_validate_manifest(
         if OPT_DRY_RUN:
             log("WARN", "[DRY-RUN] Python dependency detected but not installed.")
         else:
-            log("WARN", "Python dependency detected, but 'python' binary is not installed.")
-            log("INFO", "Installing Python via pacman...")
-
-            if not SudoEngine.refresh_sync():
-                if not SudoEngine.preflight():
-                    log("ERROR", "Sudo authentication required to install Python dependency.")
-                    return False
-
-            try:
-                subprocess.run(SudoEngine.sudo_prefix() + ["pacman", "-S", "python", "--noconfirm", "--needed"], check=True)
-                log("OK", "Python installed successfully.")
-            except subprocess.CalledProcessError:
-                log("ERROR", "Failed to install Python. Aborting update sequence.")
-                return False
+            log("ERROR", "Python is required for Dusky on NixOS. Please ensure python3 is enabled in your NixOS configuration.")
+            return False
 
     if not all_valid:
         log("ERROR", "Preflight validation failed: one or more required scripts failed syntax checks.")

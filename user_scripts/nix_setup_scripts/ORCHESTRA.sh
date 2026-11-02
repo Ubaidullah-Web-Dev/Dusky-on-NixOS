@@ -71,7 +71,6 @@ INSTALL_SEQUENCE=(
     "S | 127_pam_keyring_greetd.py --mode auto"
     "U | 130_systemd_dbus_service_manager.py --default"
     "U | 135_battery_notify_service.sh --auto"
-#    "U | 137_snapper_isolation_subvolume.sh --auto"
     "U | 140_dusky_font_configurator.py"
 
     "U | tui_matugen.py --smart"

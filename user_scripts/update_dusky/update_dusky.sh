@@ -74,7 +74,6 @@
 #     "U | 015_set_thunar_terminal.sh"
 #
 #  2. Sudo script (will halt the whole updater if it fails):
-#     "S | 060_package_installation.py"
 #
 #  3. Sudo script passing arguments (--auto and --force):
 #     "S | 050_pacman_config.sh --auto --force"
@@ -219,7 +218,6 @@ declare -ra UPDATE_SEQUENCE=(
     "S | 051_pacman_hooks.sh --auto"
 #    "S | 055_pacman_reflector.sh"
 #    "S | 058_aur_paru_fallback_yay.sh"
-#    "S | 060_package_installation.py"
 #    "S | 070_openssh_setup.sh"
 #    "U | 075_changing_shell_zsh.sh"
 #    "S | 085_warp.py"
@@ -303,7 +301,6 @@ declare -ra UPDATE_SEQUENCE=(
     "U | ignore-fail | update_counter.sh"
     "U | tui_starship.py --apply-state"
     "U | 480_dusky_commands.py -a"
-#    "U | system_update.sh --pacman"
 #
 #
     "S | fix_wayland_session.py"
