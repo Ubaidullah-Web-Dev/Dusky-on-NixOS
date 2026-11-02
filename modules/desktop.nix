@@ -6,11 +6,11 @@
     enable = true;
     settings = {
       initial_session = {
-        command = "start-hyprland";
+        command = "${pkgs.hyprland}/bin/start-hyprland";
         user = "ubaid";
       };
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session --cmd start-hyprland";
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --remember-session --cmd ${pkgs.hyprland}/bin/start-hyprland";
         user = "greeter";
       };
     };
