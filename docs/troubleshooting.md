@@ -32,6 +32,31 @@ echo "nameserver 1.1.1.1" > /etc/resolv.conf
 
 ---
 
+## 💾 Installation & Memory Issues
+
+### Problem: `Out of memory: Killed process (nix)` during `nixos-install`
+In the live ISO, there is zero swap enabled by default. If your machine or VM has limited RAM, memory spikes during builds can trigger the kernel OOM killer:
+`[ 2440.450011] Out of memory: Killed process 1689 (nix)`
+
+**Solution (You do NOT need to re-download anything!):**
+Nix is completely atomic and content-addressed. All packages already downloaded into `/mnt/nix/store` remain intact.
+
+1. Enable a temporary swapfile on `/mnt`:
+   ```bash
+   sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=4096 status=progress
+   sudo chmod 600 /mnt/swapfile
+   sudo mkswap /mnt/swapfile
+   sudo swapon /mnt/swapfile
+   ```
+
+2. Re-run `nixos-install`:
+   ```bash
+   sudo nixos-install --flake /mnt/etc/nixos#dusky-nix
+   ```
+   Nix will immediately detect all existing store paths in `/mnt/nix/store`, verify them, and resume directly from where it was interrupted.
+
+---
+
 ## 🥾 Bootloader & UEFI
 
 ### Problem: Bootloader menu doesn't show up after reboot

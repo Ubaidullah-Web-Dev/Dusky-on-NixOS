@@ -168,6 +168,16 @@ lsblk /dev/nvme0n1
 ```
 You should see `/dev/nvme0n1p2` on `/mnt` and `/dev/nvme0n1p1` on `/mnt/boot`.
 
+> [!TIP]
+> **Virtual Machine or <= 8 GB RAM?**
+> The minimal live ISO runs completely in RAM with no swap enabled. To prevent the Linux OOM (Out Of Memory) killer during builds, create a temporary swapfile on `/mnt`:
+> ```bash
+> dd if=/dev/zero of=/mnt/swapfile bs=1M count=4096 status=progress
+> chmod 600 /mnt/swapfile
+> mkswap /mnt/swapfile
+> swapon /mnt/swapfile
+> ```
+
 ---
 
 ## ⚙️ Step 4: Generating Hardware Configuration
