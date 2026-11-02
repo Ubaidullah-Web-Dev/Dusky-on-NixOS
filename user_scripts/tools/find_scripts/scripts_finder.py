@@ -284,11 +284,30 @@ def discover(root: Path) -> list[str]:
         # Hidden directories are included.
         # Directory symlinks are not traversed, avoiding cycles.
         # Symlinks to regular script files are allowed.
-        for directory, _, names in os.walk(
+        for directory, dirs, names in os.walk(
             root,
             followlinks=False,
             onerror=walk_error,
         ):
+            # Prune hidden dirs, virtualenvs, site-packages, git, caches
+            dirs[:] = [
+                d for d in dirs
+                if not d.startswith(".")
+                and d not in {
+                    "__pycache__",
+                    "site-packages",
+                    "venv",
+                    ".venv",
+                    "build",
+                    "dist",
+                    "node_modules",
+                    "target",
+                }
+            ]
+
+            if any(part.startswith(".") or part in {"__pycache__", "site-packages", "venv"} for part in Path(directory).parts):
+                continue
+
             for name in names:
                 if Path(name).suffix not in {".sh", ".py"}:
                     continue
