@@ -39,6 +39,10 @@ AUR_HELPER=""
 # --- Functions ---
 
 detect_aur_helper() {
+    if [[ -f /etc/NIXOS ]] || command -v nix &>/dev/null; then
+        return 0
+    fi
+
     if [[ $EUID -eq 0 ]]; then
         log_error "Do not run as root. AUR helpers require a non-root user."
         exit 1
@@ -55,6 +59,16 @@ detect_aur_helper() {
 }
 
 install_packages() {
+    if [[ -f /etc/NIXOS ]] || command -v nix &>/dev/null; then
+        log_info "Installing Spotify via nix profile..."
+        NIXPKGS_ALLOW_UNFREE=1 nix profile add --impure nixpkgs#spotify || {
+            log_error "Failed to install Spotify via nix profile."
+            exit 1
+        }
+        log_success "Spotify installed/verified on NixOS."
+        return 0
+    fi
+
     local helper="$1"
     shift
     local packages=("$@")
@@ -73,6 +87,10 @@ install_packages() {
 }
 
 run_spotx() {
+    if [[ -f /etc/NIXOS ]] || command -v nix &>/dev/null; then
+        log_info "On NixOS, Spotify is managed via Nixpkgs. Skipping external SpotX patcher."
+        return 0
+    fi
     log_info "Preparing SpotX installation..."
     SPOTX_TMP=$(mktemp)
     

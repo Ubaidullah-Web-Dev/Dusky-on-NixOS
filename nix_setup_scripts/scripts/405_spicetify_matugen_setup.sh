@@ -49,6 +49,19 @@ check_system() {
 ensure_packages_updated() {
     log_info "Checking Spotify installation integrity..."
     
+    if [[ -f /etc/NIXOS ]] || command -v nix &>/dev/null; then
+        if ! command -v spotify &>/dev/null; then
+            log_info "Installing Spotify via nix profile..."
+            NIXPKGS_ALLOW_UNFREE=1 nix profile add --impure nixpkgs#spotify
+        fi
+        if ! command -v spicetify &>/dev/null; then
+            log_info "Installing spicetify-cli via nix profile..."
+            nix profile add nixpkgs#spicetify-cli
+        fi
+        log_success "Packages are current on NixOS."
+        return 0
+    fi
+
     local helper
     if command -v paru &>/dev/null; then helper="paru"
     elif command -v yay &>/dev/null; then helper="yay"
