@@ -55,6 +55,21 @@ Nix is completely atomic and content-addressed. All packages already downloaded 
    ```
    Nix will immediately detect all existing store paths in `/mnt/nix/store`, verify them, and resume directly from where it was interrupted.
 
+### Problem: `umount: /mnt: target is busy` before reboot
+This occurs because the temporary swapfile (`/mnt/swapfile`) or an open process is actively using `/mnt`.
+
+**Solution:**
+1. Turn off active swap:
+   ```bash
+   sudo swapoff -a
+   ```
+2. Unmount lazily and reboot:
+   ```bash
+   sudo umount -l -R /mnt
+   sudo reboot
+   ```
+   *(Note: `sudo reboot` automatically syncs all disk buffers and safely terminates all mounts upon system shutdown!)*
+
 ---
 
 ## 🥾 Bootloader & UEFI
