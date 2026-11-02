@@ -3059,13 +3059,7 @@ class ConditionEvaluator:
         return False
 
     def _package_installed(self, name: str) -> bool:
-        pkg_cmd = GLOBAL_CONFIG.get("conditions", {}).get(
-            "package_check_cmd",
-            ["pacman", "-Qq"],
-        )
-        if not pkg_cmd or not shutil.which(pkg_cmd[0]):
-            return False
-        return self._run(pkg_cmd + [name])
+        return shutil.which(name) is not None
 
     def _user_in_group(self, group: str) -> bool:
         user = target_user_pw().pw_name
@@ -6911,7 +6905,7 @@ def run_doctor() -> None:
 
     print(f"git:            {shutil.which('git') or 'missing'}")
     print(f"sudo:           {shutil.which('sudo') or 'missing'}")
-    print(f"pacman:         {shutil.which('pacman') or 'missing'}")
+    print(f"nix:            {shutil.which('nix') or 'missing'}")
     print(f"systemctl:      {shutil.which('systemctl') or 'missing'}")
     print(f"notify-send:    {shutil.which('notify-send') or 'missing'}")
     print(f"pw-play:        {shutil.which('pw-play') or 'missing'}")

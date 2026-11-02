@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-#  ARCH LINUX MASTER ORCHESTRATOR
+#  DUSKY MASTER ORCHESTRATOR (NixOS)
 # ==============================================================================
 #  INSTRUCTIONS:
 #  1. Configure SCRIPT_SEARCH_DIRS below with directories containing your scripts.
@@ -63,20 +63,11 @@ INSTALL_SEQUENCE=(
     "U | 020_desktop_entries.py"
     "U | 025_configure_keyboard.sh"
     "U | 040_long_sleep_timeout.sh --auto"
-#    "S | 045_battery_limiter.sh"
-#    "S | 050_pacman_config.sh --auto"
-#    "S | 051_pacman_hooks.sh --auto"
-#    "S | 055_pacman_reflector.sh"
-#    "S | 058_aur_paru_fallback_yay.sh --paru"
-#    "S | 060_package_installation.sh"
     "S | 068_ufw_firewall.py"
     "S | 070_openssh_setup.sh --auto"
     "U | 075_changing_shell_zsh.sh"
 #    "S | 085_warp.py"
-#    "U | 090_paru_packages_optional.sh"
-#    "S | 095_battery_limiter_again_dusk.sh"
-#    "U | 100_paru_packages.sh"
-#    "S | 120_create_mount_directories.sh"
+#    "U | 090_optional_packages.sh"
     "S | 127_pam_keyring_greetd.py --mode auto"
     "U | 130_systemd_dbus_service_manager.py --default"
     "U | 135_battery_notify_service.sh --auto"
@@ -118,7 +109,7 @@ INSTALL_SEQUENCE=(
     "U | 242_file_manager_bookmarks_sidepane.py"
     "U | 243_mousepad_defaults.py"
 #    "S | 245_asusd_service_fix.sh"
-#    "S | 250_ftp_arch.sh"
+#    "S | 250_ftp.sh"
 #    "U | 255_tldr_update.sh"
 #    "U | 260_spotify.sh"
 #    "U | 265_mouse_button_reverse.sh --right"
@@ -133,7 +124,6 @@ INSTALL_SEQUENCE=(
     "S | 350_dns_systemd_resolve.sh"
     "U | 360_obsidian_pensive_vault_configure.sh"
     "U | 365_cache_purge.sh"
-    "S | 370_arch_install_scripts_cleanup.sh --auto"
     "U | 375_cursor_theme_bibata_classic_modern.sh"
     "U | 376_generate_colorfiles_for_current_wallpaer.sh"
     "U | 380_nvidia_open_source.sh --auto"
@@ -708,7 +698,7 @@ Options:
 
 Description:
     This script orchestrates the execution of multiple setup scripts
-    for Arch Linux with Hyprland. It tracks completed scripts and
+    for Dusky on NixOS with Hyprland. It tracks completed scripts and
     can resume from where it left off if interrupted.
 
     Scripts are searched in the directories listed in SCRIPT_SEARCH_DIRS
@@ -955,17 +945,8 @@ main() {
 
     # Automated provisioning for Python 
     if [[ $needs_python -eq 1 ]] && ! command -v python >/dev/null 2>&1; then
-        if [[ -f /etc/NIXOS ]]; then
-            log "ERROR" "Python is missing on NixOS. Please add python3 to your NixOS configuration."
-            exit 1
-        fi
-        log "WARN" "Python dependency detected, but 'python' binary is not installed."
-        log "RUN" "Installing Python via pacman..."
-        sudo pacman -S python --noconfirm --needed || {
-            log "ERROR" "Failed to install Python. Aborting orchestrator."
-            exit 1
-        }
-        log "SUCCESS" "Python installed successfully."
+        log "ERROR" "Python is missing on NixOS. Please add python3 to your NixOS configuration."
+        exit 1
     fi
 
     ensure_state_dir

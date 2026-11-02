@@ -140,7 +140,7 @@ default_interpreter = "bash"
 # ------------------------------------------------------------------------------
 [conditions]
 # Command array used to check if a system package is installed
-package_check_cmd = ["pacman", "-Qq"]
+package_check_cmd = ["which"]
 
 # Command array used to check if a systemd system service is active
 service_active_cmd = ["systemctl", "is-active", "--quiet"]

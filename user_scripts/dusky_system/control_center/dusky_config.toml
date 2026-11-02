@@ -4544,7 +4544,7 @@ icon = "package-x-generic-symbolic"
 style = "suggested"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 090_paru_packages_optional.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/090_paru_packages_optional.sh\""
+command = "foot --app-id=dusky_tui $HOME/user_scripts/nix_setup_scripts/scripts/090_optional_packages.sh"
 
 [[pages.layout.items]]
 type = "button"

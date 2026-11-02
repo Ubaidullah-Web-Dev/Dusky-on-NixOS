@@ -112,17 +112,15 @@ initialize_environment() {
 }
 
 check_and_install_deps() {
-    local -a deps=("curl" "wl-clipboard" "pciutils" "git" "inxi")
-    local missing_deps
-    
-    # Allow stderr to pass through so genuine pacman db lock errors aren't masked
-    missing_deps=$(pacman -T "${deps[@]}") || true
-
-    if [[ -n "$missing_deps" ]]; then
-        local -a to_install
-        mapfile -t to_install <<< "$missing_deps"
-        log "WARN" "Installing missing dependencies: ${to_install[*]}"
-        sudo pacman -S --needed --noconfirm "${to_install[@]}" || die "Failed to install dependencies."
+    local -a deps=("curl" "wl-copy" "lspci" "git" "inxi")
+    local -a missing=()
+    for dep in "${deps[@]}"; do
+        if ! command -v "$dep" &>/dev/null; then
+            missing+=("$dep")
+        fi
+    done
+    if (( ${#missing[@]} > 0 )); then
+        log "WARN" "Missing optional diagnostics tools: ${missing[*]}"
     fi
 }
 
