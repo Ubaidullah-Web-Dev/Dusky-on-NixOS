@@ -3,7 +3,7 @@ Type=Application
 Name=Dusky Sites TUI
 GenericName=Website Theme Manager
 Comment=Real-time website theming and domain toggle manager
-Exec=foot --app-id=dusky_tui python3 /home/dusk/user_scripts/firefox/theme_matugen/tui_dusky_sites.py
+Exec=foot --app-id=dusky_tui python3 /home/ubaid/user_scripts/firefox/theme_matugen/tui_dusky_sites.py
 Terminal=false
 Categories=Settings;DesktopSettings;Network;WebBrowser;
 Keywords=dusky;matugen;sites;websites;theme;tui;config;settings;

@@ -387,6 +387,9 @@ def enable_multilib_and_optimizations(
 ) -> bool:
     """Idempotently configures /etc/pacman.conf with multilib, ParallelDownloads, and timeout protection."""
     if not pacman_conf.exists():
+        if Path("/etc/NIXOS").exists() or shutil.which("nixos-rebuild"):
+            console.print("[bold green]NixOS detected: 32-bit graphics and gaming drivers enabled declaratively.[/bold green]")
+            return True
         console.print("[bold red]Critical system file /etc/pacman.conf not found![/bold red]")
         sys.exit(1)
 

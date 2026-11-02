@@ -836,7 +836,7 @@ hl.bind(
 
 hl.bind(
     "SUPER + ALT + K",
-    hl.dsp.group.lock_active({ action = "toggle" }),
+    hl.dsp.group.lock({ action = "toggle" }),
     { description = "Group Lock Toggle" }
 )
 

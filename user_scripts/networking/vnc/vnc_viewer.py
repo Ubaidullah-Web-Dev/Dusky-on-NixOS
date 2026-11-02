@@ -46,7 +46,10 @@ def install_dependencies() -> None:
         missing.append("python-rich")
     if missing:
         print("Installing receiving-PC packages: " + ", ".join(missing), flush=True)
-        subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm", *missing], check=True)
+        if shutil.which("pacman") is not None:
+            subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm", *missing], check=True)
+        else:
+            message("NixOS detected: packages managed declaratively.")
     if (not shutil.which("remmina") or not shutil.which("openssl") or not ctypes.util.find_library("vncclient")
             or importlib.util.find_spec("rich") is None):
         raise RuntimeError("Viewer installation incomplete; remmina, openssl, libvncserver and python-rich are required")

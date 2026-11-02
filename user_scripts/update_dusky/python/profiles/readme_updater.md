@@ -46,7 +46,7 @@ version = "9.5.0"        # Informational only — NOT read by the updater
 
 # ─── GIT SYNC + SCRIPT SEARCH ────────────────────────────────────────────────
 [git]
-repo_url = "https://github.com/dusklinux/dusky"  # Upstream repo (default from global settings)
+repo_url = "https://github.com/Ubaidullah-Web-Dev/Dusky-on-NixOS.git"  # Upstream repo (default from global settings)
 branch = "main"                                   # Upstream tracking branch
 
 # Script search directories, searched IN ORDER for each script name.

@@ -8,13 +8,13 @@ description = "dusky update scripts"
 version = "9.5.0"
 
 [git]
-repo_url = "https://github.com/dusklinux/dusky"
+repo_url = "https://github.com/Ubaidullah-Web-Dev/Dusky-on-NixOS.git"
 branch = "main"
 
 # Topologically decoupled search heuristics replacing static path dictionaries
 search_dirs = [
-    "user_scripts/arch_setup_scripts/scripts",
-    "user_scripts/arch_setup_scripts",
+    "user_scripts/nix_setup_scripts/scripts",
+    "user_scripts/nix_setup_scripts",
     "user_scripts/cursor/color",
     "user_scripts/networking",
     "user_scripts/misc_extra",

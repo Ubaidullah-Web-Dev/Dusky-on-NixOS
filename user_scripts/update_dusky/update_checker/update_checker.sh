@@ -52,7 +52,7 @@ unset _debug_env
 declare -r FETCH_REFSPEC='+refs/heads/*:refs/remotes/origin/*'
 
 # Git command with safe.directory override to prevent dubious ownership halts
-declare -ra GIT_CMD=(/usr/bin/git -c "safe.directory=*" --git-dir="$GIT_DIR" --work-tree="$WORK_TREE")
+declare -ra GIT_CMD=(git -c "safe.directory=*" --git-dir="$GIT_DIR" --work-tree="$WORK_TREE")
 
 # ANSI ESCAPE CODES
 declare _hbuf=''
@@ -140,19 +140,19 @@ _has_network() {
     fi
 
     # 3. Direct TCP probes to high-availability DNS root IPs (bypasses DNS resolution)
-    if /usr/bin/timeout 2 bash -c 'exec 3<>/dev/tcp/1.1.1.1/53' 2>/dev/null || \
-       /usr/bin/timeout 2 bash -c 'exec 3<>/dev/tcp/8.8.8.8/53' 2>/dev/null || \
-       /usr/bin/timeout 2 bash -c 'exec 3<>/dev/tcp/1.1.1.1/443' 2>/dev/null; then
+    if timeout 2 bash -c 'exec 3<>/dev/tcp/1.1.1.1/53' 2>/dev/null || \
+       timeout 2 bash -c 'exec 3<>/dev/tcp/8.8.8.8/53' 2>/dev/null || \
+       timeout 2 bash -c 'exec 3<>/dev/tcp/1.1.1.1/443' 2>/dev/null; then
         return 0
     fi
 
     # 4. Host probe fallback
-    if /usr/bin/timeout 3 bash -c 'exec 3<>/dev/tcp/github.com/443' 2>/dev/null; then
+    if timeout 3 bash -c 'exec 3<>/dev/tcp/github.com/443' 2>/dev/null; then
         return 0
     fi
 
     # 5. ICMP probe fallback
-    if /usr/bin/timeout 2 /usr/bin/ping -q -c1 -W1 1.1.1.1 >/dev/null 2>&1; then
+    if timeout 2 /usr/bin/ping -q -c1 -W1 1.1.1.1 >/dev/null 2>&1; then
         return 0
     fi
 
@@ -265,7 +265,7 @@ git_fetch() {
        GIT_ASKPASS="" \
        SSH_ASKPASS="" \
        GIT_SSH_COMMAND="$ssh_cmd" \
-       /usr/bin/timeout --kill-after="$TIMEOUT_KILL_SEC" "$TIMEOUT_SEC" \
+       timeout --kill-after="$TIMEOUT_KILL_SEC" "$TIMEOUT_SEC" \
        "${GIT_CMD[@]}" \
        -c credential.interactive=never \
        fetch \
@@ -660,7 +660,7 @@ run_background_check() {
     if (( count >= NOTIFY_THRESHOLD )) &&
        (( ! have_previous_state || previous_count < NOTIFY_THRESHOLD )) &&
        [[ -x /usr/bin/notify-send ]]; then
-        /usr/bin/timeout --kill-after=1 2 \
+        timeout --kill-after=1 2 \
             /usr/bin/notify-send -u normal -t 5000 -i software-update-available \
             "Dusky Dotfiles" \
             "Update Available: Your system is ${count} commits behind." \

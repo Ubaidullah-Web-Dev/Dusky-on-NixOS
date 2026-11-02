@@ -566,7 +566,7 @@ class ProfileConfig:
     git_dir: str = "~/dusky"
     git_work_tree: str = "~/"
     git_remote: str = "origin"
-    git_repo_url: str = "https://github.com/dusklinux/dusky"
+    git_repo_url: str = "https://github.com/Ubaidullah-Web-Dev/Dusky-on-NixOS.git"
     search_dirs: list[str] = field(default_factory=list)
     conflict_resolutions: dict[str, str] = field(default_factory=dict)
     tasks: list[OrchestratorTask] = field(default_factory=list)
@@ -2571,7 +2571,7 @@ def load_profile(filepath: Path) -> ProfileConfig:
     default_repo_url = GLOBAL_CONFIG.get(
         "git",
         {},
-    ).get("default_repo_url", "https://github.com/dusklinux/dusky")
+    ).get("default_repo_url", "https://github.com/Ubaidullah-Web-Dev/Dusky-on-NixOS.git")
     git_repo_url = str(
         g_data.get("url") or g_data.get("repo_url") or default_repo_url
     ).strip()

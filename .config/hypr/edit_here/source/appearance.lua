@@ -38,8 +38,8 @@ hl.config({
     decoration = {
         rounding = 2, -- Rounded corners' radius (in layout px)
         rounding_power = 2.0, -- Curve used for rounding (2.0 is circle, 4.0 squircle, 1.0 triangular)
-        active_opacity = 0.85, -- Opacity of active windows [0.0 - 1.0]
-        inactive_opacity = 0.85, -- Opacity of inactive windows [0.0 - 1.0]
+        active_opacity = 1.0, -- Opacity of active windows [0.0 - 1.0]
+        inactive_opacity = 1.0, -- Opacity of inactive windows [0.0 - 1.0]
         fullscreen_opacity = 1.0, -- Opacity of fullscreen windows [0.0 - 1.0]
         dim_modal = true, -- Enables dimming of parents of modal windows
         dim_inactive = true, -- Enables dimming of inactive windows
@@ -50,7 +50,7 @@ hl.config({
         border_part_of_window = true, -- Whether the window border should be a part of the window
 
         blur = {
-            enabled = true, -- Enable kawase window background blur
+            enabled = false, -- Enable kawase window background blur
             size = 6, -- Blur size (distance)
             passes = 2, -- Amount of passes to perform
             ignore_opacity = true, -- Make the blur layer ignore the opacity of the window
@@ -69,7 +69,7 @@ hl.config({
         },
 
         shadow = {
-            enabled = true, -- Enable drop shadows on windows
+            enabled = false, -- Enable drop shadows on windows
             range = 6, -- Shadow range ("size") in layout px
             render_power = 1, -- Falloff power (more power = faster falloff) [1 - 4]
             sharp = false, -- Make shadows sharp, akin to infinite render power

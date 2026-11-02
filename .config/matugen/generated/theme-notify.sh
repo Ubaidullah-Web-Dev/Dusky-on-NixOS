@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # Matugen injects these dynamically. Zero subshells or forks used.
-c_1="#74daa3"
-c_2="#91d5ac"
-c_3="#82d3e2"
-c_4="#005232"
-c_5="#045233"
+c_1="#86d6be"
+c_2="#b2ccc2"
+c_3="#a9cbe3"
+c_4="#005141"
+c_5="#344c44"
 
 # U+25CF (Black Circle) with Pango color spans
 dots="<span color='${c_1}'>●</span> <span color='${c_2}'>●</span> <span color='${c_3}'>●</span> <span color='${c_4}'>●</span> <span color='${c_5}'>●</span>"

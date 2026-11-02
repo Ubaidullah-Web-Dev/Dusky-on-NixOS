@@ -591,7 +591,7 @@ def persistence(*, combined=False):
     import shlex
     import types
     from unittest.mock import patch
-    script=ROOT.parent/'arch_setup_scripts/scripts/390_clipboard_persistance.py'
+    script=ROOT.parent/'nix_setup_scripts/scripts/390_clipboard_persistance.py'
     f=Fixture(ROOT/'terminal_clipboard.sh')
     process=None
     try:
@@ -710,7 +710,7 @@ else:
                 completions.append(emit('text',i+10,data));time.sleep(.002)
             for done in completions:wait_for(done.exists,seconds=20)
         def frontend_switches():
-            selector=ROOT.parent/'arch_setup_scripts/scripts/460_switch_clipboard.sh'
+            selector=ROOT.parent/'nix_setup_scripts/scripts/460_switch_clipboard.sh'
             for i in range(256):run([str(selector),'--rofi' if i%2 else '--terminal','--force'],f.env)
         def vim_updates():
             for _ in range(256):f.ui('--toggle-vim')
@@ -826,7 +826,7 @@ def integration():
         zsource=zsource[start:end+len('add-zsh-hook precmd _dusky_clipboard_env')]
         daemon_source=(ROOT/'dusky_clipboard_daemon.sh').read_text().split('# A watcher starts')[0]
         with patch.dict(os.environ,f.env):
-            module=runpy.run_path(str(ROOT.parent/'arch_setup_scripts/scripts/390_clipboard_persistance.py'))
+            module=runpy.run_path(str(ROOT.parent/'nix_setup_scripts/scripts/390_clipboard_persistance.py'))
         fallback=str(f.root/'cache/cliphist/db')
         literal=str(f.root/'literal $name `data` space/db')
         cases=[('',fallback),('CLIPHIST_DB_PATH=relative\n',fallback),
@@ -968,7 +968,7 @@ def integration():
 def frontend():
     """Frontend preference, Lua consumer, settings lock and reload failures."""
     f=Fixture(ROOT/'terminal_clipboard.sh')
-    switcher=ROOT.parent/'arch_setup_scripts/scripts/460_switch_clipboard.sh'
+    switcher=ROOT.parent/'nix_setup_scripts/scripts/460_switch_clipboard.sh'
     try:
         f.env.pop('HYPRLAND_INSTANCE_SIGNATURE',None)
         def call(*args,extra=None,check=True):

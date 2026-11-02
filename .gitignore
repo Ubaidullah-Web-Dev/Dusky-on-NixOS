@@ -25,3 +25,11 @@ result-*
 # User-specific local overrides
 .zshrc.local
 .config/zshrc/custom/
+
+# Ephemeral user data
+.config/mozilla/
+.config/pulse/
+.config/dconf/
+.config/hypr/hyprland-057-backup-*
+.config/hypr/edit_here/source/backups/
+.config/obsidian/

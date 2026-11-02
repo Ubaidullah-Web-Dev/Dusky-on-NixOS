@@ -44,7 +44,7 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 cmd_exists() { command -v "$1" &>/dev/null; }
-pkg_installed() { pacman -Q "$1" &>/dev/null; }
+pkg_installed() { if cmd_exists pacman; then pacman -Q "$1" &>/dev/null; else cmd_exists "$1"; fi; }
 
 # --- Pre-Flight Checks ---
 if (( BASH_VERSINFO[0] < 5 )); then die "Bash 5.0+ required."; fi
@@ -147,7 +147,7 @@ log_step "Removing Software"
 
 if pkg_installed tailscale; then
     log_info "Uninstalling Tailscale package..."
-    pacman -Rns --noconfirm tailscale
+    if cmd_exists pacman; then pacman -Rns --noconfirm tailscale; else log_info "NixOS: remove tailscale from configuration.nix"; fi
     log_succ "Tailscale uninstalled."
 else
     log_warn "Tailscale package not found (already removed?)."

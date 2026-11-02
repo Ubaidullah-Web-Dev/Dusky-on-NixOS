@@ -148,7 +148,10 @@ def ensure_dependencies(requirements: dict[str, tuple[str, ...]]) -> None:
         missing.append("python-rich")
     if missing:
         message("Installing missing packages: " + ", ".join(missing))
-        subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm", *missing], check=True)
+        if shutil.which("pacman") is not None:
+            subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm", *missing], check=True)
+        else:
+            message("NixOS detected: packages managed declaratively.")
     unavailable = [command for commands in requirements.values() for command in commands if not shutil.which(command)]
     if unavailable or importlib.util.find_spec("rich") is None:
         raise RuntimeError("Dependency installation incomplete: " + ", ".join(unavailable or ["python-rich"]))

@@ -801,6 +801,23 @@ main() (
         esac
     done
 
+        if ! command -v pacman >/dev/null 2>&1 && [ -f /etc/NIXOS ]; then
+        if [ -z "$count" ]; then
+            selected=$(find /run/current-system/sw/bin -maxdepth 1 -type l -printf "%f\n" | sort -u | fzf --prompt="NixOS Packages > " --preview 'ls -l /run/current-system/sw/bin/{}' || true)
+            if [ -n "$selected" ]; then
+                printf '%s\n' "$selected"
+                if (( desktop )) && command -v wl-copy >/dev/null 2>&1; then
+                    wl-copy <<< "$selected"
+                    printf 'Copied "%s" to clipboard.\n' "$selected" >&2
+                fi
+            fi
+            return 0
+        else
+            find /run/current-system/sw/bin -maxdepth 1 -type l -printf "%f\n" | sort -u | head -n "$count"
+            return 0
+        fi
+    fi
+
     _pkg_require pacman expac gawk sort mktemp rm || return 1
 
     if [[ -z "$count" ]]; then

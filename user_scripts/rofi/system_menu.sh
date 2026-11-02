@@ -111,7 +111,7 @@ declare -agr NETWORK_MENU=(
 
 declare -agr SYSTEM_MENU=(
     '  Dusky Updater'
-    '  Arch Updater'
+    '  NixOS System Rebuild'
     '  Fastfetch'
     '  Dysk Usage'
     '  Disk I/O Monitor'
@@ -119,10 +119,10 @@ declare -agr SYSTEM_MENU=(
     '  Drive Health'
     '  Disk Formatter'
     '  NTFS Fix'
-    '  Snapshots'
+    '  NixOS Generations'
     '  View Backups'
     '  Send Logs'
-    '  Cache Purge'
+    '  Nix Garbage Collect'
 )
 
 declare -agr PERFORMANCE_MENU=(
@@ -413,7 +413,7 @@ show_display_menu() {
                 run_app "$SCRIPTS_DIR/theme_matugen/theme_ctl.sh" set --mode light
                 ;;
             '  Fix KDE Theming')
-                run_term_hold "kde_theming_fix" bash -c "python3 '$SCRIPTS_DIR/arch_setup_scripts/scripts/331_sync_kde_apps.py' && notify-send 'KDE Theming' 'KDE applications successfully themed!'"
+                run_term_hold "kde_theming_fix" bash -c "python3 '$SCRIPTS_DIR/nix_setup_scripts/scripts/331_sync_kde_apps.py' && notify-send 'KDE Theming' 'KDE applications successfully themed!'"
                 ;;
             '  Wallpaper App')
                 run_app waypaper
@@ -553,10 +553,10 @@ show_network_menu() {
                 run_term_hold "airmon_ng" python3 "$SCRIPTS_DIR/networking/airmon_ng_gpu.py"
                 ;;
             '  Block Distractions')
-                run_term_hold "hosts_block" "$SCRIPTS_DIR/arch_setup_scripts/scripts/325_hosts_files_block.sh"
+                run_term_hold "hosts_block" "$SCRIPTS_DIR/nix_setup_scripts/scripts/325_hosts_files_block.sh"
                 ;;
             '  FTP Setup')
-                run_term_hold "ftp_setup" "$SCRIPTS_DIR/arch_setup_scripts/scripts/250_ftp_arch.sh"
+                run_term_hold "ftp_setup" "$SCRIPTS_DIR/nix_setup_scripts/scripts/250_ftp_arch.sh"
                 ;;
             *)
                 return 0
@@ -575,8 +575,8 @@ show_system_menu() {
             '  Dusky Updater')
                 run_term_hold "update_dusky" bash -c "'$SCRIPTS_DIR/update_dusky/python/update_dusky_supervisor.py'"
                 ;;
-            '  Arch Updater')
-                run_term_hold "arch_update" bash -c "paru -Syu"
+            '  NixOS System Rebuild')
+                run_term_hold "nixos_update" bash -c "dusky-update --flake-update"
                 ;;
             '  Fastfetch')
                 run_term_hold "fastfetch" fastfetch
@@ -599,17 +599,17 @@ show_system_menu() {
             '  NTFS Fix')
                 run_term_hold "ntfs_fix" "$SCRIPTS_DIR/drives/ntfs_fix.sh"
                 ;;
-            '  Snapshots')
-                run_term_hold "dusky_snapshots" sudo python3 "$SCRIPTS_DIR/btrfs_snapshots/cc/dusky_snapshot_manager.py"
+            '  NixOS Generations')
+                run_term_hold "dusky_generations" python3 "$SCRIPTS_DIR/dusky_system/generations/dusky_generation_manager.py"
                 ;;
             '  View Backups')
                 run_term_hold "backup_viewer" bash -c "yazi '$HOME/Documents/dusky_backups/'"
                 ;;
             '  Send Logs')
-                run_term_hold "send_logs" "$SCRIPTS_DIR/arch_setup_scripts/send_logs.sh"
+                run_term_hold "send_logs" "$SCRIPTS_DIR/nix_setup_scripts/send_logs.sh"
                 ;;
-            '  Cache Purge')
-                run_term_hold "cache_purge" "$SCRIPTS_DIR/arch_setup_scripts/scripts/365_cache_purge.sh"
+            '  Nix Garbage Collect')
+                run_term_hold "nix_gc" bash -c "echo \x27=== Collecting Nix Garbage ===\x27 && nix-collect-garbage -d && sudo nix-collect-garbage -d"
                 ;;
             *)
                 return 0
@@ -647,7 +647,7 @@ show_performance_menu() {
                 run_term_hold "zram_sweep" sudo python3 "$SCRIPTS_DIR/performance/zram/dusky_pro_active_swap_modifier_cc.py" --run-now --force
                 ;;
             '  ZRAM Diagnostics')
-                run_term_hold "zram_diag" "$SCRIPTS_DIR/arch_setup_scripts/scripts/208_check_zram0_zram1_setup.py"
+                run_term_hold "zram_diag" "$SCRIPTS_DIR/nix_setup_scripts/scripts/208_check_zram0_zram1_setup.py"
                 ;;
             '  Kernel Compiler')
                 run_term_hold "dusky_kernel_compile" python3 "$SCRIPTS_DIR/kernel/dusky_kernel_compiler/dusky_kernal_compile.py"
@@ -688,7 +688,7 @@ show_power_menu() {
                 run_term_hold "dusky_tui" python3 "$SCRIPTS_DIR/power/tui_power.py"
                 ;;
             '  Battery Config')
-                run_term_hold "bat_notify_config" "$SCRIPTS_DIR/arch_setup_scripts/scripts/440_config_bat_notify.sh"
+                run_term_hold "bat_notify_config" "$SCRIPTS_DIR/nix_setup_scripts/scripts/440_config_bat_notify.sh"
                 ;;
             '  Idle Settings')
                 run_term_hold "dusky_tui" python3 "$SCRIPTS_DIR/hypridle/tui_dusky_hypridle.py"
@@ -703,10 +703,10 @@ show_power_menu() {
                 run_term_hold "dusky_tui" python3 "$SCRIPTS_DIR/hypr/input/tui_trackpad.py"
                 ;;
             '  Mouse Left-Handed')
-                run_term_hold "mouse_handedness" "$SCRIPTS_DIR/arch_setup_scripts/scripts/265_mouse_button_reverse.sh" --left
+                run_term_hold "mouse_handedness" "$SCRIPTS_DIR/nix_setup_scripts/scripts/265_mouse_button_reverse.sh" --left
                 ;;
             '  Mouse Right-Handed')
-                run_term_hold "mouse_handedness" "$SCRIPTS_DIR/arch_setup_scripts/scripts/265_mouse_button_reverse.sh" --right
+                run_term_hold "mouse_handedness" "$SCRIPTS_DIR/nix_setup_scripts/scripts/265_mouse_button_reverse.sh" --right
                 ;;
             '  Bluetooth Manager')
                 run_app blueman-manager
@@ -750,16 +750,16 @@ show_configs_menu() {
                 edit_file "$HYPR_EDIT_DIR/source/autostart.lua"
                 ;;
             '  File Manager Default')
-                run_term_hold "235_default_apps.py" "$SCRIPTS_DIR/arch_setup_scripts/scripts/235_default_apps.py" --file-manager
+                run_term_hold "235_default_apps.py" "$SCRIPTS_DIR/nix_setup_scripts/scripts/235_default_apps.py" --file-manager
                 ;;
             '  Browser Default')
-                run_term_hold "235_default_apps.py" "$SCRIPTS_DIR/arch_setup_scripts/scripts/235_default_apps.py" --browser
+                run_term_hold "235_default_apps.py" "$SCRIPTS_DIR/nix_setup_scripts/scripts/235_default_apps.py" --browser
                 ;;
             '  Editor Default')
-                run_term_hold "235_default_apps.py" "$SCRIPTS_DIR/arch_setup_scripts/scripts/235_default_apps.py" --text-editor
+                run_term_hold "235_default_apps.py" "$SCRIPTS_DIR/nix_setup_scripts/scripts/235_default_apps.py" --text-editor
                 ;;
             '  Terminal Default')
-                run_term_hold "235_default_apps.py" "$SCRIPTS_DIR/arch_setup_scripts/scripts/235_default_apps.py" --terminal
+                run_term_hold "235_default_apps.py" "$SCRIPTS_DIR/nix_setup_scripts/scripts/235_default_apps.py" --terminal
                 ;;
             '  Window Rules Generator')
                 run_term_hold "dusky_window_rules" "$SCRIPTS_DIR/hypr/rules/window_rules_generator.py"
@@ -838,7 +838,7 @@ show_tools_menu() {
                 run_term_hold "dusky_firefox_opt" python3 "$SCRIPTS_DIR/firefox/optimize_firefox.py"
                 ;;
             '  Git Config')
-                run_term_hold "git_config" "$SCRIPTS_DIR/arch_setup_scripts/scripts/300_git_config.sh"
+                run_term_hold "git_config" "$SCRIPTS_DIR/nix_setup_scripts/scripts/300_git_config.sh"
                 ;;
             '  Git New Repo')
                 run_term_hold "dusky_backup_new" "$SCRIPTS_DIR/git/dusky_backup_manager.py" --new

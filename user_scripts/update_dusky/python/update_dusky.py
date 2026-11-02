@@ -130,7 +130,7 @@ def _normalize_global_config(raw: dict[str, Any]) -> dict[str, Any]:
             "max_defer_passes": 3, "log_max_bytes": 8 * 1024 * 1024, "log_max_line_bytes": 256 * 1024,
         },
         "git": {
-            "branch": "main", "repo_url": "https://github.com/dusklinux/dusky",
+            "branch": "main", "repo_url": "https://github.com/Ubaidullah-Web-Dev/Dusky-on-NixOS.git",
             "fetch_timeout": 60, "fetch_max_attempts": 5, "clone_timeout": 120, "clone_max_attempts": 5,
             "command_timeout": 300, "backup_timeout": 900,
             "env_strip": ["GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_LITERAL_PATHSPECS", "GIT_ASKPASS", "SSH_ASKPASS"],
@@ -238,9 +238,9 @@ def _normalize_global_config(raw: dict[str, Any]) -> dict[str, Any]:
     finite_number("execution", "prompt_wait_timeout", 900.0, 1.0, 24 * 3600.0)
     raw_git = raw.get("git", {}) if isinstance(raw.get("git", {}), dict) else {}
     raw_branch = raw_git.get("branch", "main")
-    raw_repo = raw_git.get("repo_url", "https://github.com/dusklinux/dusky")
+    raw_repo = raw_git.get("repo_url", "https://github.com/Ubaidullah-Web-Dev/Dusky-on-NixOS.git")
     string("git", "branch", "main")
-    string("git", "repo_url", "https://github.com/dusklinux/dusky")
+    string("git", "repo_url", "https://github.com/Ubaidullah-Web-Dev/Dusky-on-NixOS.git")
     if not isinstance(raw_branch, str) or not raw_branch.strip() or "\x00" in raw_branch:
         _config_fatal("git.branch is invalid; synchronization target is ambiguous")
     if not isinstance(raw_repo, str) or not raw_repo.strip() or "\x00" in raw_repo:
@@ -2770,8 +2770,8 @@ def load_profile(name_or_path: str) -> ProfileConfig:
             sys.stderr.write(f"[FATAL] Profile '{p}': [sequence] tasks must be an array of strings\n")
             sys.exit(2)
         search_dirs = git_cfg.get("search_dirs", [
-            "user_scripts/arch_setup_scripts/scripts",
-            "user_scripts/arch_setup_scripts",
+            "user_scripts/nix_setup_scripts/scripts",
+            "user_scripts/nix_setup_scripts",
             "user_scripts/networking",
             "user_scripts/misc_extra",
             "user_scripts/update_dusky",
@@ -2790,7 +2790,7 @@ def load_profile(name_or_path: str) -> ProfileConfig:
             sys.stderr.write(f"[FATAL] Invalid git branch '{branch}' in profile '{p}'\n")
             sys.exit(2)
 
-        repo_url = git_cfg.get("repo_url", GLOBAL_CONFIG.get("git", {}).get("repo_url", "https://github.com/dusklinux/dusky"))
+        repo_url = git_cfg.get("repo_url", GLOBAL_CONFIG.get("git", {}).get("repo_url", "https://github.com/Ubaidullah-Web-Dev/Dusky-on-NixOS.git"))
         if not isinstance(repo_url, str) or not repo_url:
             sys.stderr.write(f"[FATAL] Profile '{p}': [git] repo_url must be a non-empty string\n")
             sys.exit(2)

@@ -3,7 +3,7 @@ Type=Application
 Name=DNS & Resolver TUI
 GenericName=DNS Configurator
 Comment=Systemd-resolved DNS, DNS-over-TLS, custom upstreams and privacy presets manager
-Exec=foot --app-id=dusky_tui python3 /home/dusk/user_scripts/network_manager/tui_dns.py
+Exec=foot --app-id=dusky_tui python3 /home/ubaid/user_scripts/network_manager/tui_dns.py
 Terminal=false
 Categories=Network;Settings;System;Utility;
 Keywords=dusky;dns;resolver;systemd-resolved;dot;dns-over-tls;cloudflare;quad9;mullvad;tui;config;settings;

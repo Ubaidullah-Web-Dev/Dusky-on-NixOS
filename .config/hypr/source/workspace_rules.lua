@@ -237,7 +237,6 @@ hl.config({
         -- resize the smaller side on manual resize
         smart_resizing               = true,
         permanent_direction_override = false,
-        special_scale_factor         = 1.0,
         split_width_multiplier       = 1.0,
         use_active_for_splits        = true,
         default_split_ratio          = 1.0,
@@ -266,7 +265,6 @@ hl.config({
         always_keep_position          = false,
         focus_master_on_close         = false,
         -- scale of windows in special workspaces
-        special_scale_factor          = 1.0,
     },
 
     -- §10d Scrolling layout

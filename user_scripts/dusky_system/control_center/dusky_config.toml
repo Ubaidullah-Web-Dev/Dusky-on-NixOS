@@ -239,7 +239,7 @@ style = "destructive"
 button_text = "Deploy"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class deploy_dotfiles.sh --hold sh -c $HOME/user_scripts/arch_setup_scripts/deploy_dotfiles.sh"
+command = "kitty --class deploy_dotfiles.sh --hold sh -c $HOME/user_scripts/nix_setup_scripts/deploy_dotfiles.sh"
 terminal = false
 
 [[pages.layout.items]]
@@ -252,28 +252,28 @@ style = "destructive"
 button_text = "Orchestra"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class ORCHESTRA.sh --hold sh -c $HOME/user_scripts/arch_setup_scripts/ORCHESTRA.sh"
+command = "kitty --class ORCHESTRA.sh --hold sh -c $HOME/user_scripts/nix_setup_scripts/ORCHESTRA.sh"
 terminal = false
 
 [[pages.layout]]
 type = "section"
 [pages.layout.properties]
-title = "BTRFS Snapshots"
+title = "NixOS Generations"
 icon = "drive-harddisk-system-symbolic"
-description = "Manage filesystem snapshots"
+description = "Manage NixOS system generations and rollbacks"
 
 [[pages.layout.items]]
 type = "button"
 [pages.layout.items.properties]
-title = "Dusky System Snapshots"
+title = "NixOS Generations & Rollback"
 button_text = "Open"
-description = "Manage Btrfs snapshots and restores"
+description = "View generations and rollback system state"
 icon = "document-revert-symbolic"
 
 style = "suggested"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class dusky_snapshot_manager.py --hold sudo python3 \"$HOME/user_scripts/btrfs_snapshots/cc/dusky_snapshot_manager.py\""
+command = "kitty --class dusky_generation_manager.py --title \"NixOS Generations\" --hold sh -c \"python3 $HOME/user_scripts/dusky_system/generations/dusky_generation_manager.py\""
 
 [[pages.layout]]
 type = "section"
@@ -312,12 +312,12 @@ terminal = false
 [[pages.layout.items.layout.items]]
 type = "button"
 [pages.layout.items.layout.items.properties]
-title = "Arch Updater"
-description = "Pacman and AUR packages update"
+title = "NixOS Flake Update"
+description = "Update flake inputs and switch to new generation"
 icon = "folder-download-symbolic"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --class arch_update --title \"Arch Linux Updater\" --hold sh -c \"paru -Syu\""
+command = "kitty --class nixos_update --title \"NixOS System Updater\" --hold sh -c \"dusky-update --flake-update\""
 terminal = false
 
 [[pages.layout.items.layout]]
@@ -353,7 +353,7 @@ description = "Generate system logs and copy link to clipboard"
 icon = "mail-send-symbolic"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --class send_logs.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/send_logs.sh\""
+command = "kitty --class send_logs.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/send_logs.sh\""
 terminal = false
 
 [[pages.layout]]
@@ -410,16 +410,16 @@ description = "Automatically login to TTY1 on boot"
 icon = "avatar-default-symbolic"
 key = "auto_login_tty"
 persistence = "action"
-state_command = "$HOME/user_scripts/arch_setup_scripts/scripts/285_tty_autologin.sh --status"
+state_command = "$HOME/user_scripts/nix_setup_scripts/scripts/285_tty_autologin.sh --status"
 interval = 2
 [pages.layout.items.on_toggle.enabled]
 type = "exec"
-command = "kitty --class 285_tty_autologin.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/285_tty_autologin.sh --auto\""
+command = "kitty --class 285_tty_autologin.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/285_tty_autologin.sh --auto\""
 mode = "launch"
 terminal = false
 [pages.layout.items.on_toggle.disabled]
 type = "exec"
-command = "kitty --class 285_tty_autologin.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/285_tty_autologin.sh --revert --auto\""
+command = "kitty --class 285_tty_autologin.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/285_tty_autologin.sh --revert --auto\""
 mode = "launch"
 terminal = false
 
@@ -452,7 +452,7 @@ description = "Configure global git user/email"
 icon = "preferences-system-symbolic"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --class 300_git_config.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/300_git_config.sh\""
+command = "kitty --class 300_git_config.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/300_git_config.sh\""
 terminal = false
 
 [[pages.layout.items.layout]]
@@ -795,7 +795,7 @@ icon = "dialog-information-symbolic"
 style = "suggested"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --class 208_check_zram0_zram1_setup.py --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/208_check_zram0_zram1_setup.py\""
+command = "kitty --class 208_check_zram0_zram1_setup.py --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/208_check_zram0_zram1_setup.py\""
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -808,7 +808,7 @@ icon = "power-profile-performance-symbolic"
 style = "destructive"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --class 210_zram_optimize_swappiness.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/210_zram_optimize_swappiness.sh\""
+command = "kitty --class 210_zram_optimize_swappiness.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/210_zram_optimize_swappiness.sh\""
 terminal = false
 
 [[pages.layout.items]]
@@ -1134,12 +1134,12 @@ description = ""
 [[pages.layout.items]]
 type = "button"
 [pages.layout.items.properties]
-title = "Cache Purge"
-description = "Clear Pacman and AUR helper caches"
+title = "Nix Garbage Collection"
+description = "Collect old Nix garbage and free disk space"
 icon = "user-trash-symbolic"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 365_cache_purge.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/365_cache_purge.sh\""
+command = "kitty --class nix_gc --title \"Nix Garbage Collection\" --hold sh -c \"echo '=== Collecting Nix Garbage ===' && nix-collect-garbage -d && sudo nix-collect-garbage -d && echo 'Done!'\""
 terminal = false
 
 [[pages.layout.items]]
@@ -1165,10 +1165,10 @@ options = ["Yazi", "thunar"]
 options_map = { "false" = "thunar", "true" = "Yazi" }
 [pages.layout.items.on_change.Yazi]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/235_default_apps.py --file-manager --set yazi"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/235_default_apps.py --file-manager --set yazi"
 [pages.layout.items.on_change.thunar]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/235_default_apps.py --file-manager --set thunar"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/235_default_apps.py --file-manager --set thunar"
 
 [[pages.layout.items]]
 type = "button"
@@ -1214,7 +1214,7 @@ icon = "network-server-symbolic"
 style = "suggested"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 250_ftp_arch.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/250_ftp_arch.sh\""
+command = "kitty --class 250_ftp_arch.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/250_ftp_arch.sh\""
 terminal = false
 
 [[pages.layout.items]]
@@ -2017,7 +2017,7 @@ description = "Blocks social media sites"
 icon = "window-close-symbolic"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 325_hosts_files_block.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/325_hosts_files_block.sh\""
+command = "kitty --class 325_hosts_files_block.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/325_hosts_files_block.sh\""
 terminal = false
 
 [[pages.layout]]
@@ -2171,11 +2171,11 @@ key = "left_handed_mouse"
 persistence = "app"
 [pages.layout.items.on_toggle.enabled]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/265_mouse_button_reverse.sh --left"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/265_mouse_button_reverse.sh --left"
 terminal = false
 [pages.layout.items.on_toggle.disabled]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/265_mouse_button_reverse.sh --right"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/265_mouse_button_reverse.sh --right"
 terminal = false
 
 [[pages.layout.items]]
@@ -2753,7 +2753,7 @@ icon = "applications-system-symbolic"
 style = "suggested"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "python3 $HOME/user_scripts/arch_setup_scripts/scripts/331_sync_kde_apps.py && notify-send 'KDE Theming' 'KDE applications successfully themed!'"
+command = "python3 $HOME/user_scripts/nix_setup_scripts/scripts/331_sync_kde_apps.py && notify-send 'KDE Theming' 'KDE applications successfully themed!'"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -2946,12 +2946,12 @@ options = ["RAM", "Disk"]
 options_map = { "false" = "RAM", "true" = "Disk" }
 [pages.layout.items.on_change.RAM]
 type = "exec"
-command = "kitty --class 390_clipboard_persistance.py --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/390_clipboard_persistance.py --ram\""
+command = "kitty --class 390_clipboard_persistance.py --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/390_clipboard_persistance.py --ram\""
 mode = "launch"
 terminal = false
 [pages.layout.items.on_change.Disk]
 type = "exec"
-command = "kitty --class 390_clipboard_persistance.py --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/390_clipboard_persistance.py --disk\""
+command = "kitty --class 390_clipboard_persistance.py --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/390_clipboard_persistance.py --disk\""
 mode = "launch"
 terminal = false
 
@@ -2961,17 +2961,17 @@ type = "selection"
 title = "Clipboard Interface"
 description = "Toggle between Rofi and Terminal clipboards"
 icon = "edit-paste-symbolic"
-value_command = "$HOME/user_scripts/arch_setup_scripts/scripts/460_switch_clipboard.sh --status"
+value_command = "$HOME/user_scripts/nix_setup_scripts/scripts/460_switch_clipboard.sh --status"
 watch_key = "clipboard_state"
 persistence = "action"
 options = ["Rofi", "Terminal"]
 options_map = { "rofi" = "Rofi", "terminal" = "Terminal" }
 [pages.layout.items.on_change.Rofi]
 type = "exec"
-argv = ["$HOME/user_scripts/arch_setup_scripts/scripts/460_switch_clipboard.sh", "--rofi"]
+argv = ["$HOME/user_scripts/nix_setup_scripts/scripts/460_switch_clipboard.sh", "--rofi"]
 [pages.layout.items.on_change.Terminal]
 type = "exec"
-argv = ["$HOME/user_scripts/arch_setup_scripts/scripts/460_switch_clipboard.sh", "--terminal"]
+argv = ["$HOME/user_scripts/nix_setup_scripts/scripts/460_switch_clipboard.sh", "--terminal"]
 
 [[pages.layout]]
 type = "section"
@@ -3405,7 +3405,7 @@ description = "Switch system-wide file manager"
 icon = "system-file-manager-symbolic"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --app-id 235_default_apps.py --hold \"$HOME/user_scripts/arch_setup_scripts/scripts/235_default_apps.py\" --file-manager"
+command = "kitty --app-id 235_default_apps.py --hold \"$HOME/user_scripts/nix_setup_scripts/scripts/235_default_apps.py\" --file-manager"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -3416,7 +3416,7 @@ description = "Set default internet browser"
 icon = "web-browser-symbolic"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --app-id 235_default_apps.py --hold \"$HOME/user_scripts/arch_setup_scripts/scripts/235_default_apps.py\" --browser"
+command = "kitty --app-id 235_default_apps.py --hold \"$HOME/user_scripts/nix_setup_scripts/scripts/235_default_apps.py\" --browser"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -3427,7 +3427,7 @@ description = "Set default code/text editor"
 icon = "text-editor-symbolic"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --app-id 235_default_apps.py --hold \"$HOME/user_scripts/arch_setup_scripts/scripts/235_default_apps.py\" --text-editor"
+command = "kitty --app-id 235_default_apps.py --hold \"$HOME/user_scripts/nix_setup_scripts/scripts/235_default_apps.py\" --text-editor"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -3438,7 +3438,7 @@ description = "Set default system terminal"
 icon = "utilities-terminal-symbolic"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --app-id 235_default_apps.py --hold \"$HOME/user_scripts/arch_setup_scripts/scripts/235_default_apps.py\" --terminal"
+command = "kitty --app-id 235_default_apps.py --hold \"$HOME/user_scripts/nix_setup_scripts/scripts/235_default_apps.py\" --terminal"
 terminal = false
 
 [[pages.layout.items]]
@@ -3464,7 +3464,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force"
 terminal = false
 
 [[pages.layout.items.layout]]
@@ -3483,7 +3483,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --default_apps"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --default_apps"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -3496,7 +3496,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --monitors"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --monitors"
 terminal = false
 
 
@@ -3510,7 +3510,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --appearance"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --appearance"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -3523,7 +3523,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --workspace_rules"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --workspace_rules"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -3536,7 +3536,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --keybinds"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --keybinds"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -3549,7 +3549,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --input"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --input"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -3562,7 +3562,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --trackpad"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --trackpad"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -3575,7 +3575,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --window_rules"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --window_rules"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -3588,7 +3588,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --autostart"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --autostart"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -3601,7 +3601,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --environment_variables"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --environment_variables"
 terminal = false
 
 [[pages.layout.items.layout.items]]
@@ -3614,7 +3614,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --plugins"
+command = "$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force --plugins"
 terminal = false
 
 [[pages.layout]]
@@ -3742,7 +3742,7 @@ style = "suggested"
 button_text = "Run"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --class 383_configure_hyprland_gpu.py --hold sh -c \"python3 $HOME/user_scripts/arch_setup_scripts/scripts/383_configure_hyprland_gpu.py\""
+command = "kitty --class 383_configure_hyprland_gpu.py --hold sh -c \"python3 $HOME/user_scripts/nix_setup_scripts/scripts/383_configure_hyprland_gpu.py\""
 
 [[pages.layout.items.layout]]
 type = "section"
@@ -3867,7 +3867,7 @@ command = "foot --app-id=dusky_tui --hold python3 $HOME/user_scripts/fonts/tui_f
 icon = "system-run-symbolic"
 [pages.layout.items.layout.items.properties.buttons.on_press]
 type = "exec"
-command = "kitty --class 140_dusky_font_configurator.py --hold sh -c \"python3 $HOME/user_scripts/arch_setup_scripts/scripts/140_dusky_font_configurator.py\""
+command = "kitty --class 140_dusky_font_configurator.py --hold sh -c \"python3 $HOME/user_scripts/nix_setup_scripts/scripts/140_dusky_font_configurator.py\""
 
 [[pages.layout.items.layout.items]]
 type = "button"
@@ -4502,15 +4502,15 @@ description = "Essential tools"
 [[pages.layout.items]]
 type = "button"
 [pages.layout.items.properties]
-title = "Install AUR Helper"
-button_text = "Install"
-description = "Setup Paru (with Yay fallback)"
-icon = "package-x-generic-symbolic"
+title = "Search Nix Packages"
+button_text = "Search"
+description = "Search packages in Nixpkgs repository"
+icon = "system-search-symbolic"
 
 style = "suggested"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 058_aur_paru_fallback_yay.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/058_aur_paru_fallback_yay.sh\""
+command = "kitty --class nix_search --title \"Nixpkgs Package Search\" --hold sh -c \"python3 $HOME/user_scripts/dusky_system/nix_search/nix_search.py\""
 
 [[pages.layout.items]]
 type = "button"
@@ -4522,7 +4522,7 @@ icon = "network-vpn-symbolic"
 style = "suggested"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 085_warp.py --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/085_warp.py\""
+command = "kitty --class 085_warp.py --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/085_warp.py\""
 terminal = false
 
 [[pages.layout.items]]
@@ -4535,7 +4535,7 @@ icon = "system-run-symbolic"
 style = "destructive"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 335_preload_config.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/335_preload_config.sh\""
+command = "kitty --class 335_preload_config.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/335_preload_config.sh\""
 terminal = false
 
 [[pages.layout.items]]
@@ -4548,7 +4548,7 @@ icon = "system-users-symbolic"
 style = "suggested"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 465_sddm_setup.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/465_sddm_setup.sh\""
+command = "kitty --class 465_sddm_setup.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/465_sddm_setup.sh\""
 terminal = false
 
 [[pages.layout]]
@@ -4569,7 +4569,7 @@ icon = "package-x-generic-symbolic"
 style = "suggested"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 090_paru_packages_optional.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/090_paru_packages_optional.sh\""
+command = "kitty --class 090_paru_packages_optional.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/090_paru_packages_optional.sh\""
 
 [[pages.layout.items]]
 type = "button"
@@ -4579,7 +4579,7 @@ description = "Download ~2 GB of wallpapers"
 icon = "image-x-generic-symbolic"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 150_wallpapers_download.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/150_wallpapers_download.sh\""
+command = "kitty --class 150_wallpapers_download.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/150_wallpapers_download.sh\""
 terminal = false
 
 # [[pages.layout.items]]
@@ -4603,7 +4603,7 @@ terminal = false
 # button_text = "Install"
 # [pages.layout.items.layout.items.on_press]
 # type = "exec"
-# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/356_dusky_plugin_manager.sh --expo\""
+# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/356_dusky_plugin_manager.sh --expo\""
 # terminal = false
 #
 # [[pages.layout.items.layout.items]]
@@ -4615,7 +4615,7 @@ terminal = false
 # button_text = "Install"
 # [pages.layout.items.layout.items.on_press]
 # type = "exec"
-# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/356_dusky_plugin_manager.sh --space\""
+# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/356_dusky_plugin_manager.sh --space\""
 # terminal = false
 #
 # [[pages.layout.items.layout.items]]
@@ -4627,7 +4627,7 @@ terminal = false
 # button_text = "Install"
 # [pages.layout.items.layout.items.on_press]
 # type = "exec"
-# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/356_dusky_plugin_manager.sh --scrolling\""
+# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/356_dusky_plugin_manager.sh --scrolling\""
 # terminal = false
 #
 # [[pages.layout.items.layout.items]]
@@ -4639,7 +4639,7 @@ terminal = false
 # button_text = "Install"
 # [pages.layout.items.layout.items.on_press]
 # type = "exec"
-# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/356_dusky_plugin_manager.sh --hy3\""
+# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/356_dusky_plugin_manager.sh --hy3\""
 # terminal = false
 #
 # [[pages.layout.items.layout]]
@@ -4656,7 +4656,7 @@ terminal = false
 # button_text = "Install"
 # [pages.layout.items.layout.items.on_press]
 # type = "exec"
-# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/356_dusky_plugin_manager.sh --cursors\""
+# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/356_dusky_plugin_manager.sh --cursors\""
 # terminal = false
 #
 # [[pages.layout.items.layout.items]]
@@ -4668,7 +4668,7 @@ terminal = false
 # button_text = "Install"
 # [pages.layout.items.layout.items.on_press]
 # type = "exec"
-# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/356_dusky_plugin_manager.sh --bars\""
+# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/356_dusky_plugin_manager.sh --bars\""
 # terminal = false
 #
 # [[pages.layout.items.layout.items]]
@@ -4680,7 +4680,7 @@ terminal = false
 # button_text = "Install"
 # [pages.layout.items.layout.items.on_press]
 # type = "exec"
-# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/356_dusky_plugin_manager.sh --glass\""
+# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/356_dusky_plugin_manager.sh --glass\""
 # terminal = false
 #
 # [[pages.layout.items.layout.items]]
@@ -4692,7 +4692,7 @@ terminal = false
 # button_text = "Install"
 # [pages.layout.items.layout.items.on_press]
 # type = "exec"
-# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/356_dusky_plugin_manager.sh --darkwindow\""
+# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/356_dusky_plugin_manager.sh --darkwindow\""
 # terminal = false
 #
 # [[pages.layout.items.layout]]
@@ -4709,7 +4709,7 @@ terminal = false
 # button_text = "Install"
 # [pages.layout.items.layout.items.on_press]
 # type = "exec"
-# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/356_dusky_plugin_manager.sh --hotedge\""
+# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/356_dusky_plugin_manager.sh --hotedge\""
 # terminal = false
 #
 # [[pages.layout.items.layout.items]]
@@ -4721,7 +4721,7 @@ terminal = false
 # button_text = "Install"
 # [pages.layout.items.layout.items.on_press]
 # type = "exec"
-# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/356_dusky_plugin_manager.sh --grass\""
+# command = "kitty --class 356_dusky_plugin_manager.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/356_dusky_plugin_manager.sh --grass\""
 # terminal = false
 
 [[pages.layout.items]]
@@ -4865,7 +4865,7 @@ icon = "applications-internet-symbolic"
 style = "suggested"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 470_vesktop_matugen.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/470_vesktop_matugen.sh\""
+command = "kitty --class 470_vesktop_matugen.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/470_vesktop_matugen.sh\""
 terminal = false
 
 [[pages.layout]]
@@ -4898,7 +4898,7 @@ icon = "system-software-install-symbolic"
 style = "suggested"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --class 405_spicetify_matugen_setup.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/405_spicetify_matugen_setup.sh\""
+command = "kitty --class 405_spicetify_matugen_setup.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/405_spicetify_matugen_setup.sh\""
 
 [[pages.layout.items.layout]]
 type = "section"
@@ -4916,7 +4916,7 @@ icon = "system-software-install-symbolic"
 style = "suggested"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --class 260_spotify.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/260_spotify.sh\""
+command = "kitty --class 260_spotify.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/260_spotify.sh\""
 
 [[pages.layout]]
 type = "section"
@@ -4950,7 +4950,7 @@ icon = "video-display-symbolic"
 style = "suggested"
 [pages.layout.items.layout.items.on_press]
 type = "exec"
-command = "kitty --class 380_nvidia_open_source.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/380_nvidia_open_source.sh\""
+command = "kitty --class 380_nvidia_open_source.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/380_nvidia_open_source.sh\""
 
 [[pages.layout]]
 type = "section"
@@ -4970,7 +4970,7 @@ icon = "phone-symbolic"
 style = "suggested"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 385_waydroid_setup.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/385_waydroid_setup.sh\""
+command = "kitty --class 385_waydroid_setup.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/385_waydroid_setup.sh\""
 
 
 [[pages]]
@@ -4993,18 +4993,18 @@ description = "Resolve application launcher issues"
 icon = "application-x-executable-symbolic"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 020_desktop_entries.py --hold sh -c \"python3 $HOME/user_scripts/arch_setup_scripts/scripts/020_desktop_entries.py\""
+command = "kitty --class 020_desktop_entries.py --hold sh -c \"python3 $HOME/user_scripts/nix_setup_scripts/scripts/020_desktop_entries.py\""
 terminal = false
 
 [[pages.layout.items]]
 type = "button"
 [pages.layout.items.properties]
-title = "Fix Mirror Speeds"
-description = "Update Pacman mirrors (Reflector)"
-icon = "network-server-symbolic"
+title = "Optimise Nix Store"
+description = "Hardlink identical files in Nix store to save space"
+icon = "drive-harddisk-symbolic"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 055_pacman_reflector.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/055_pacman_reflector.sh\""
+command = "kitty --class nix_optimise --title \"Optimise Nix Store\" --hold sh -c \"echo '=== Optimising Nix Store ===' && sudo nix-store --optimise && echo 'Done!'\""
 terminal = false
 
 [[pages.layout.items]]
@@ -5017,7 +5017,7 @@ style = "destructive"
 button_text = "Reset"
 [pages.layout.items.on_press]
 type = "exec"
-command = "\"$HOME/user_scripts/arch_setup_scripts/scripts/005_hypr_custom_config_setup.py --force\""
+command = "\"$HOME/user_scripts/nix_setup_scripts/scripts/005_hypr_custom_config_setup.py --force\""
 terminal = false
 
 [[pages.layout.items]]
@@ -5028,7 +5028,7 @@ description = "Enable battery alerts"
 icon = "battery-level-50-symbolic"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 135_battery_notify_service.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/135_battery_notify_service.sh\""
+command = "kitty --class 135_battery_notify_service.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/135_battery_notify_service.sh\""
 terminal = false
 
 [[pages.layout.items]]
@@ -5039,7 +5039,7 @@ description = "Restore default animation settings"
 icon = "media-playlist-shuffle-symbolic"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 006_animation_default.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/006_animation_default.sh\""
+command = "kitty --class 006_animation_default.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/006_animation_default.sh\""
 terminal = false
 
 [[pages.layout.items]]
@@ -5061,7 +5061,7 @@ description = "Reset to Bibata Modern Classic"
 icon = "input-mouse-symbolic"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class 375_cursor_theme_bibata_classic_modern.sh --hold sh -c \"$HOME/user_scripts/arch_setup_scripts/scripts/375_cursor_theme_bibata_classic_modern.sh\""
+command = "kitty --class 375_cursor_theme_bibata_classic_modern.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/375_cursor_theme_bibata_classic_modern.sh\""
 terminal = false
 
 [[pages.layout.items]]

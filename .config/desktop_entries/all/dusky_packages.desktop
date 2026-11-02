@@ -3,7 +3,7 @@ Version=1.0
 Type=Application
 Name=Dusky Package Atlas
 Comment=Interactive FZF Arch Linux Package Explorer
-Exec=foot --app-id=dusky_packages.sh /home/dusk/user_scripts/pacman/dusky_packages.sh --desktop
+Exec=foot --app-id=dusky_packages.sh /home/ubaid/user_scripts/pacman/dusky_packages.sh --desktop
 Icon=system-software-install
 Terminal=false
 Categories=System;Utility;TerminalEmulator;

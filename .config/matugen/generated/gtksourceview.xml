@@ -12,45 +12,45 @@
   <!-- ======================================================================= -->
   <!-- Palette Definitions                                                     -->
   <!-- ======================================================================= -->
-  <color name="bg_main"                value="#051012"/>
-  <color name="bg_dim"                 value="#091518"/>
-  <color name="bg_surface"             value="#091518"/>
-  <color name="bg_container_lowest"    value="#051012"/>
-  <color name="bg_container_low"       value="#111d20"/>
-  <color name="bg_container"           value="#152224"/>
-  <color name="bg_container_high"      value="#202c2e"/>
-  <color name="bg_container_highest"   value="#2b3739"/>
-  <color name="bg_gutter"              value="#051012"/>
+  <color name="bg_main"                value="#090f0d"/>
+  <color name="bg_dim"                 value="#0f1512"/>
+  <color name="bg_surface"             value="#0f1512"/>
+  <color name="bg_container_lowest"    value="#090f0d"/>
+  <color name="bg_container_low"       value="#171d1b"/>
+  <color name="bg_container"           value="#1b211f"/>
+  <color name="bg_container_high"      value="#252b29"/>
+  <color name="bg_container_highest"   value="#303634"/>
+  <color name="bg_gutter"              value="#090f0d"/>
   
-  <color name="fg_main"                value="#d7e5e8"/>
-  <color name="fg_variant"             value="#b1cbd0"/>
-  <color name="fg_gutter"              value="#7c959a"/>
-  <color name="fg_disabled"            value="#334b4f"/>
+  <color name="fg_main"                value="#dee4e0"/>
+  <color name="fg_variant"             value="#bfc9c4"/>
+  <color name="fg_gutter"              value="#89938e"/>
+  <color name="fg_disabled"            value="#3f4945"/>
   
-  <color name="primary"                value="#74daa3"/>
-  <color name="primary_dim"            value="#74daa3"/>
-  <color name="on_primary"             value="#003921"/>
-  <color name="primary_container"      value="#005232"/>
-  <color name="on_primary_container"   value="#90f7be"/>
+  <color name="primary"                value="#86d6be"/>
+  <color name="primary_dim"            value="#86d6be"/>
+  <color name="on_primary"             value="#00382c"/>
+  <color name="primary_container"      value="#005141"/>
+  <color name="on_primary_container"   value="#a2f2d9"/>
   
-  <color name="secondary"              value="#91d5ac"/>
-  <color name="on_secondary"           value="#003921"/>
-  <color name="secondary_container"    value="#045233"/>
-  <color name="on_secondary_container" value="#acf2c7"/>
+  <color name="secondary"              value="#b2ccc2"/>
+  <color name="on_secondary"           value="#1d352e"/>
+  <color name="secondary_container"    value="#344c44"/>
+  <color name="on_secondary_container" value="#cde9de"/>
   
-  <color name="tertiary"               value="#82d3e2"/>
-  <color name="on_tertiary"            value="#00363e"/>
-  <color name="tertiary_container"     value="#004e59"/>
-  <color name="on_tertiary_container"  value="#9eefff"/>
+  <color name="tertiary"               value="#a9cbe3"/>
+  <color name="on_tertiary"            value="#0e3446"/>
+  <color name="tertiary_container"     value="#294b5e"/>
+  <color name="on_tertiary_container"  value="#c5e7ff"/>
   
   <color name="error"                  value="#ffb4ab"/>
   <color name="on_error"               value="#690005"/>
   <color name="error_container"        value="#93000a"/>
   <color name="on_error_container"     value="#ffdad6"/>
   
-  <color name="selection"              value="#005232"/>
-  <color name="on_selection"          value="#90f7be"/>
-  <color name="current_line"           value="#111d20"/>
+  <color name="selection"              value="#005141"/>
+  <color name="on_selection"          value="#a2f2d9"/>
+  <color name="current_line"           value="#171d1b"/>
 
   <!-- ======================================================================= -->
   <!-- Editor Canvas & Interface Styles                                        -->

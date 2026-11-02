@@ -234,7 +234,7 @@ env_keep = [
 branch = "main"
 
 # Default git repository URL
-repo_url = "https://github.com/dusklinux/dusky"
+repo_url = "https://github.com/Ubaidullah-Web-Dev/Dusky-on-NixOS.git"
 
 # Timeout in seconds for git fetch commands
 fetch_timeout = 60

@@ -130,6 +130,9 @@ def check_pacman_lock():
 
 def install_openssh():
     """Install the SSH daemon and QR encoder if missing."""
+    if shutil.which("pacman") is None:
+        log_success("NixOS detected: OpenSSH and qrencode are managed declaratively.")
+        return
     missing = [pkg for pkg in ("openssh", "qrencode")
                if run_cmd(["pacman", "-Qq", pkg], check=False).returncode != 0]
     if not missing:

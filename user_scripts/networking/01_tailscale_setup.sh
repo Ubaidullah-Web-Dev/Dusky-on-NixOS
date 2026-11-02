@@ -64,7 +64,7 @@ backup_file() {
 
 cmd_exists() { command -v "$1" &>/dev/null; }
 svc_active() { systemctl is-active --quiet "$1" 2>/dev/null; }
-pkg_installed() { pacman -Q "$1" &>/dev/null; }
+pkg_installed() { if command -v pacman >/dev/null 2>&1; then pacman -Q "$1" &>/dev/null; else command -v "$1" >/dev/null 2>&1; fi; }
 
 # --- Pre-Flight Checks ---
 (( BASH_VERSINFO[0] >= 5 )) || die "Bash 5.0+ required. Current: $BASH_VERSION"
@@ -162,7 +162,7 @@ log_succ "uinput module persistence enabled."
 # --- Phase 1: Tailscale ---
 log_step "Phase 1: Tailscale Network"
 
-pkg_installed tailscale || { log_info "Installing Tailscale..."; pacman -S --needed --noconfirm tailscale; }
+pkg_installed tailscale || { if command -v pacman >/dev/null 2>&1; then log_info "Installing Tailscale..."; pacman -S --needed --noconfirm tailscale; else log_info "NixOS: tailscale managed declaratively."; fi; }
 
 log_info "Ensuring Tailscale daemon is enabled and running..."
 systemctl enable --now tailscaled

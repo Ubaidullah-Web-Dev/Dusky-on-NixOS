@@ -23,7 +23,7 @@
         "break",
         {
             "type": "os",
-            "key": "\u001b[38;2;{{colors.primary.default.red}};{{colors.primary.default.green}};{{colors.primary.default.blue}}m \u001b[38;2;{{colors.on_surface_variant.default.red}};{{colors.on_surface_variant.default.green}};{{colors.on_surface_variant.default.blue}}mos\u001b[0m",
+            "key": "\u001b[38;2;{{colors.primary.default.red}};{{colors.primary.default.green}};{{colors.primary.default.blue}}m \u001b[38;2;{{colors.on_surface_variant.default.red}};{{colors.on_surface_variant.default.green}};{{colors.on_surface_variant.default.blue}}mos\u001b[0m",
             "keyWidth": 14,
             "format": "{2} {8}"
         },
@@ -82,12 +82,6 @@
             "key": "\u001b[38;2;{{colors.tertiary.default.red}};{{colors.tertiary.default.green}};{{colors.tertiary.default.blue}}m󰍛 \u001b[38;2;{{colors.on_surface_variant.default.red}};{{colors.on_surface_variant.default.green}};{{colors.on_surface_variant.default.blue}}mcpu\u001b[0m",
             "keyWidth": 14,
             "format": "{1}"
-        },
-        {
-            "type": "command",
-            "key": "\u001b[38;2;{{colors.tertiary.default.red}};{{colors.tertiary.default.green}};{{colors.tertiary.default.blue}}m󰆧 \u001b[38;2;{{colors.on_surface_variant.default.red}};{{colors.on_surface_variant.default.green}};{{colors.on_surface_variant.default.blue}}march\u001b[0m",
-            "keyWidth": 14,
-            "text": "/lib/ld-linux-x86-64.so.2 --help | awk '/supported, searched/ {print $1; exit}'"
         },
         {
             "type": "gpu",

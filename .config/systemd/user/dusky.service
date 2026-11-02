@@ -6,12 +6,12 @@ StartLimitIntervalSec=10
 StartLimitBurst=50
 
 [Service]
-Type=simple
+Type=dbus
 BusName=com.github.dusky.controlcenter
 
 # Keep the window ready; limit allocator arenas used by background workers.
 Environment=PYTHONUNBUFFERED=1 PYTHONOPTIMIZE=2 MALLOC_ARENA_MAX=2
-ExecStart=%h/user_scripts/dusky_system/control_center/dusky_control_center.py --gapplication-service
+ExecStart=%h/user_scripts/dusky_system/control_center/dusky_control_center.py
 Slice=app-graphical.slice
 
 Restart=on-failure

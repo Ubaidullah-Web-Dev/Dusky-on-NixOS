@@ -61,20 +61,20 @@ STATE_FILE = Path("/run/dusky/pro_active_zram_swap.state")
 def get_setup_script_path() -> Path:
     """Dynamically resolve the 217 setup script path without hardcoding any user or home directory."""
     try:
-        # Relative to current script location: ../../arch_setup_scripts/scripts/217_pro_active_zram_swap.py
-        cand = Path(__file__).resolve().parents[2] / "arch_setup_scripts" / "scripts" / "217_pro_active_zram_swap.py"
+        # Relative to current script location: ../../nix_setup_scripts/scripts/217_pro_active_zram_swap.py
+        cand = Path(__file__).resolve().parents[2] / "nix_setup_scripts" / "scripts" / "217_pro_active_zram_swap.py"
         if cand.exists():
             return cand
     except Exception:
         pass
     try:
         _, _, _, home_dir = get_real_user_info()
-        cand = home_dir / "user_scripts" / "arch_setup_scripts" / "scripts" / "217_pro_active_zram_swap.py"
+        cand = home_dir / "user_scripts" / "nix_setup_scripts" / "scripts" / "217_pro_active_zram_swap.py"
         if cand.exists():
             return cand
     except Exception:
         pass
-    return Path.home() / "user_scripts" / "arch_setup_scripts" / "scripts" / "217_pro_active_zram_swap.py"
+    return Path.home() / "user_scripts" / "nix_setup_scripts" / "scripts" / "217_pro_active_zram_swap.py"
 
 DEFAULT_RATIO = 0.30        # 30% slice anon reclaim cap
 DEFAULT_BUDGET_MB = 256     # 256 MB per periodic run

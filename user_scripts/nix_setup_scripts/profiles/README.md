@@ -52,7 +52,7 @@ enabled = true              # Pull latest dotfiles before running tasks (default
 git_dir = "~/dusky"         # Bare repo path (--git-dir)
 work_tree = "~/"            # Working tree path (--work-tree)
 remote = "origin"           # Remote name (default: "origin")
-url = "https://github.com/dusklinux/dusky"  # Repo URL override (alias: repo_url; default from global settings)
+url = "https://github.com/Ubaidullah-Web-Dev/Dusky-on-NixOS.git"  # Repo URL override (alias: repo_url; default from global settings)
 
 # ─── SCRIPT SEARCH DIRECTORIES ───────────────────────────────────────────────
 # Searched IN ORDER to find each script name. First match wins.

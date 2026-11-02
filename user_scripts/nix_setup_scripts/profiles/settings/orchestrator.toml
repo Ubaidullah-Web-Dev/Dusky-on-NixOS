@@ -250,7 +250,7 @@ upstream_branch = "main"
 upstream_ref = "refs/dusky/upstream/main"
 
 # Default git repository URL fallback if not specified in profile TOML
-default_repo_url = "https://github.com/dusklinux/dusky"
+default_repo_url = "https://github.com/Ubaidullah-Web-Dev/Dusky-on-NixOS.git"
 
 # Maximum git fetch retry attempts on network failures
 fetch_max_attempts = 5

@@ -53,6 +53,7 @@
   };
 
   # Performance Tuning
+  boot.kernelPackages = lib.mkDefault pkgs.linuxPackages_latest;
   zramSwap.enable = lib.mkDefault true;
   services.resolved.enable = lib.mkDefault true;
   security.sudo.wheelNeedsPassword = lib.mkDefault false;
