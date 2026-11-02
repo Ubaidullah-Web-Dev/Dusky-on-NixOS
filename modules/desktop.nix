@@ -41,7 +41,9 @@
   };
   programs.starship.enable = true;
 
-  # User default shell
+  # Shell defaults
+  users.defaultUserShell = pkgs.zsh;
+  users.users.root.shell = pkgs.zsh;
   users.users.ubaid.shell = pkgs.zsh;
 
   # Thunar Volume Manager & File Sharing

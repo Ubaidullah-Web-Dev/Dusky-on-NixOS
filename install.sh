@@ -58,6 +58,16 @@ done
 deploy_nixos_flake() {
     log_info "Deploying NixOS system configuration to /etc/nixos..."
     sudo mkdir -p /etc/nixos/modules
+    sudo mkdir -p /etc/skel
+
+    # Pre-populate .zshrc in skel, root, and target user to prevent zsh-newuser-install
+    if [[ -f "$SCRIPT_DIR/.zshrc" ]]; then
+        sudo cp -f "$SCRIPT_DIR/.zshrc" /etc/skel/.zshrc
+        sudo cp -f "$SCRIPT_DIR/.zshrc" /root/.zshrc
+        mkdir -p "$TARGET_HOME"
+        cp -f "$SCRIPT_DIR/.zshrc" "$TARGET_HOME/.zshrc"
+        chown "$TARGET_USER:" "$TARGET_HOME/.zshrc" 2>/dev/null || true
+    fi
 
     # Preserve host hardware configuration if present
     if [[ -f /etc/nixos/hardware-configuration.nix ]]; then
@@ -118,8 +128,15 @@ deploy_dotfiles_and_scripts() {
         cp -f "$SCRIPT_DIR/.zshrc" "$TARGET_HOME/.zshrc"
     fi
 
+    # Copy .local binaries and assets
+    if [[ -d "$SCRIPT_DIR/.local" ]]; then
+        log_info "Syncing .local..."
+        mkdir -p "$TARGET_HOME/.local"
+        cp -rn "$SCRIPT_DIR/.local/"* "$TARGET_HOME/.local/" 2>/dev/null || true
+    fi
+
     # Ensure correct permissions
-    chown -R "$TARGET_USER:" "$TARGET_HOME/.config" "$TARGET_HOME/user_scripts" "$TARGET_HOME/Pictures" "$TARGET_HOME/.zshrc" 2>/dev/null || true
+    chown -R "$TARGET_USER:" "$TARGET_HOME/.config" "$TARGET_HOME/user_scripts" "$TARGET_HOME/Pictures" "$TARGET_HOME/.zshrc" "$TARGET_HOME/.local" 2>/dev/null || true
     log_ok "Configurations deployed!"
 }
 
