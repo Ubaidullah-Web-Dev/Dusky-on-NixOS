@@ -8,6 +8,7 @@
     neovim
     uv
     wget
+    patchelf
     curl
     pciutils
     usbutils

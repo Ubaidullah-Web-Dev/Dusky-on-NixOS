@@ -63,4 +63,21 @@
       TimeoutStopSec = 10;
     };
   };
+
+  # Dynamic linker shim for standard Linux binaries (e.g. dusky-papers)
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      stdenv.cc.cc.lib
+      zlib
+      glibc
+      wayland
+      libxkbcommon
+      vulkan-loader
+      libGL
+      mesa
+      fontconfig
+      freetype
+    ];
+  };
 }
