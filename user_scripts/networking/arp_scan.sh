@@ -72,6 +72,15 @@ install_dependencies() {
         "${C_YELLOW}" "${C_BOLD}" "${C_RESET}" \
         "${C_CYAN}" "${missing[*]}" "${C_RESET}"
     
+    if [[ -f /etc/NIXOS ]] || command -v nix &>/dev/null; then
+        for dep in "${missing[@]}"; do
+            printf "%sInstalling %s via nix profile...%s\n" "${C_DIM}" "$dep" "${C_RESET}"
+            nix profile add "nixpkgs#$dep" 2>/dev/null || true
+        done
+        printf "\n%s%s[✓]%s Dependencies processed.\n\n" "${C_GREEN}" "${C_BOLD}" "${C_RESET}"
+        return 0
+    fi
+
     printf "%sInstalling via pacman...%s\n\n" "${C_DIM}" "${C_RESET}"
     
     if ! pacman -S --needed --noconfirm "${missing[@]}"; then

@@ -945,12 +945,14 @@ def check_system_dependencies() -> list[str]:
 
         unique_pkgs = list(dict.fromkeys(missing_pkgs))
         if unique_pkgs:
-            missing.append(f"Install required packages: sudo pacman -S {' '.join(unique_pkgs)}")
+            pkg_cmd = f"nix profile add {' '.join(['nixpkgs#' + p for p in unique_pkgs])}" if os.path.exists("/etc/NIXOS") else f"sudo pacman -S {' '.join(unique_pkgs)}"
+            missing.append(f"Install required packages: {pkg_cmd}")
         else:
             missing.append(f"Native Audio DSP engine failed to compile ({Path(__file__).resolve().parent / 'audio-helper'})")
     elif missing_pkgs:
         unique_pkgs = list(dict.fromkeys(missing_pkgs))
-        missing.append(f"Install required packages: sudo pacman -S {' '.join(unique_pkgs)}")
+        pkg_cmd = f"nix profile add {' '.join(['nixpkgs#' + p for p in unique_pkgs])}" if os.path.exists("/etc/NIXOS") else f"sudo pacman -S {' '.join(unique_pkgs)}"
+        missing.append(f"Install required packages: {pkg_cmd}")
 
     return missing
 

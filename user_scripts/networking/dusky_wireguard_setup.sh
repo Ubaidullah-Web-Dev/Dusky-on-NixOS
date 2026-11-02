@@ -21,7 +21,7 @@ info() { printf '%s[INFO]%s  %s\n' "$BLU" "$RST" "$1"; }
 err()  { printf '%s[ERR]%s   %s\n' "$RED" "$RST" "$1" >&2; }
 
 # ── 0. wireguard-tools ────────────────────────────────────────────────────────
-if [[ -x /usr/bin/wg ]]; then
+if command -v wg >/dev/null 2>&1; then
     ok "wireguard-tools present ($(wg --version))"
 else
     info "Installing wireguard-tools ..."

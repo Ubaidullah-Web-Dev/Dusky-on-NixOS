@@ -94,7 +94,9 @@ MAX_STATE_BYTES: Final[int] = 1024 * 1024
 MAX_DIAGNOSTIC_BYTES: Final[int] = 128 * 1024
 
 INSTALL_COMMAND: Final[str] = (
-    "sudo pacman -Syu --needed python python-rich sshfs fuse3 openssh"
+    "nix profile add nixpkgs#sshfs nixpkgs#fuse3"
+    if os.path.exists("/etc/NIXOS")
+    else "sudo pacman -Syu --needed python python-rich sshfs fuse3 openssh"
 )
 
 SSHFS_OPTIONS: Final[tuple[str, ...]] = (

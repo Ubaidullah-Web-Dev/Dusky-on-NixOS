@@ -120,6 +120,8 @@ def monitors(instance: str) -> list[dict]:
 
 
 def ensure_dependencies() -> None:
+    if os.path.exists("/etc/NIXOS") or shutil.which("nix"):
+        return
     requirements = {"hyprland": "hyprctl", "systemd": "systemctl", "iproute2": "ip",
                     "libva-utils": "vainfo", "xdg-utils": "xdg-open"}
     missing = [package for package, command in requirements.items() if not shutil.which(command)]
@@ -153,6 +155,10 @@ def aur_helper() -> str:
 
 def sunshine_package(package: Path | None) -> None:
     if shutil.which("sunshine"):
+        return
+    if os.path.exists("/etc/NIXOS") or shutil.which("nix"):
+        message("Installing Sunshine via nix profile...")
+        subprocess.run(["nix", "profile", "add", "nixpkgs#sunshine"], check=False)
         return
     if package:
         if not package.is_file():
@@ -201,6 +207,8 @@ def firewall_worker() -> None:
 def setup_iphone_usb() -> None:
     """Keep iPhone USB tethering local, even when the phone has no internet."""
     if not shutil.which("nmcli"):
+        if os.path.exists("/etc/NIXOS") or shutil.which("nix"):
+            raise RuntimeError("NetworkManager (nmcli) is required on NixOS.")
         if os.geteuid() == 0:
             raise RuntimeError("Run USB setup as the desktop user, without sudo")
         subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm", "networkmanager"], check=True)

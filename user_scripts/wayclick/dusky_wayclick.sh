@@ -200,23 +200,28 @@ command -v uv >/dev/null 2>&1          || NEEDED_DEPS+=("uv")
 command -v notify-send >/dev/null 2>&1 || NEEDED_DEPS+=("libnotify")
 
 # Runtime audio stack (always required regardless of build marker)
-audio_deps=("pipewire" "pipewire-audio" "pipewire-pulse" "wireplumber")
-for dep in "${audio_deps[@]}"; do
-    if ! pacman -Qq "$dep" >/dev/null 2>&1; then
-        NEEDED_DEPS+=("$dep")
-        AUDIO_PKGS_INSTALLED=true
-    fi
-done
-
-# Build-time deps (only needed if native compilation hasn't been done yet)
-if [[ ! -f "$BASE_DIR/.build_marker_v10" ]]; then
-    command -v gcc >/dev/null 2>&1 || NEEDED_DEPS+=("gcc")
-
-    # libuv for uvloop. PyGame dependencies removed as we now use binary wheels.
-    build_deps=("libuv")
-    for dep in "${build_deps[@]}"; do
-        pacman -Qq "$dep" >/dev/null 2>&1 || NEEDED_DEPS+=("$dep")
+if [[ -f /etc/NIXOS ]] || command -v nix &>/dev/null; then
+    # On NixOS, audio stack & core libraries are managed by the system flake
+    :
+else
+    audio_deps=("pipewire" "pipewire-audio" "pipewire-pulse" "wireplumber")
+    for dep in "${audio_deps[@]}"; do
+        if ! pacman -Qq "$dep" >/dev/null 2>&1; then
+            NEEDED_DEPS+=("$dep")
+            AUDIO_PKGS_INSTALLED=true
+        fi
     done
+
+    # Build-time deps (only needed if native compilation hasn't been done yet)
+    if [[ ! -f "$BASE_DIR/.build_marker_v10" ]]; then
+        command -v gcc >/dev/null 2>&1 || NEEDED_DEPS+=("gcc")
+
+        # libuv for uvloop. PyGame dependencies removed as we now use binary wheels.
+        build_deps=("libuv")
+        for dep in "${build_deps[@]}"; do
+            pacman -Qq "$dep" >/dev/null 2>&1 || NEEDED_DEPS+=("$dep")
+        done
+    fi
 fi
 
 if (( ${#NEEDED_DEPS[@]} > 0 )); then

@@ -125,6 +125,8 @@ def get_real_user() -> str:
 
 def check_pacman_lock():
     """Check if Pacman is currently locked."""
+    if shutil.which("pacman") is None:
+        return
     if Path("/var/lib/pacman/db.lck").exists():
         die("Pacman database is locked (/var/lib/pacman/db.lck). Is it running elsewhere?")
 
