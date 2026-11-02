@@ -3256,13 +3256,13 @@ type = "button"
 [pages.layout.items.properties]
 title = "Service Manager"
 button_text = "Open"
-description = "Declarative Unit State Manager (TUI)"
+description = "Interactive Services & Timers TUI Manager"
 icon = "system-run-symbolic"
 
 style = "suggested"
 [pages.layout.items.on_press]
 type = "exec"
-command = "kitty --class dusky_service_manager.sh --hold sh -c \"$HOME/user_scripts/services/dusky_service_manager.sh\""
+command = "foot --app-id=dusky_tui python3 $HOME/user_scripts/services/tui_service_toggle.py"
 
 [[pages.layout.items]]
 type = "button"
