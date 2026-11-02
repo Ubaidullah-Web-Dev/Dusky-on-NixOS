@@ -9,9 +9,9 @@ let
     cd "$FLAKE_DIR"
 
     if [ -d .git ]; then
-      if git remote get-url origin >/dev/null 2>&1; then
+      if sudo git remote get-url origin >/dev/null 2>&1; then
         echo "Pulling updates from git repository..."
-        git pull --ff-only || {
+        sudo git pull --ff-only || {
           echo "Warning: git pull failed or local changes exist. Proceeding with local configs..."
         }
       else
@@ -23,7 +23,7 @@ let
     for arg in "$@"; do
       if [ "$arg" = "--flake-update" ] || [ "$arg" = "-u" ]; then
         echo "Updating flake inputs..."
-        nix flake update
+        sudo nix flake update
       fi
     done
 
