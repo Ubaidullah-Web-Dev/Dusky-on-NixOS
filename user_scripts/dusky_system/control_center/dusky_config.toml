@@ -4525,31 +4525,6 @@ type = "exec"
 command = "kitty --class 085_warp.py --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/085_warp.py\""
 terminal = false
 
-[[pages.layout.items]]
-type = "button"
-[pages.layout.items.properties]
-title = "Preload Config"
-button_text = "Setup"
-description = "Cache binaries (WARNING: High RAM Usage!)"
-icon = "system-run-symbolic"
-style = "destructive"
-[pages.layout.items.on_press]
-type = "exec"
-command = "kitty --class 335_preload_config.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/335_preload_config.sh\""
-terminal = false
-
-[[pages.layout.items]]
-type = "button"
-[pages.layout.items.properties]
-title = "SDDM Setup"
-button_text = "Setup"
-description = "Custom login screen & profile picture"
-icon = "system-users-symbolic"
-style = "suggested"
-[pages.layout.items.on_press]
-type = "exec"
-command = "kitty --class 465_sddm_setup.sh --hold sh -c \"$HOME/user_scripts/nix_setup_scripts/scripts/465_sddm_setup.sh\""
-terminal = false
 
 [[pages.layout]]
 type = "section"

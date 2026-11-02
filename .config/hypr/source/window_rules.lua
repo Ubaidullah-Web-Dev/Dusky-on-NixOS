@@ -1330,23 +1330,6 @@ hl.window_rule({
     center = true
 })
 
---- 335_preload_config.sh script ---
-hl.window_rule({
-    name = "335_preload_config.sh",
-    match = { class = "^(335_preload_config.sh)$" },
-    float = true,
-    size = {889, 669},
-    center = true
-})
-
---- 465_sddm_setup.sh script ---
-hl.window_rule({
-    name = "465_sddm_setup.sh",
-    match = { class = "^(465_sddm_setup.sh)$" },
-    float = true,
-    size = {889, 669},
-    center = true
-})
 
 --- update_dusky.py updater ---
 hl.window_rule({
