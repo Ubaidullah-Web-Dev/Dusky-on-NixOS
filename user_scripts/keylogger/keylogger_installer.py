@@ -338,7 +338,7 @@ def build_venv(user: str, home: str, *, offline: bool = False) -> str:
         created = False
         if has_uv():
             proc = subprocess.run(
-                ["uv", "venv", str(venv), "--python", system_python(), "--no-python-downloads"],
+                ["uv", "venv", "--system-site-packages", str(venv), "--python", system_python(), "--no-python-downloads"],
                 capture_output=True,
                 text=True,
             )
@@ -352,7 +352,7 @@ def build_venv(user: str, home: str, *, offline: bool = False) -> str:
                     f"CPython >= {'.'.join(map(str, REQUIRED_PYTHON))} required "
                     f"(found {ver}). Install python or uv."
                 )
-            run([system_python(), "-m", "venv", str(venv)])
+            run([system_python(), "-m", "venv", "--system-site-packages", str(venv)])
     venv_py = venv / "bin" / "python"
     vver = python_version(str(venv_py))
     if not vver or vver < REQUIRED_PYTHON:
@@ -361,12 +361,12 @@ def build_venv(user: str, home: str, *, offline: bool = False) -> str:
 
     step("Installing Dusky Keylogger + dependencies from pyproject.toml...")
     if has_uv():
-        command = ["uv", "pip", "install", "--python", str(venv_py), "-e", str(INSTALL_DIR)]
+        command = ["uv", "pip", "install", "--python", str(venv_py), "--no-deps", "-e", str(INSTALL_DIR)]
         if offline:
             command.append("--offline")
         run(command)
     else:
-        command = [str(venv_py), "-m", "pip", "install", "-e", str(INSTALL_DIR)]
+        command = [str(venv_py), "-m", "pip", "install", "--no-deps", "-e", str(INSTALL_DIR)]
         if offline:
             command.append("--no-index")
         run(command)
