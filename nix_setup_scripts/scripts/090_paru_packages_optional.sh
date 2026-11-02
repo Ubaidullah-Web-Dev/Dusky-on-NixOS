@@ -607,10 +607,10 @@ main_loop() {
 # --- Installation Logic ---
 
 detect_package_manager() {
-    if command -v nix-env &>/dev/null; then printf 'nix-env'; return 0; fi
     if command -v nix &>/dev/null; then printf 'nix'; return 0; fi
     if command -v paru &>/dev/null; then printf 'paru'; return 0; fi
     if command -v yay &>/dev/null; then printf 'yay'; return 0; fi
+    if command -v pacman &>/dev/null; then printf 'pacman'; return 0; fi
     return 1
 }
 
@@ -634,26 +634,14 @@ run_installer() {
 
     log_info "Processing installation for ${#targets[@]} packages..."
 
-    if [[ "$helper" == "nix-env" ]]; then
-        log_info "Installing selected packages via nix-env..."
-        local -a nix_targets=()
-        for t in "${targets[@]}"; do
-            nix_targets+=("nixpkgs.$t")
-        done
-        nix-env -iA "${nix_targets[@]}" || {
-            log_err "nix-env installation encountered errors."
-            return 1
-        }
-        log_info "Installation complete!"
-        return 0
-    elif [[ "$helper" == "nix" ]]; then
+    if [[ "$helper" == "nix" ]]; then
         log_info "Installing selected packages via nix profile..."
         local -a nix_targets=()
         for t in "${targets[@]}"; do
             nix_targets+=("nixpkgs#$t")
         done
-        nix profile install "${nix_targets[@]}" || {
-            log_err "nix profile install encountered errors."
+        nix profile add "${nix_targets[@]}" || {
+            log_err "nix profile add encountered errors."
             return 1
         }
         log_info "Installation complete!"
