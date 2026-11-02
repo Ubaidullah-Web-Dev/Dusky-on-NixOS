@@ -137,6 +137,7 @@ hl.config({
     misc = {
         disable_hyprland_logo = true, -- Disables random anime girl background
         disable_splash_rendering = true, -- Disables splash rendering
+        disable_watchdog_warning = true, -- Suppresses start-hyprland watchdog warning popup
         font_family = "Sans", -- Default font for debug/error text
         splash_font_family = "", -- Font for splash text
         force_default_wallpaper = 1, -- Enforce default wallpapers (-1 random, 0/1 disables anime)
