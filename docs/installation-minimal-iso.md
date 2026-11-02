@@ -251,7 +251,7 @@ cp -rf /tmp/dusky/user_scripts/* /mnt/home/ubaid/user_scripts/
 cp -rf /tmp/dusky/nix_setup_scripts /mnt/home/ubaid/user_scripts/
 cp -rf /tmp/dusky/Pictures/* /mnt/home/ubaid/Pictures/
 cp -f /tmp/dusky/.zshrc /mnt/home/ubaid/.zshrc
-[[ -d /tmp/dusky/.local ]] && cp -rf /tmp/dusky/.local /mnt/home/ubaid/
+cp -rf /tmp/dusky/.local /mnt/home/ubaid/ 2>/dev/null || true
 
 # Fix ownership so your user owns the files
 nixos-enter --root /mnt -c 'chown -R ubaid:users /home/ubaid'
