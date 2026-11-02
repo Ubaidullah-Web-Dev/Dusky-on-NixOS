@@ -29,7 +29,7 @@ ZSH_DOCS+=(
     "cmd_atlas"           "Command Atlas engine behind the 'atlas' alias."
     "batstat"             "Zero-fork battery monitor with live TUI."
     "mon_info"            "Mathematical aspect ratio and display info renderer."
-    "pkg"                 "Advanced pacman/expac package querying tool."
+    "pkg"                 "Dusky NixOS package querying tool."
     "res_mon"             "Live system resource monitor."
 
     # --- VIRTUALIZATION & KVM ---
@@ -77,9 +77,7 @@ ZSH_DOCS+=(
     "cat"                 "Concatenate and print files (often overridden by bat)."
 
     # --- ARCH LINUX / PACMAN / SYSTEM ---
-    "pacman"              "Arch Linux package manager."
-    "yay"                 "AUR helper and pacman wrapper."
-    "paru"                "Feature-packed AUR helper."
+    "nix"                 "Nix package manager."
     "update"              "System update alias."
     "sysctl"              "Kernel parameter configuration."
     "systemctl"           "Control the systemd system and service manager."
@@ -94,7 +92,7 @@ _atlas_fzf_ok() {
     local v
 
     if (( ! $+commands[fzf] )); then
-        print -ru2 -- 'atlas: fzf is not installed  (pacman -S fzf)'
+        print -ru2 -- 'atlas: fzf is not installed  (nix profile add nixpkgs#fzf)'
         return 1
     fi
     if [[ -z ${_DUSKY_FZF_VERSION-} ]]; then
