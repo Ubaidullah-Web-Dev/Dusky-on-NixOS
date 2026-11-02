@@ -74,7 +74,7 @@ if (( EUID != 0 )); then
     exec sudo --preserve-env=TERM bash "$(realpath "${BASH_SOURCE[0]}")" "$@"
 fi
 
-[[ -f /etc/arch-release ]] || die "This script is strictly optimized for Arch Linux."
+[[ -f /etc/arch-release || -f /etc/NIXOS ]] || die "This script requires Arch Linux or NixOS."
 
 # Atomic Lock via File Descriptor (Prevents TOCTOU Race Condition)
 exec 9> "$LOCKFILE"
@@ -83,7 +83,7 @@ flock -n 9 || die "Another instance is running."
 # --- Main Logic ---
 log_step "Initializing Setup..."
 printf "This will configure Tailscale and System Networking Optimizations.\n"
-printf "%sTarget Environment:%s Arch + Hyprland + UWSM\n\n" "$C" "$W"
+printf "%sTarget Environment:%s Dusky Hyprland + Wayland\n\n" "$C" "$W"
 
 printf "%s[QUESTION]%s Proceed? [Y/n] " "$Y" "$W"
 read -r response

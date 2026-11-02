@@ -104,9 +104,13 @@ NETWORK
 ) || die 'LAN detection failed.'
 read -r interface lan_ip subnet <<< "$network"
 info "User: $ftp_user; root: $ftp_root; LAN: $interface ($lan_ip, $subnet)"
-if ! pacman -Q vsftpd >/dev/null 2>&1; then
-    info 'Installing vsftpd from the configured repositories/cache.'
-    pacman -S --needed --noconfirm vsftpd
+if ! command -v vsftpd >/dev/null 2>&1; then
+    if command -v pacman >/dev/null 2>&1; then
+        info 'Installing vsftpd from the configured repositories/cache.'
+        pacman -S --needed --noconfirm vsftpd
+    else
+        die "vsftpd is not installed. On NixOS, enable services.vsftpd or install pkgs.vsftpd."
+    fi
 fi
 
 # Preserve existing shared/mounted directory metadata and all descendant modes.
@@ -208,7 +212,7 @@ pasv_max_port=40100
 use_sendfile=YES
 connect_from_port_20=YES
 seccomp_sandbox=NO
-ftpd_banner=Welcome to the Arch Linux LAN FTP service.
+ftpd_banner=Welcome to the Dusky LAN FTP service.
 EOF
 chmod 0600 -- "$update_dir/vsftpd.conf" "$update_dir/vsftpd.userlist"
 chown root:root -- "$update_dir/vsftpd.conf" "$update_dir/vsftpd.userlist"
