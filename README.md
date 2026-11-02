@@ -43,6 +43,12 @@ Everything here is configured declaratively with Nix flakes, uses pre-built bina
 
 ## Getting Started
 
+> [!TIP]
+> **Installing from scratch?** Check our dedicated walkthroughs in the [`docs/`](docs/README.md) folder:
+> * 🖥️ [**Minimal ISO Guide**](docs/installation-minimal-iso.md) — CLI Wi-Fi setup, manual disk partitioning, formatting, and installation.
+> * 🖱️ [**Graphical ISO Guide**](docs/installation-graphical-iso.md) — Point-and-click Calamares installation.
+> * 🛠️ [**Troubleshooting & FAQ**](docs/troubleshooting.md) — Wi-Fi, bootloader, Nvidia, and audio tips.
+
 ### 1. Requirements
 - A fresh or existing installation of **NixOS** (unstable channel recommended).
 - Git installed (`nix-shell -p git`).
