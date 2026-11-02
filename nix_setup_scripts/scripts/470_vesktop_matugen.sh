@@ -83,39 +83,43 @@ if [[ "$_auto_mode" == "false" ]]; then
     fi
 fi
 
-# --- Detect AUR Helper ---
-AUR_HELPER=""
-if command -v paru &>/dev/null; then
-    AUR_HELPER="paru"
-elif command -v yay &>/dev/null; then
-    AUR_HELPER="yay"
-else
-    log_error "Neither 'paru' nor 'yay' found. Please install an AUR helper."
-fi
-readonly AUR_HELPER
-
 # ==============================================================================
 #  Phase 1: Installation
 # ==============================================================================
 log_info "Phase 1: Package Management..."
 
-# Ensure jq is installed (vital for JSON editing in Phase 4)
-if ! command -v jq &>/dev/null; then
-    log_info "Installing dependency: jq..."
-    sudo pacman -S --needed --noconfirm jq
-fi
-
-# Warn early if matugen is missing (config is written regardless)
-if ! command -v matugen &>/dev/null; then
-    log_warn "'matugen' is not installed. Theme generation will not work until it is."
-fi
-
-# Install vesktop-bin
-if pacman -Qi vesktop-bin &>/dev/null || pacman -Qi vesktop &>/dev/null || pacman -Qi vesktop-git &>/dev/null; then
-    log_success "Vesktop is already installed."
+if [ -f /etc/NIXOS ] || command -v nix &>/dev/null; then
+    if command -v vesktop &>/dev/null; then
+        log_success "Vesktop is already installed."
+    else
+        log_info "Installing vesktop via nix profile add nixpkgs#vesktop..."
+        nix profile add nixpkgs#vesktop
+        log_success "Vesktop installed successfully."
+    fi
 else
-    log_info "Installing vesktop-bin via ${AUR_HELPER}..."
-    "$AUR_HELPER" -S --needed --noconfirm vesktop-bin
+    # --- Detect AUR Helper ---
+    AUR_HELPER=""
+    if command -v paru &>/dev/null; then
+        AUR_HELPER="paru"
+    elif command -v yay &>/dev/null; then
+        AUR_HELPER="yay"
+    else
+        log_error "Neither 'paru' nor 'yay' found. Please install an AUR helper."
+    fi
+
+    # Ensure jq is installed
+    if ! command -v jq &>/dev/null; then
+        log_info "Installing dependency: jq..."
+        sudo pacman -S --needed --noconfirm jq
+    fi
+
+    # Install vesktop-bin
+    if pacman -Qi vesktop-bin &>/dev/null || pacman -Qi vesktop &>/dev/null || pacman -Qi vesktop-git &>/dev/null; then
+        log_success "Vesktop is already installed."
+    else
+        log_info "Installing vesktop-bin via ${AUR_HELPER}..."
+        "$AUR_HELPER" -S --needed --noconfirm vesktop-bin
+    fi
 fi
 
 # ==============================================================================
