@@ -37,6 +37,18 @@ cleanup() {
 trap cleanup EXIT
 
 # --- 0. Smart User Consent ---
+if [ -f /etc/NIXOS ] || command -v nix &>/dev/null; then
+    if ! command -v waydroid &>/dev/null; then
+        log_info "NixOS detected. Waydroid requires declarative configuration."
+        echo ""
+        printf "${C_GREEN}To enable Waydroid on NixOS:${C_RESET}\n"
+        printf "  1. Add to /etc/nixos/configuration.nix: ${C_BLUE}virtualisation.waydroid.enable = true;${C_RESET}\n"
+        printf "  2. Run: ${C_BLUE}sudo nixos-rebuild switch${C_RESET}\n\n"
+        log_info "This sets up kernel binder, container bridges, and waydroid-container service cleanly."
+        exit 0
+    fi
+fi
+
 # Prevents the double-prompt when the script re-executes itself via sudo
 if [[ -z "${WAYDROID_SETUP_RUNNING:-}" ]]; then
     echo ""

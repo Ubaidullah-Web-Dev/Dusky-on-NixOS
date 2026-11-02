@@ -300,6 +300,8 @@ def backup_paths() -> tuple[pathlib.Path, pathlib.Path, pathlib.Path]:
 
 
 def pkg_installed(name: str = PKG_NAME) -> bool:
+    if os.path.exists("/etc/NIXOS") or shutil.which("nix"):
+        return shutil.which("warp-cli") is not None
     return run_root(["pacman", "-Qi", name], capture=True).ok
 
 
@@ -343,6 +345,22 @@ def install_package(auto: bool) -> None:
     if pkg_installed():
         log_success(f"'{PKG_NAME}' is already installed.")
         return
+
+    if os.path.exists("/etc/NIXOS") or shutil.which("nix"):
+        with spinner("Installing Cloudflare WARP via nix profile..."):
+            r = subprocess.run(
+                ["sh", "-c", "NIXPKGS_ALLOW_UNFREE=1 nix profile add --impure nixpkgs#cloudflare-warp"],
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+        if r.returncode == 0:
+            log_success("Cloudflare WARP installed successfully via nix profile.")
+            return
+        else:
+            log_warn(f"Nix profile install failed: {r.stderr.strip()}")
+            log_info("On NixOS, you can enable WARP declaratively by adding 'services.cloudflare-warp.enable = true;' to /etc/nixos/configuration.nix")
+            return
 
     if not auto and sys.stdin.isatty():
         if not Confirm.ask(
@@ -1120,16 +1138,21 @@ def run_uninstall() -> None:
             )
 
     if pkg_installed():
-        with spinner(f"Removing {PKG_NAME} via pacman..."):
-            r = run_root(
-                ["pacman", "-Rns", "--noconfirm", PKG_NAME],
-                capture=True,
-                timeout=120,
-            )
-            if r.ok:
-                log_success(f"Removed '{PKG_NAME}'.")
-            else:
-                log_warn(f"pacman removal failed: {r.stderr.strip()}")
+        if os.path.exists("/etc/NIXOS") or shutil.which("nix"):
+            with spinner("Removing Cloudflare WARP via nix profile..."):
+                subprocess.run(["nix", "profile", "remove", ".*cloudflare-warp.*"], capture_output=True)
+            log_success("Removed Cloudflare WARP on NixOS.")
+        else:
+            with spinner(f"Removing {PKG_NAME} via pacman..."):
+                r = run_root(
+                    ["pacman", "-Rns", "--noconfirm", PKG_NAME],
+                    capture=True,
+                    timeout=120,
+                )
+                if r.ok:
+                    log_success(f"Removed '{PKG_NAME}'.")
+                else:
+                    log_warn(f"pacman removal failed: {r.stderr.strip()}")
     else:
         log_info("Package not installed.")
 
