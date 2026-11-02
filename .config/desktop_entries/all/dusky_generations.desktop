@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Dusky NixOS Generations
+GenericName=NixOS Generations & Rollback
+Comment=Manage NixOS system generations, rollbacks and garbage collection
+Exec=kitty --class dusky_generation_manager.py --title "NixOS Generations" python3 /home/ubaid/user_scripts/dusky_system/generations/dusky_generation_manager.py
+Icon=document-revert-symbolic
+Terminal=false
+Categories=System;Settings;

@@ -620,10 +620,10 @@ hl.window_rule({
 })
 
 
---- dusky_snapshot_manager.py ---
+--- dusky_generation_manager.py ---
 hl.window_rule({
-    name = "dusky_snapshot_manager.py",
-    match = { class = "^(dusky_snapshot_manager.py)$" },
+    name = "dusky_generation_manager.py",
+    match = { class = "^(dusky_generation_manager.py)$" },
     float = true,
     size = {"(monitor_w*0.95)", "(monitor_h*0.9)"},
     center = true
@@ -734,23 +734,6 @@ hl.window_rule({
     center = true
 })
 
---- step 2 Snapper Isolation Subvolume script ---
-hl.window_rule({
-    name = "02_snapper_isolation_subvolume.sh",
-    match = { class = "^(02_snapper_isolation_subvolume.sh)$" },
-    float = true,
-    size = {730, 454},
-    center = true
-})
-
---- step 3 Snapper Pacman Hooks script ---
-hl.window_rule({
-    name = "03_snapper_pacman_hooks.sh",
-    match = { class = "^(03_snapper_pacman_hooks.sh)$" },
-    float = true,
-    size = {730, 454},
-    center = true
-})
 
 --- dusky swapiness ---
 hl.window_rule({
