@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Retains the existing ytm JSON interface; this optional client is not installed.
+# now: title US artist US position US duration US status (one line).
+set -euo pipefail
+case ${1:-} in
+    now)
+        json=$(ytm now) || exit $?
+        jq -er '
+            def text: tostring | gsub("[\u0000-\u001f]"; " ");
+            def time:
+                (tonumber? // 0) | floor | if . < 0 then 0 else . end
+                | ((. / 60 | floor | tostring) + ":" +
+                   (. % 60 | tostring | if length < 2 then "0" + . else . end));
+            if (.is_playing | type) != "boolean" then error("missing playback state") else
+                [(.track.title // "" | text), (.track.artist // "" | text),
+                 (.position // 0 | time), (.duration // 0 | time),
+                 (if .is_playing then "Playing" else "Paused" end)] | join("\u001f")
+            end' <<< "$json"
+        ;;
+    toggle)
+        json=$(ytm status) || exit $?
+        playing=$(jq -er 'if (.is_playing | type) == "boolean" then
+            (.is_playing | tostring) else error("missing playback state") end' <<< "$json") || exit $?
+        if [[ $playing == true ]]; then exec ytm pause; else exec ytm play; fi
+        ;;
+    next) exec ytm next ;;
+    prev) exec ytm prev ;;
+    stop) exec ytm pause ;;
+    *) printf 'Usage: %s {now|toggle|next|prev|stop}\n' "${0##*/}" >&2; exit 1 ;;
+esac

@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Dusky Template Generator",
+  "version": "4.0.0",
+  "description": "Author per-site CSS theme templates for Dusky Sites: map a site's colour tokens to your Matugen palette, or pick elements visually.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "dusky_template_generator@dusk.com",
+      "strict_min_version": "156.0",
+      "data_collection_permissions": { "required": ["none"] }
+    }
+  },
+  "permissions": [
+    "activeTab",
+    "nativeMessaging",
+    "scripting"
+  ],
+  "optional_host_permissions": ["*://*/*"],
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Dusky Template Generator — theme this site",
+    "default_popup": "popup.html",
+    "default_area": "navbar"
+  },
+  "commands": {
+    "toggle-picker": {
+      "suggested_key": { "default": "Alt+Shift+P" },
+      "description": "Start / stop the visual element picker on the current page"
+    }
+  }
+}

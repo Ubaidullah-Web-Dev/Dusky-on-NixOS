@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# now: title US artist US position US duration US status (one line).
+set -euo pipefail
+
+format_seconds() {
+    local value=$1
+    if [[ ! $value =~ ^[0-9]{1,10}$ ]]; then value=0; fi
+    value=$((10#$value))
+    printf -v REPLY '%d:%02d' "$((value / 60))" "$((value % 60))"
+}
+
+case ${1:-} in
+    now)
+        info=$(cmus-remote -Q) || exit $?
+        title='' artist='' pos=0 dur=0 status='' file=''
+        while IFS= read -r line; do
+            case $line in
+                'tag title '*) title=${line#tag title } ;;
+                'tag artist '*) artist=${line#tag artist } ;;
+                'file '*) file=${line#file } ;;
+                'position '*) pos=${line#position } ;;
+                'duration '*) dur=${line#duration } ;;
+                'status '*) status=${line#status } ;;
+            esac
+        done <<< "$info"
+        case $status in
+            playing) status=Playing ;; paused) status=Paused ;; stopped) status=Stopped ;;
+            *) exit 1 ;;
+        esac
+        title=${title:-${file##*/}}
+        title=${title//[$'\r\n\x1f']/ }; artist=${artist//[$'\r\n\x1f']/ }
+        format_seconds "$pos"; pos=$REPLY
+        format_seconds "$dur"; dur=$REPLY
+        printf '%s\x1f%s\x1f%s\x1f%s\x1f%s\n' "$title" "$artist" "$pos" "$dur" "$status"
+        ;;
+    toggle) exec cmus-remote -u ;;
+    next) exec cmus-remote -n ;;
+    prev) exec cmus-remote -r ;;
+    stop) exec cmus-remote -s ;;
+    *) printf 'Usage: %s {now|toggle|next|prev|stop}\n' "${0##*/}" >&2; exit 1 ;;
+esac

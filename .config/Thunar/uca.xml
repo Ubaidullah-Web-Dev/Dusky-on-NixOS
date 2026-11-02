@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<actions>
+    <action>
+        <icon>utilities-terminal</icon>
+        <name>Open Terminal Here</name>
+        <submenu />
+        <unique-id>1793596949902545-1</unique-id>
+        <command>foot --working-directory=%f</command>
+        <description>Open foot in current folder</description>
+        <range />
+        <patterns>*</patterns>
+        <startup-notify />
+        <directories />
+    </action>
+</actions>

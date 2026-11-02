@@ -1,0 +1,59 @@
+[calendars]
+
+[[private]]
+path = ~/.local/share/khal/calendars/private
+type = calendar
+
+[locale]
+timeformat = %H:%M
+dateformat = %Y-%m-%d
+longdateformat = %Y-%m-%d
+datetimeformat = %Y-%m-%d %H:%M
+longdatetimeformat = %Y-%m-%d %H:%M
+firstweekday = 0
+
+[default]
+default_calendar = private
+highlight_event_days = True
+
+[view]
+min_calendar_display = 12
+monthdisplay = firstday
+theme = dark
+
+[palette]
+header = '', '', '', '#74daa3', '#2b3739'
+footer = '', '', '', '#d7e5e8', '#2b3739'
+line header = '', '', 'bold', '#d7e5e8', '#005232'
+alt header = '', '', 'bold', '#b1cbd0', ''
+bright = '', '', 'bold,standout', '#74daa3', '#2b3739'
+list = '', '', '', '#d7e5e8', '#111d20'
+list focused = '', '', 'bold', '#003921', '#74daa3'
+edit = '', '', '', '#d7e5e8', '#111d20'
+edit focus = '', '', 'bold', '#003921', '#74daa3'
+button = '', '', '', '#90f7be', '#005232'
+button focused = '', '', 'bold', '#003921', '#74daa3'
+reveal focus = '', '', '', '#d7e5e8', '#2b3739'
+today focus = '', '', 'bold', '#00363e', '#82d3e2'
+today = '', '', '', '#9eefff', '#004e59'
+date header = '', '', '', '#b1cbd0', '#111d20'
+date header focused = '', '', '', '#d7e5e8', '#005232'
+date header selected = '', '', '', '#acf2c7', '#045233'
+dayname = '', '', '', '#b1cbd0', ''
+monthname = '', '', '', '#74daa3', '#111d20'
+weeknumber_right = '', '', '', '#b1cbd0', ''
+alert = '', '', '', '#690005', '#ffb4ab'
+mark = '', '', '', '#00363e', '#82d3e2'
+frame = '', '', '', '#7c959a', '#111d20'
+frame focus = '', '', '', '#74daa3', '#111d20'
+frame focus color = '', '', '', '#74daa3', '#111d20'
+frame focus top = '', '', '', '#82d3e2', '#111d20'
+eventcolumn = '', '', '', '#d7e5e8', '#111d20'
+eventcolumn focus = '', '', '', '#d7e5e8', '#111d20'
+calendar = '', '', '', '#d7e5e8', '#111d20'
+calendar focus = '', '', '', '#d7e5e8', '#111d20'
+editbx = '', '', '', '#d7e5e8', '#2b3739'
+editcp = '', '', '', '#acf2c7', '#045233'
+popupbg = '', '', 'bold', '#d7e5e8', '#2b3739'
+popupper = '', '', '', '#90f7be', '#005232'
+caption = '', '', '', '#b1cbd0', ''

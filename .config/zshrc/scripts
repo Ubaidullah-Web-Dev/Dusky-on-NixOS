@@ -1,0 +1,60 @@
+# =============================================================================
+# Dusky Scripts Finder
+#
+# Keep this wrapper in the current shell: print -z places a command
+# into the next prompt without executing it.
+#
+# Optional overrides:
+#   DUSKY_SCRIPTS_ROOT
+#   DUSKY_SCRIPTS_HELPER
+# =============================================================================
+
+function scripts() {
+    emulate -L zsh
+
+    local root="${DUSKY_SCRIPTS_ROOT:-$HOME/user_scripts}"
+    local helper="${DUSKY_SCRIPTS_HELPER:-$HOME/user_scripts/tools/find_scripts/scripts_finder.py}"
+    local buffer_file queued
+    local result=0
+
+    if (( ! $+commands[python] )); then
+        print -ru2 -- "Error: required command not found: python"
+        return 1
+    fi
+
+    if [[ ! -f "$helper" ]]; then
+        print -ru2 -- "Error: scripts finder helper not found: $helper"
+        return 1
+    fi
+
+    buffer_file=$(
+        command mktemp "${TMPDIR:-/tmp}/dusky-scripts-buffer.XXXXXXXX"
+    ) || return 1
+
+    {
+        command python "$helper" \
+            --root "$root" \
+            --buffer-file "$buffer_file"
+
+        result=$?
+
+        # Copy-and-type retains the queued command even when copying fails.
+        if [[ -s "$buffer_file" ]]; then
+            if IFS= read -r -d '' queued < "$buffer_file"; then
+                if ! print -z -- "$queued"; then
+                    print -ru2 -- "Error: could not queue the command."
+                    result=1
+                fi
+            else
+                print -ru2 -- "Error: incomplete command from scripts finder."
+                result=1
+            fi
+        fi
+    } always {
+        command rm -f -- "$buffer_file"
+    }
+
+    return "$result"
+}
+
+alias s='scripts'

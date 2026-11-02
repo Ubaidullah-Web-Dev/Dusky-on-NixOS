@@ -1,0 +1,210 @@
+/* Internal Firefox documents only; the native host reads the declarations. */
+@-moz-document regexp("about:(?!blank(?:[?#]|$)|srcdoc(?:[?#]|$)).*"), url("chrome://global/content/print.html"), url("chrome://global/content/commonDialog.xhtml"), url("chrome://browser/content/places/places.xhtml"), url-prefix("chrome://devtools/content/") {
+:root {
+--dusky-palette-color-scheme: dark;
+
+
+    --dusky-palette-background: #091518;
+
+    --dusky-palette-error: #ffb4ab;
+
+    --dusky-palette-error_container: #93000a;
+
+    --dusky-palette-inverse_on_surface: #263235;
+
+    --dusky-palette-inverse_primary: #006c44;
+
+    --dusky-palette-inverse_surface: #d7e5e8;
+
+    --dusky-palette-on_background: #d7e5e8;
+
+    --dusky-palette-on_error: #690005;
+
+    --dusky-palette-on_error_container: #ffdad6;
+
+    --dusky-palette-on_primary: #003921;
+
+    --dusky-palette-on_primary_container: #90f7be;
+
+    --dusky-palette-on_primary_fixed: #002111;
+
+    --dusky-palette-on_primary_fixed_variant: #005232;
+
+    --dusky-palette-on_secondary: #003921;
+
+    --dusky-palette-on_secondary_container: #acf2c7;
+
+    --dusky-palette-on_secondary_fixed: #002111;
+
+    --dusky-palette-on_secondary_fixed_variant: #045233;
+
+    --dusky-palette-on_surface: #d7e5e8;
+
+    --dusky-palette-on_surface_variant: #b1cbd0;
+
+    --dusky-palette-on_tertiary: #00363e;
+
+    --dusky-palette-on_tertiary_container: #9eefff;
+
+    --dusky-palette-on_tertiary_fixed: #001f24;
+
+    --dusky-palette-on_tertiary_fixed_variant: #004e59;
+
+    --dusky-palette-outline: #7c959a;
+
+    --dusky-palette-outline_variant: #334b4f;
+
+    --dusky-palette-primary: #74daa3;
+
+    --dusky-palette-primary_container: #005232;
+
+    --dusky-palette-primary_fixed: #90f7be;
+
+    --dusky-palette-primary_fixed_dim: #74daa3;
+
+    --dusky-palette-scrim: #000000;
+
+    --dusky-palette-secondary: #91d5ac;
+
+    --dusky-palette-secondary_container: #045233;
+
+    --dusky-palette-secondary_fixed: #acf2c7;
+
+    --dusky-palette-secondary_fixed_dim: #91d5ac;
+
+    --dusky-palette-shadow: #000000;
+
+    --dusky-palette-source_color: #032b31;
+
+    --dusky-palette-surface: #091518;
+
+    --dusky-palette-surface_bright: #2f3b3e;
+
+    --dusky-palette-surface_container: #152224;
+
+    --dusky-palette-surface_container_high: #202c2e;
+
+    --dusky-palette-surface_container_highest: #2b3739;
+
+    --dusky-palette-surface_container_low: #111d20;
+
+    --dusky-palette-surface_container_lowest: #051012;
+
+    --dusky-palette-surface_dim: #091518;
+
+    --dusky-palette-surface_tint: #74daa3;
+
+    --dusky-palette-surface_variant: #334b4f;
+
+    --dusky-palette-tertiary: #82d3e2;
+
+    --dusky-palette-tertiary_container: #004e59;
+
+    --dusky-palette-tertiary_fixed: #9eefff;
+
+    --dusky-palette-tertiary_fixed_dim: #82d3e2;
+
+
+
+    --dusky-palette-background_rgb: 9 21 24;
+
+    --dusky-palette-error_rgb: 255 180 171;
+
+    --dusky-palette-error_container_rgb: 147 0 10;
+
+    --dusky-palette-inverse_on_surface_rgb: 38 50 53;
+
+    --dusky-palette-inverse_primary_rgb: 0 108 68;
+
+    --dusky-palette-inverse_surface_rgb: 215 229 232;
+
+    --dusky-palette-on_background_rgb: 215 229 232;
+
+    --dusky-palette-on_error_rgb: 105 0 5;
+
+    --dusky-palette-on_error_container_rgb: 255 218 214;
+
+    --dusky-palette-on_primary_rgb: 0 57 33;
+
+    --dusky-palette-on_primary_container_rgb: 144 247 190;
+
+    --dusky-palette-on_primary_fixed_rgb: 0 33 17;
+
+    --dusky-palette-on_primary_fixed_variant_rgb: 0 82 50;
+
+    --dusky-palette-on_secondary_rgb: 0 57 33;
+
+    --dusky-palette-on_secondary_container_rgb: 172 242 199;
+
+    --dusky-palette-on_secondary_fixed_rgb: 0 33 17;
+
+    --dusky-palette-on_secondary_fixed_variant_rgb: 4 82 51;
+
+    --dusky-palette-on_surface_rgb: 215 229 232;
+
+    --dusky-palette-on_surface_variant_rgb: 177 203 208;
+
+    --dusky-palette-on_tertiary_rgb: 0 54 62;
+
+    --dusky-palette-on_tertiary_container_rgb: 158 239 255;
+
+    --dusky-palette-on_tertiary_fixed_rgb: 0 31 36;
+
+    --dusky-palette-on_tertiary_fixed_variant_rgb: 0 78 89;
+
+    --dusky-palette-outline_rgb: 124 149 154;
+
+    --dusky-palette-outline_variant_rgb: 51 75 79;
+
+    --dusky-palette-primary_rgb: 116 218 163;
+
+    --dusky-palette-primary_container_rgb: 0 82 50;
+
+    --dusky-palette-primary_fixed_rgb: 144 247 190;
+
+    --dusky-palette-primary_fixed_dim_rgb: 116 218 163;
+
+    --dusky-palette-scrim_rgb: 0 0 0;
+
+    --dusky-palette-secondary_rgb: 145 213 172;
+
+    --dusky-palette-secondary_container_rgb: 4 82 51;
+
+    --dusky-palette-secondary_fixed_rgb: 172 242 199;
+
+    --dusky-palette-secondary_fixed_dim_rgb: 145 213 172;
+
+    --dusky-palette-shadow_rgb: 0 0 0;
+
+    --dusky-palette-source_color_rgb: 3 43 49;
+
+    --dusky-palette-surface_rgb: 9 21 24;
+
+    --dusky-palette-surface_bright_rgb: 47 59 62;
+
+    --dusky-palette-surface_container_rgb: 21 34 36;
+
+    --dusky-palette-surface_container_high_rgb: 32 44 46;
+
+    --dusky-palette-surface_container_highest_rgb: 43 55 57;
+
+    --dusky-palette-surface_container_low_rgb: 17 29 32;
+
+    --dusky-palette-surface_container_lowest_rgb: 5 16 18;
+
+    --dusky-palette-surface_dim_rgb: 9 21 24;
+
+    --dusky-palette-surface_tint_rgb: 116 218 163;
+
+    --dusky-palette-surface_variant_rgb: 51 75 79;
+
+    --dusky-palette-tertiary_rgb: 130 211 226;
+
+    --dusky-palette-tertiary_container_rgb: 0 78 89;
+
+    --dusky-palette-tertiary_fixed_rgb: 158 239 255;
+
+    --dusky-palette-tertiary_fixed_dim_rgb: 130 211 226;
+
+}
+}

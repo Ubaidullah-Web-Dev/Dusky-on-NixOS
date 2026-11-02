@@ -1,0 +1,166 @@
+[
+  {
+    "id": "run_20261027_210304",
+    "timestamp": "2026-10-27 21:03:04",
+    "time_short": "21:03:04",
+    "date_short": "10-27",
+    "bench": "all",
+    "hugepages": false,
+    "workers": 12,
+    "cores": null,
+    "time_sec": 10,
+    "optimal_core": "0",
+    "cpu_model": "AMD Ryzen 5 PRO 4650U with Radeon Graphics",
+    "mem_type": "DDR4",
+    "configured_speed_mts": 2667,
+    "cache": {
+      "l1_ns": 2.12,
+      "l2_ns": 5.61,
+      "l3_ns": 53.15,
+      "dram_ns": 145.77
+    },
+    "metrics": {
+      "Random Memory Latency (ns)": 151.18,
+      "Single-Core Copy (1 Core)": 5.265615224832,
+      "Pure Read (Multi-Thread)": 11.441159536639999,
+      "Pure Write (Multi-Thread)": 5.452616171520001,
+      "Stream Copy (Multi-Thread)": 11.837959999999999
+    },
+    "results_raw": [
+      {
+        "name": "Random Memory Latency",
+        "throughput_gb_s": 0.0,
+        "throughput_mib_s": 0.0,
+        "read_gb_s": 0.0,
+        "write_gb_s": 0.0,
+        "efficiency_pct": null,
+        "latency_ns": 151.18,
+        "details": "128M pointer chasing (SCHED_FIFO + Zero-Bias Lemire on Core 0; median of 3 samples)"
+      },
+      {
+        "name": "Single-Core Copy (1 Core)",
+        "throughput_gb_s": 5.265615224832,
+        "throughput_mib_s": 5021.682,
+        "read_gb_s": 2.632807612416,
+        "write_gb_s": 2.632807612416,
+        "efficiency_pct": 24.679486430596175,
+        "latency_ns": null,
+        "details": "mbw memcpy 1481M on Core 0 (Line Fill Buffer limit)"
+      },
+      {
+        "name": "Pure Read (Multi-Thread)",
+        "throughput_gb_s": 11.441159536639999,
+        "throughput_mib_s": 10911.14,
+        "read_gb_s": 11.441159536639999,
+        "write_gb_s": 0.0,
+        "efficiency_pct": 53.62373236145481,
+        "latency_ns": null,
+        "details": "sysbench 64M blocks, 12 parallel read workers"
+      },
+      {
+        "name": "Pure Write (Multi-Thread)",
+        "throughput_gb_s": 5.452616171520001,
+        "throughput_mib_s": 5200.02,
+        "read_gb_s": 0.0,
+        "write_gb_s": 5.452616171520001,
+        "efficiency_pct": 25.555943811023628,
+        "latency_ns": null,
+        "details": "sysbench 64M blocks, 12 parallel write workers"
+      },
+      {
+        "name": "Stream Copy (Multi-Thread)",
+        "throughput_gb_s": 11.837959999999999,
+        "throughput_mib_s": 11289.55841064453,
+        "read_gb_s": 7.10278,
+        "write_gb_s": 4.73518,
+        "efficiency_pct": 55.483502062242216,
+        "latency_ns": null,
+        "details": "stress-ng --stream, 12 workers (Read: 7.1 GB/s, Write: 4.7 GB/s)"
+      }
+    ],
+    "initial_temps": [],
+    "final_temps": []
+  },
+  {
+    "id": "run_20261101_204635",
+    "timestamp": "2026-11-01 20:46:35",
+    "time_short": "20:46:35",
+    "date_short": "11-01",
+    "bench": "all",
+    "hugepages": false,
+    "workers": 12,
+    "cores": null,
+    "time_sec": 10,
+    "optimal_core": "0",
+    "cpu_model": "AMD Ryzen 5 PRO 4650U with Radeon Graphics",
+    "mem_type": "DDR4",
+    "configured_speed_mts": 2667,
+    "cache": {
+      "l1_ns": 1.27,
+      "l2_ns": 3.12,
+      "l3_ns": 10.62,
+      "dram_ns": 124.76
+    },
+    "metrics": {
+      "Random Memory Latency (ns)": 124.1,
+      "Single-Core Copy (1 Core)": 5.229219151872,
+      "Pure Read (Multi-Thread)": 13.46989195264,
+      "Pure Write (Multi-Thread)": 5.66297100288,
+      "Stream Copy (Multi-Thread)": 13.59627
+    },
+    "results_raw": [
+      {
+        "name": "Random Memory Latency",
+        "throughput_gb_s": 0.0,
+        "throughput_mib_s": 0.0,
+        "read_gb_s": 0.0,
+        "write_gb_s": 0.0,
+        "efficiency_pct": null,
+        "latency_ns": 124.1,
+        "details": "128M pointer chasing (SCHED_FIFO + Zero-Bias Lemire on Core 0; median of 3 samples)"
+      },
+      {
+        "name": "Single-Core Copy (1 Core)",
+        "throughput_gb_s": 5.229219151872,
+        "throughput_mib_s": 4986.972,
+        "read_gb_s": 2.614609575936,
+        "write_gb_s": 2.614609575936,
+        "efficiency_pct": 24.508901161754782,
+        "latency_ns": null,
+        "details": "mbw memcpy 1553M on Core 0 (Line Fill Buffer limit)"
+      },
+      {
+        "name": "Pure Read (Multi-Thread)",
+        "throughput_gb_s": 13.46989195264,
+        "throughput_mib_s": 12845.89,
+        "read_gb_s": 13.46989195264,
+        "write_gb_s": 0.0,
+        "efficiency_pct": 63.132226999625054,
+        "latency_ns": null,
+        "details": "sysbench 64M blocks, 12 parallel read workers"
+      },
+      {
+        "name": "Pure Write (Multi-Thread)",
+        "throughput_gb_s": 5.66297100288,
+        "throughput_mib_s": 5400.63,
+        "read_gb_s": 0.0,
+        "write_gb_s": 5.66297100288,
+        "efficiency_pct": 26.541858843644544,
+        "latency_ns": null,
+        "details": "sysbench 64M blocks, 12 parallel write workers"
+      },
+      {
+        "name": "Stream Copy (Multi-Thread)",
+        "throughput_gb_s": 13.59627,
+        "throughput_mib_s": 12966.413497924805,
+        "read_gb_s": 8.15776,
+        "write_gb_s": 5.43851,
+        "efficiency_pct": 63.724550056242975,
+        "latency_ns": null,
+        "details": "stress-ng --stream, 12 workers (Read: 8.2 GB/s, Write: 5.4 GB/s)"
+      }
+    ],
+    "initial_temps": [],
+    "final_temps": []
+  }
+]

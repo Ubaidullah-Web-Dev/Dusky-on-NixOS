@@ -1,0 +1,9 @@
+{
+  "flush_interval": 0.5,
+  "log_level": "info",
+  "data_dir": "~/.config/dusky/settings/keylogger/data",
+  "transcript_dir": "/tmp",
+  "transcript_format": "text",
+  "persistent_enabled": true,
+  "ephemeral_enabled": true
+}

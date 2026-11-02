@@ -1,0 +1,349 @@
+/* Matugen palette. Keep GTK/libadwaita widget geometry and state styling. */
+@define-color accent_color #74daa3;
+@define-color accent_fg_color #003921;
+@define-color accent_bg_color #74daa3;
+@define-color accent_hover_color #74daa3;
+@define-color accent_active_color #90f7be;
+@define-color window_bg_color #051012;
+@define-color window_fg_color #d7e5e8;
+@define-color window_border_color #334b4f;
+@define-color window_outline_color #334b4f;
+@define-color view_bg_color #051012;
+@define-color view_fg_color #d7e5e8;
+@define-color view_border_color #334b4f;
+@define-color headerbar_bg_color #051012;
+@define-color headerbar_fg_color #d7e5e8;
+@define-color headerbar_border_color #334b4f;
+@define-color headerbar_backdrop_color #051012;
+@define-color headerbar_shade_color rgba(0, 0, 0, 0.45);
+@define-color headerbar_darker_shade_color rgba(0, 0, 0, 0.65);
+@define-color headerbar_light_shade_color rgba(255, 255, 255, 0.05);
+@define-color card_bg_color #091518;
+@define-color card_fg_color #d7e5e8;
+@define-color card_border_color #334b4f;
+@define-color card_shade_color rgba(0, 0, 0, 0.35);
+@define-color dialog_bg_color #091518;
+@define-color dialog_fg_color #d7e5e8;
+@define-color popover_bg_color #091518;
+@define-color popover_fg_color #d7e5e8;
+@define-color popover_shade_color rgba(0, 0, 0, 0.45);
+@define-color shade_color rgba(0, 0, 0, 0.35);
+@define-color scrollbar_outline_color rgba(0, 0, 0, 0.5);
+@define-color sidebar_bg_color #051012;
+@define-color sidebar_fg_color #d7e5e8;
+@define-color sidebar_border_color #334b4f;
+@define-color sidebar_backdrop_color #051012;
+@define-color sidebar_shade_color rgba(0, 0, 0, 0.25);
+@define-color secondary_sidebar_bg_color #051012;
+@define-color secondary_sidebar_fg_color #d7e5e8;
+@define-color secondary_sidebar_backdrop_color #051012;
+@define-color secondary_sidebar_border_color #334b4f;
+@define-color secondary_sidebar_shade_color rgba(0, 0, 0, 0.25);
+@define-color thumbnail_bg_color #051012;
+@define-color thumbnail_fg_color #d7e5e8;
+@define-color destructive_bg_color #ffb4ab;
+@define-color destructive_fg_color #690005;
+@define-color destructive_color #ffb4ab;
+@define-color destructive_hover_color #93000a;
+@define-color destructive_active_color #ffdad6;
+@define-color success_bg_color #82d3e2;
+@define-color success_fg_color #00363e;
+@define-color success_color #82d3e2;
+@define-color success_hover_color #82d3e2;
+@define-color success_active_color #9eefff;
+@define-color warning_bg_color #91d5ac;
+@define-color warning_fg_color #003921;
+@define-color warning_color #91d5ac;
+@define-color warning_hover_color #91d5ac;
+@define-color warning_active_color #acf2c7;
+@define-color error_bg_color #ffb4ab;
+@define-color error_fg_color #690005;
+@define-color error_color #ffb4ab;
+@define-color link_color #74daa3;
+@define-color link_visited_color #91d5ac;
+@define-color blue_1 #005232;
+@define-color blue_2 #74daa3;
+@define-color blue_3 #74daa3;
+@define-color blue_4 #90f7be;
+@define-color blue_5 #003921;
+@define-color green_1 #004e59;
+@define-color green_2 #82d3e2;
+@define-color green_3 #82d3e2;
+@define-color green_4 #9eefff;
+@define-color green_5 #00363e;
+@define-color yellow_1 #045233;
+@define-color yellow_2 #91d5ac;
+@define-color yellow_3 #91d5ac;
+@define-color yellow_4 #acf2c7;
+@define-color yellow_5 #003921;
+@define-color orange_1 #045233;
+@define-color orange_2 #91d5ac;
+@define-color orange_3 #91d5ac;
+@define-color orange_4 #acf2c7;
+@define-color orange_5 #003921;
+@define-color red_1 #93000a;
+@define-color red_2 #ffb4ab;
+@define-color red_3 #ffb4ab;
+@define-color red_4 #ffdad6;
+@define-color red_5 #690005;
+@define-color purple_1 #004e59;
+@define-color purple_2 #82d3e2;
+@define-color purple_3 #82d3e2;
+@define-color purple_4 #9eefff;
+@define-color purple_5 #00363e;
+@define-color brown_1 #202c2e;
+@define-color brown_2 #91d5ac;
+@define-color brown_3 #91d5ac;
+@define-color brown_4 #acf2c7;
+@define-color brown_5 #003921;
+@define-color dark_1 #051012;
+@define-color dark_2 #111d20;
+@define-color dark_3 #152224;
+@define-color dark_4 #202c2e;
+@define-color dark_5 #2b3739;
+@define-color light_1 #2f3b3e;
+@define-color light_2 #334b4f;
+@define-color light_3 #7c959a;
+@define-color light_4 #b1cbd0;
+@define-color light_5 #d7e5e8;
+@define-color overview_bg_color #051012;
+@define-color overview_fg_color #d7e5e8;
+@define-color active_toggle_bg_color #2b3739;
+@define-color active_toggle_fg_color #d7e5e8;
+@define-color border_color #334b4f;
+
+/* GTK's exported color names are also used by application-owned CSS and
+ * custom drawing. Keep them paired with the same palette as our widget rules. */
+@define-color theme_fg_color @window_fg_color;
+@define-color theme_text_color @view_fg_color;
+@define-color theme_bg_color @window_bg_color;
+@define-color theme_base_color @view_bg_color;
+@define-color theme_selected_bg_color #005232;
+@define-color theme_selected_fg_color #90f7be;
+@define-color insensitive_bg_color #111d20;
+@define-color insensitive_fg_color alpha(@window_fg_color, 0.45);
+@define-color insensitive_base_color @view_bg_color;
+@define-color theme_unfocused_fg_color alpha(@window_fg_color, 0.7);
+@define-color theme_unfocused_text_color @view_fg_color;
+@define-color theme_unfocused_bg_color @window_bg_color;
+@define-color theme_unfocused_base_color @view_bg_color;
+@define-color theme_unfocused_selected_bg_color @theme_selected_bg_color;
+@define-color theme_unfocused_selected_fg_color @theme_selected_fg_color;
+@define-color unfocused_insensitive_color alpha(@window_fg_color, 0.3);
+@define-color borders @border_color;
+@define-color unfocused_borders @border_color;
+@define-color content_view_bg @view_bg_color;
+@define-color text_view_bg @view_bg_color;
+
+/* GTK 4 and libadwaita use CSS custom properties for current widgets.
+ * Named colors above remain available to apps using the older API. */
+:root {
+  --overview-bg-color: #051012;
+  --overview-fg-color: #d7e5e8;
+  --active-toggle-bg-color: #2b3739;
+  --active-toggle-fg-color: #d7e5e8;
+  --border-color: #334b4f;
+  --accent-color: #74daa3;
+  --accent-fg-color: #003921;
+  --accent-bg-color: #74daa3;
+  --accent-hover-color: #74daa3;
+  --accent-active-color: #90f7be;
+  --window-bg-color: #051012;
+  --window-fg-color: #d7e5e8;
+  --window-border-color: #334b4f;
+  --window-outline-color: #334b4f;
+  --view-bg-color: #051012;
+  --view-fg-color: #d7e5e8;
+  --view-border-color: #334b4f;
+  --headerbar-bg-color: #051012;
+  --headerbar-fg-color: #d7e5e8;
+  --headerbar-border-color: #334b4f;
+  --headerbar-backdrop-color: #051012;
+  --headerbar-shade-color: rgba(0, 0, 0, 0.45);
+  --headerbar-darker-shade-color: rgba(0, 0, 0, 0.65);
+  --headerbar-light-shade-color: rgba(255, 255, 255, 0.05);
+  --card-bg-color: #091518;
+  --card-fg-color: #d7e5e8;
+  --card-border-color: #334b4f;
+  --card-shade-color: rgba(0, 0, 0, 0.35);
+  --dialog-bg-color: #091518;
+  --dialog-fg-color: #d7e5e8;
+  --popover-bg-color: #091518;
+  --popover-fg-color: #d7e5e8;
+  --popover-shade-color: rgba(0, 0, 0, 0.45);
+  --shade-color: rgba(0, 0, 0, 0.35);
+  --scrollbar-outline-color: rgba(0, 0, 0, 0.5);
+  --sidebar-bg-color: #051012;
+  --sidebar-fg-color: #d7e5e8;
+  --sidebar-border-color: #334b4f;
+  --sidebar-backdrop-color: #051012;
+  --sidebar-shade-color: rgba(0, 0, 0, 0.25);
+  --secondary-sidebar-bg-color: #051012;
+  --secondary-sidebar-fg-color: #d7e5e8;
+  --secondary-sidebar-backdrop-color: #051012;
+  --secondary-sidebar-border-color: #334b4f;
+  --secondary-sidebar-shade-color: rgba(0, 0, 0, 0.25);
+  --thumbnail-bg-color: #051012;
+  --thumbnail-fg-color: #d7e5e8;
+  --destructive-bg-color: #ffb4ab;
+  --destructive-fg-color: #690005;
+  --destructive-color: #ffb4ab;
+  --destructive-hover-color: #93000a;
+  --destructive-active-color: #ffdad6;
+  --success-bg-color: #82d3e2;
+  --success-fg-color: #00363e;
+  --success-color: #82d3e2;
+  --success-hover-color: #82d3e2;
+  --success-active-color: #9eefff;
+  --warning-bg-color: #91d5ac;
+  --warning-fg-color: #003921;
+  --warning-color: #91d5ac;
+  --warning-hover-color: #91d5ac;
+  --warning-active-color: #acf2c7;
+  --error-bg-color: #ffb4ab;
+  --error-fg-color: #690005;
+  --error-color: #ffb4ab;
+  --link-color: #74daa3;
+  --link-visited-color: #91d5ac;
+  --blue-1: #005232;
+  --blue-2: #74daa3;
+  --blue-3: #74daa3;
+  --blue-4: #90f7be;
+  --blue-5: #003921;
+  --green-1: #004e59;
+  --green-2: #82d3e2;
+  --green-3: #82d3e2;
+  --green-4: #9eefff;
+  --green-5: #00363e;
+  --yellow-1: #045233;
+  --yellow-2: #91d5ac;
+  --yellow-3: #91d5ac;
+  --yellow-4: #acf2c7;
+  --yellow-5: #003921;
+  --orange-1: #045233;
+  --orange-2: #91d5ac;
+  --orange-3: #91d5ac;
+  --orange-4: #acf2c7;
+  --orange-5: #003921;
+  --red-1: #93000a;
+  --red-2: #ffb4ab;
+  --red-3: #ffb4ab;
+  --red-4: #ffdad6;
+  --red-5: #690005;
+  --purple-1: #004e59;
+  --purple-2: #82d3e2;
+  --purple-3: #82d3e2;
+  --purple-4: #9eefff;
+  --purple-5: #00363e;
+  --brown-1: #202c2e;
+  --brown-2: #91d5ac;
+  --brown-3: #91d5ac;
+  --brown-4: #acf2c7;
+  --brown-5: #003921;
+  --dark-1: #051012;
+  --dark-2: #111d20;
+  --dark-3: #152224;
+  --dark-4: #202c2e;
+  --dark-5: #2b3739;
+  --light-1: #2f3b3e;
+  --light-2: #334b4f;
+  --light-3: #7c959a;
+  --light-4: #b1cbd0;
+  --light-5: #d7e5e8;
+}
+
+/* Plain GTK4's built-in theme uses compiled colors rather than libadwaita's
+ * variables. Override paint properties only; retain all widget geometry. */
+window.background {
+  background-color: @window_bg_color;
+  color: @window_fg_color;
+}
+notebook > stack, .view, textview text, list, columnview, gridview {
+  background-color: @view_bg_color;
+  color: @view_fg_color;
+}
+notebook > header, headerbar, popover > contents {
+  background-color: @headerbar_bg_color;
+  color: @headerbar_fg_color;
+  border-color: @headerbar_border_color;
+  background-image: none;
+}
+notebook > header > tabs > tab {
+  color: @window_fg_color;
+  background-color: transparent;
+}
+notebook > header > tabs > tab:checked {
+  color: @accent_color;
+  box-shadow: inset 0 -3px @accent_color;
+}
+button, entry, spinbutton {
+  color: @window_fg_color;
+  background-color: #152224;
+  background-image: none;
+  border-color: @border_color;
+}
+button:hover {
+  background-color: #202c2e;
+}
+/* Marked scales draw shaped handles with theme image assets. Never erase
+ * those images or fill their rectangular allocation with a solid color.
+ * Unmarked handles use CSS geometry and can be recolored directly. */
+scale:not(.marks-before):not(.marks-after):not(.color) > trough > slider {
+  background-color: @window_fg_color;
+  background-image: none;
+  border-color: @window_bg_color;
+}
+scale:not(.marks-before):not(.marks-after):not(.color) > trough > slider:hover,
+scale:not(.marks-before):not(.marks-after):not(.color) > trough > slider:active {
+  background-color: @accent_bg_color;
+}
+scale:not(.marks-before):not(.marks-after):not(.color) > trough > slider:disabled {
+  background-color: alpha(@window_fg_color, 0.45);
+}
+button:active, button:checked {
+  background-color: #005232;
+  color: #90f7be;
+}
+button.flat:not(:hover):not(:active):not(:checked) {
+  background-color: transparent;
+  border-color: transparent;
+}
+button.suggested-action, check:checked, radio:checked, switch:checked,
+scale highlight, progressbar progress {
+  background-color: @accent_bg_color;
+  background-image: none;
+  color: @accent_fg_color;
+  border-color: @accent_bg_color;
+}
+scale trough, progressbar trough, switch {
+  background-color: #2b3739;
+  background-image: none;
+  border-color: @border_color;
+}
+row:selected, .view:selected, textview text selection {
+  background-color: #005232;
+  color: #90f7be;
+}
+/* Stock dropdown rules are more specific than the generic selected row.
+ * Cover mouse hover and keyboard selection in both GTK popup implementations. */
+dropdown popover listview > row.activatable:selected,
+dropdown popover listview > row.activatable:selected:hover,
+combobox popover listview > row.activatable:selected,
+combobox popover listview > row.activatable:selected:hover,
+popover.menu modelbutton:selected,
+popover.menu modelbutton:selected:active,
+modelbutton.flat:hover {
+  background-color: #005232;
+  background-image: none;
+  color: #90f7be;
+}
+separator {
+  background-color: @border_color;
+}
+button:disabled, entry:disabled, spinbutton:disabled {
+  color: alpha(@window_fg_color, 0.45);
+  background-color: #111d20;
+  background-image: none;
+}
+
+/* dusky-palette-complete */

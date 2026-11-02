@@ -1,0 +1,93 @@
+# Dusky Kokoro TTS - configuration (TOML)
+# Location: ~/.config/dusky-kokoro/config.toml
+# Apply changes with: trigger.sh --reload (or dusky-kokoro-tui)
+
+[voice]
+spec = "af_heart:0.40,af_bella:0.60"   # "name" or "name:weight,name:weight"
+blend = true                          # true | false
+voice_1 = "af_heart"
+weight_1 = 0.40
+voice_2 = "af_bella"
+weight_2 = 0.60
+voice_3 = "none"
+weight_3 = 0.00
+lang = "auto"                         # auto = from voice prefix (a, b, j, z, e, f, h, i, p)
+speed = 1.00                          # Kokoro duration-model speed, 0.50 - 2.00
+
+[playback]
+mpv_binary = "mpv"
+mpv_speed = 1.00                      # second-stage tempo (scaletempo2, pitch-preserving)
+volume = 100                          # 0 - 150
+window = true                         # show small mpv window (space=pause, q=stop)
+window_geometry = "420x96"
+window_title = "Kokoro TTS"
+audio_device = ""
+cache_max_mb = 512
+use_user_mpv_config = true
+extra_args = []
+prefetch_segments = 4
+write_stall_timeout_s = 0.0
+
+[archive]
+enabled = true
+dir = ""                              # "" = ~/.cache/dusky-kokoro/audio
+max_files = 32
+bit_depth = 16                        # 16 | 24
+
+[engine]
+provider = "auto"                     # auto | cuda | tensorrt | migraphx | openvino | cpu
+precision = "auto"                    # auto | f32 | fp16 | fp16-gpu | int8
+models_dir = ""
+voices_file = ""
+device_id = 0
+gpu_mem_limit_mb = 2048               # CUDA arena budget, not total VRAM (0 = unlimited)
+cudnn_conv_use_max_workspace = false
+arena_extend_strategy = "kSameAsRequested"
+cudnn_conv_algo_search = "HEURISTIC"
+cuda_lib_dirs = []
+openvino_device = "GPU"
+openvino_precision = "FP16"
+openvino_cache_dir = ""
+tensorrt_cache_dir = ""
+intra_op_threads = 0
+allow_spinning = true
+graph_optimization = "all"
+require_accelerator = false
+warmup = true
+model_idle_timeout_s = 30.0           # unload model after inactivity (frees GPU VRAM)
+profiling = false
+
+[engine.env]
+
+[daemon]
+socket_path = ""                      # "" = $XDG_RUNTIME_DIR/dusky-kokoro/control.sock
+default_mode = "interrupt"            # interrupt | enqueue
+dedup_window_s = 2.0
+max_queue = 8
+process_idle_timeout_s = 30.0         # exit after idling: allows laptop GPU D3cold sleep
+exit_when_idle = true
+desktop_notifications = true
+request_timeout_s = 10.0
+max_request_bytes = 67108864
+
+[text]
+max_chars = 10000000                  # 10M chars (~2,500 pages); 0 = unlimited
+url_mode = "domain"                   # domain | placeholder | omit
+url_placeholder = "link"
+emoji_mode = "strip"                  # strip | name
+read_code_blocks = false
+strip_citations = true                # remove [12] / [^3] citations
+target_segment_chars = 220
+max_segment_chars = 320
+min_segment_chars = 24
+first_segment_max_chars = 140
+max_phonemes = 480
+sentence_pause_ms = 140
+paragraph_pause_ms = 380
+trim_silence = true
+
+[logging]
+level = "INFO"
+file = ""
+file_max_mb = 5
+ort_verbose = false

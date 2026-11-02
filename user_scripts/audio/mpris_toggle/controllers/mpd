@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Uses the configured mpc connection (MPD_HOST / MPD_PORT).
+# now: title US artist US position US duration US status (one line).
+set -euo pipefail
+readonly SEP=$'\x1f'
+case ${1:-} in
+    now)
+        current=$(mpc --format "[%title%]${SEP}[%artist%]${SEP}[%file%]" current) || exit $?
+        info=$(LC_ALL=C mpc status) || exit $?
+        current=${current//[$'\r\n']/ }
+        IFS=$SEP read -r title artist file <<< "$current"
+        title=${title:-${file##*/}}
+        status=Stopped pos='' dur=''
+        state_pattern='^\[(playing|paused)\]'
+        time_pattern='([0-9]+:[0-9:]+)/([0-9]+:[0-9:]+)'
+        while IFS= read -r line; do
+            if [[ $line =~ $state_pattern ]]; then
+                case ${BASH_REMATCH[1]} in playing) status=Playing ;; paused) status=Paused ;; esac
+                if [[ $line =~ $time_pattern ]]; then
+                    pos=${BASH_REMATCH[1]}; dur=${BASH_REMATCH[2]}
+                fi
+                break
+            fi
+        done <<< "$info"
+        printf '%s\x1f%s\x1f%s\x1f%s\x1f%s\n' "$title" "$artist" "$pos" "$dur" "$status"
+        ;;
+    toggle|next|prev|stop) exec mpc --quiet "$1" ;;
+    *) printf 'Usage: %s {now|toggle|next|prev|stop}\n' "${0##*/}" >&2; exit 1 ;;
+esac

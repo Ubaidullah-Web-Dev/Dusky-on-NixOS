@@ -1,0 +1,11 @@
+-- User configuration overlay; app globals are loaded by the main config.
+require("edit_here.source.appearance")
+require("edit_here.source.autostart")
+require("edit_here.source.environment_variables")
+require("edit_here.source.input")
+require("edit_here.source.keybinds")
+require("edit_here.source.monitors")
+require("edit_here.source.plugins")
+require("edit_here.source.trackpad")
+require("edit_here.source.window_rules")
+require("edit_here.source.workspace_rules")

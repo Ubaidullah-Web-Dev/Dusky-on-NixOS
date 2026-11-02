@@ -1,0 +1,182 @@
+/* Matugen colors for adw-gtk3. Geometry belongs to the base theme. */
+@define-color accent_color #74daa3;
+@define-color accent_fg_color #003921;
+@define-color accent_bg_color #74daa3;
+@define-color accent_hover_color #74daa3;
+@define-color accent_active_color #90f7be;
+@define-color window_bg_color #051012;
+@define-color window_fg_color #d7e5e8;
+@define-color window_border_color #334b4f;
+@define-color window_outline_color #334b4f;
+@define-color view_bg_color #051012;
+@define-color view_fg_color #d7e5e8;
+@define-color view_border_color #334b4f;
+@define-color headerbar_bg_color #051012;
+@define-color headerbar_fg_color #d7e5e8;
+@define-color headerbar_border_color #334b4f;
+@define-color headerbar_backdrop_color #051012;
+@define-color headerbar_shade_color rgba(0, 0, 0, 0.45);
+@define-color headerbar_darker_shade_color rgba(0, 0, 0, 0.65);
+@define-color headerbar_light_shade_color rgba(255, 255, 255, 0.05);
+@define-color card_bg_color #091518;
+@define-color card_fg_color #d7e5e8;
+@define-color card_border_color #334b4f;
+@define-color card_shade_color rgba(0, 0, 0, 0.35);
+@define-color dialog_bg_color #091518;
+@define-color dialog_fg_color #d7e5e8;
+@define-color popover_bg_color #091518;
+@define-color popover_fg_color #d7e5e8;
+@define-color popover_shade_color rgba(0, 0, 0, 0.45);
+@define-color shade_color rgba(0, 0, 0, 0.35);
+@define-color scrollbar_outline_color rgba(0, 0, 0, 0.5);
+@define-color sidebar_bg_color #051012;
+@define-color sidebar_fg_color #d7e5e8;
+@define-color sidebar_border_color #334b4f;
+@define-color sidebar_backdrop_color #051012;
+@define-color sidebar_shade_color rgba(0, 0, 0, 0.25);
+@define-color secondary_sidebar_bg_color #051012;
+@define-color secondary_sidebar_fg_color #d7e5e8;
+@define-color secondary_sidebar_backdrop_color #051012;
+@define-color secondary_sidebar_border_color #334b4f;
+@define-color secondary_sidebar_shade_color rgba(0, 0, 0, 0.25);
+@define-color thumbnail_bg_color #051012;
+@define-color thumbnail_fg_color #d7e5e8;
+@define-color destructive_bg_color #ffb4ab;
+@define-color destructive_fg_color #690005;
+@define-color destructive_color #ffb4ab;
+@define-color destructive_hover_color #93000a;
+@define-color destructive_active_color #ffdad6;
+@define-color success_bg_color #82d3e2;
+@define-color success_fg_color #00363e;
+@define-color success_color #82d3e2;
+@define-color success_hover_color #82d3e2;
+@define-color success_active_color #9eefff;
+@define-color warning_bg_color #91d5ac;
+@define-color warning_fg_color #003921;
+@define-color warning_color #91d5ac;
+@define-color warning_hover_color #91d5ac;
+@define-color warning_active_color #acf2c7;
+@define-color error_bg_color #ffb4ab;
+@define-color error_fg_color #690005;
+@define-color error_color #ffb4ab;
+@define-color link_color #74daa3;
+@define-color link_visited_color #91d5ac;
+@define-color blue_1 #005232;
+@define-color blue_2 #74daa3;
+@define-color blue_3 #74daa3;
+@define-color blue_4 #90f7be;
+@define-color blue_5 #003921;
+@define-color green_1 #004e59;
+@define-color green_2 #82d3e2;
+@define-color green_3 #82d3e2;
+@define-color green_4 #9eefff;
+@define-color green_5 #00363e;
+@define-color yellow_1 #045233;
+@define-color yellow_2 #91d5ac;
+@define-color yellow_3 #91d5ac;
+@define-color yellow_4 #acf2c7;
+@define-color yellow_5 #003921;
+@define-color orange_1 #045233;
+@define-color orange_2 #91d5ac;
+@define-color orange_3 #91d5ac;
+@define-color orange_4 #acf2c7;
+@define-color orange_5 #003921;
+@define-color red_1 #93000a;
+@define-color red_2 #ffb4ab;
+@define-color red_3 #ffb4ab;
+@define-color red_4 #ffdad6;
+@define-color red_5 #690005;
+@define-color purple_1 #004e59;
+@define-color purple_2 #82d3e2;
+@define-color purple_3 #82d3e2;
+@define-color purple_4 #9eefff;
+@define-color purple_5 #00363e;
+@define-color brown_1 #202c2e;
+@define-color brown_2 #91d5ac;
+@define-color brown_3 #91d5ac;
+@define-color brown_4 #acf2c7;
+@define-color brown_5 #003921;
+@define-color dark_1 #051012;
+@define-color dark_2 #111d20;
+@define-color dark_3 #152224;
+@define-color dark_4 #202c2e;
+@define-color dark_5 #2b3739;
+@define-color light_1 #2f3b3e;
+@define-color light_2 #334b4f;
+@define-color light_3 #7c959a;
+@define-color light_4 #b1cbd0;
+@define-color light_5 #d7e5e8;
+@define-color theme_fg_color @window_fg_color;
+@define-color theme_text_color @view_fg_color;
+@define-color theme_bg_color @window_bg_color;
+@define-color theme_base_color @view_bg_color;
+@define-color theme_selected_bg_color #74daa3;
+@define-color theme_selected_fg_color #003921;
+@define-color insensitive_bg_color #051012;
+@define-color insensitive_fg_color alpha(@window_fg_color, 0.45);
+@define-color insensitive_base_color @view_bg_color;
+@define-color theme_unfocused_fg_color alpha(@window_fg_color, 0.7);
+@define-color theme_unfocused_text_color alpha(@view_fg_color, 0.7);
+@define-color theme_unfocused_bg_color @window_bg_color;
+@define-color theme_unfocused_base_color @view_bg_color;
+@define-color theme_unfocused_selected_bg_color #2b3739;
+@define-color theme_unfocused_selected_fg_color @window_fg_color;
+@define-color unfocused_insensitive_color alpha(@window_fg_color, 0.3);
+@define-color borders #334b4f;
+@define-color unfocused_borders #334b4f;
+@define-color wm_title @window_fg_color;
+@define-color wm_unfocused_title alpha(@window_fg_color, 0.5);
+@define-color wm_bg_a @window_bg_color;
+@define-color wm_bg_b @window_bg_color;
+@define-color wm_shadow rgba(0, 0, 0, 0.5);
+@define-color content_view_bg @view_bg_color;
+@define-color text_view_bg @view_bg_color;
+@define-color drop_target_color @accent_color;
+@define-color panel_bg_color #202c2e;
+@define-color panel_fg_color #d7e5e8;
+
+/* Solid accent buttons need the paired foreground; flat/disabled buttons
+ * retain the base theme's separate state colors. */
+button.suggested-action:not(.flat):not(:disabled),
+button.suggested-action:not(.flat):not(:disabled) label,
+button.suggested-action:not(.flat):not(:disabled) image {
+  color: @accent_fg_color;
+}
+
+/* Thunar paints solid named selection colors itself. adw-gtk3's normal view
+ * foreground is intended for translucent selections, so pair these explicitly. */
+.thunar .standard-view .view:selected {
+  color: @theme_selected_fg_color;
+}
+.thunar .standard-view .view:selected:backdrop {
+  color: @theme_unfocused_selected_fg_color;
+}
+
+/* Legacy custom-drawn widgets (including Disks' volume grid) use the generic
+ * widget node and draw a solid selection separately from their text/icons. */
+widget:selected:not(.view) {
+  color: @theme_selected_fg_color;
+}
+widget:selected:not(.view):backdrop {
+  color: @theme_unfocused_selected_fg_color;
+}
+
+/* These base-theme selections also use an opaque accent background. */
+.content-view .tile:selected,
+.content-view .tile:active,
+.content-view .tile:selected label,
+.content-view .tile:active label,
+.content-view .tile:selected image,
+.content-view .tile:active image,
+.terminal selection,
+.terminal text selection {
+  color: @accent_fg_color;
+}
+
+textview border,
+sourceview gutter {
+  background-color: @view_bg_color;
+  color: #7c959a;
+}
+
+/* dusky-palette-complete */
