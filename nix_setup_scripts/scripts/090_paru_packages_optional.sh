@@ -38,8 +38,8 @@ Media       | audacity              | Audio recording and editing software
 Media       | handbrake             | Video transcoder and converter
 Development | patchelf              | Modify dynamic linker and RPATH of ELF executables
 Development | nix-index             | Files-in-packages indexing tool for Nix
-Development | nixfmt-classic        | Official Nix code formatter
-Games       | 2048.c                | The 2048 sliding tile game in C
+Development | nixfmt-rfc-style      | Official Nix code formatter
+Games       | n2048                 | The 2048 sliding tile game in C
 Games       | vitetris              | Classic Tetris clone for the terminal
 Games       | ttyper                | Terminal-based typing test and practice
 "
@@ -147,9 +147,18 @@ trim() {
 
 parse_data() {
     # Pre-cache installed packages for O(1) rendering checks
-    while read -r _inst_pkg; do
-        INSTALLED_PKGS["$_inst_pkg"]=1
-    done < <(pacman -Qq 2>/dev/null || true)
+    if command -v pacman >/dev/null 2>&1; then
+        while read -r _inst_pkg; do
+            [[ -n "$_inst_pkg" ]] && INSTALLED_PKGS["$_inst_pkg"]=1
+        done < <(pacman -Qq 2>/dev/null || true)
+    elif command -v nix >/dev/null 2>&1; then
+        while read -r _inst_pkg; do
+            [[ -n "$_inst_pkg" ]] && INSTALLED_PKGS["$_inst_pkg"]=1
+        done < <(nix-store -q --references /run/current-system/sw 2>/dev/null | sed -E 's|/nix/store/[a-z0-9]+-||; s|-[0-9].*||' || true)
+        while read -r _inst_pkg; do
+            [[ -n "$_inst_pkg" ]] && INSTALLED_PKGS["$_inst_pkg"]=1
+        done < <(nix profile list 2>/dev/null | awk '/^Name:[[:space:]]*/ {print $2}' || true)
+    fi
 
     local line category pkg desc
     local -A category_map
@@ -269,7 +278,7 @@ render_item_list() {
 
         if [[ "$selected" == "true" ]]; then
             check_mark="${C_GREEN}[]${C_RESET}"
-        elif [[ -n "${INSTALLED_PKGS[$item]:-}" ]]; then
+        elif [[ -n "${INSTALLED_PKGS[$item]:-}" ]] || command -v "$item" >/dev/null 2>&1; then
             check_mark="${C_GREEN}[✓]${C_RESET}"
         else
             check_mark="${C_GREY}[ ]${C_RESET}"
