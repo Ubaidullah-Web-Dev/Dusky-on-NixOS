@@ -5652,6 +5652,9 @@ def install_aur_package(pkg: str) -> bool:
 def initialize_toolchains() -> None:
     rule("Toolchains & hardware profiler")
     official_pkgs = ["base-devel", "clang", "lld", "llvm", "rust", "rust-bindgen", "bc", "cpio", "kmod", "pahole", "perf", "curl", "gnupg", "terminus-font"]
+    if not have("pacman"):
+        ok("NixOS detected: Kernel development toolchains are managed declaratively.")
+        return
     if ask_yes(f"Install official packages (pacman -S --needed {' '.join(official_pkgs)}) ?", True):
         PRIV.run(["pacman", "-S", "--needed", *official_pkgs], capture=False)
 

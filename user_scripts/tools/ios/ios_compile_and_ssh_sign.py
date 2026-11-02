@@ -181,6 +181,10 @@ class ArchDependencyManager:
         if not pkgs:
             return
 
+        if not self.is_installed("pacman"):
+            log_warn(f"NixOS detected: missing tools ({', '.join(pkgs)}) should be provided via configuration.nix.")
+            return
+
         pkgs_list = list(pkgs)
         log_info(f"Auto-installing missing Arch packages via pacman: {', '.join(pkgs_list)}...")
 

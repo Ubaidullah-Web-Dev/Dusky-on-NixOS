@@ -498,7 +498,7 @@ def enable_multilib_and_optimizations(
 
 def filter_missing_packages(pkgs: Sequence[str]) -> List[str]:
     """Filters package list using pacman -Q to only return packages not installed."""
-    if not pkgs:
+    if not pkgs or shutil.which("pacman") is None:
         return []
     try:
         res = subprocess.run(["pacman", "-Q", *pkgs], capture_output=True, text=True)
