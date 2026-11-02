@@ -4563,7 +4563,7 @@ type = "button"
 [pages.layout.items.properties]
 title = "Optional Dusky Packages"
 button_text = "Install"
-description = "Install extra utilities"
+description = "Install extra utilities (Nix packages)"
 icon = "package-x-generic-symbolic"
 
 style = "suggested"

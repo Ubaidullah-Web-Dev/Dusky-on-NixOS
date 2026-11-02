@@ -13,107 +13,35 @@ declare -r APP_VERSION="v3.0 (Template Engine)"
 
 # Format: Category | Package Name | Description
 readonly RAW_PKG_DATA="
-Tools       | pacseek-bin           | TUI for browsing Pacman/AUR databases
-# Tools       | yayfzf                | TUI for browsing AUR databases
-# Tools       | gnome-software        | Gnome Package installer and manager
-Tools       | pamac-aur             | GUI Package installer and manager
-Tools       | keypunch-git          | Gamified typing proficiency trainer
-Tools       | kew-git               | Minimalist, efficient CLI music player
-Tools       | youtube-dl-gui-bin    | GUI wrapper for yt-dlp
-Tools       | sysmontask            | Windows-style Task Manager for Linux
-Tools       | glances               | CLI curses-based monitoring tool
-Tools       | lazydocker            | TUI for managing Docker containers
-Tools       | kvantum               | SVG-based theme engine for Qt applications
 Tools       | gparted               | GUI partition editor for disk management
-Tools       | xorg-xhost            | to allow unfettered access to xorg root apps, like timeshfit, gparted etc
 Tools       | baobab                | Disk usage analyzer to visualize storage
-Tools       | grsync                | GUI rsync frontend for backups
-Tools       | caligula              | User-friendly, lightweight disk imager
+Tools       | lazydocker            | TUI for managing Docker containers
+Tools       | glances               | CLI curses-based monitoring tool
 Tools       | collision             | Verifies file hashes (MD5, SHA, etc.)
 Tools       | impression            | Tool to create bootable drives from ISOs
-Tools       | xembed-sni-proxy-standalone-git | Fix proton/wine apps tray icons
-Tools       | showmethekey          | Screen keystroke visualizer for screencasts
-Tools       | identity              | Compare images and videos side-by-side
+Tools       | evince                | Document viewer (PDF, PostScript, XPS)
+Tools       | aria2                 | High-speed download utility
 Tools       | zellij                | Modern terminal workspace/multiplexer (Rust)
 Tools       | tealdeer              | Fast tldr client (simplified man pages)
-Tools       | man-db                | The standard manual pager suite
-Tools       | avahi                 | Service Discovery using mDNS/DNS-SD (compatible with Bonjour)
-Tools       | xdg-desktop-portal-kde | KDE backend for xdg-desktop-portal (file chooser, etc.)
-Tools       | evince                | Document viewer (PDF, PostScript, XPS, djvu, dvi, tiff, cbr, cbz, cb7, cbt)
-Tools       | aria2                 | High-speed download utility (Pair with uget)
-Tools       | uget                  | Download Manager GUI (Pair with aria2)
-Tools       | libdvdcss             | Portable abstraction library for DVD decryption
-Internet    | filezilla             | Fast and reliable FTP/SFTP client
-Internet    | zapret2               | Deep Packet Inspection circumvetntion for blocked sites
 Internet    | qbittorrent           | Feature-rich BitTorrent client (Qt-based)
-Internet    | networkmanager-openvpn| NetworkManager VPN plugin for OpenVPN (with GUI)
-Internet    | network-manager-applet| NetworkManager applet, GUI, System Tray
-Internet    | vesktop               | Custom Discord client (Vencord + Electron)
-Internet    | beeper-v4-bin         | Universal chat app (Matrix bridge)
-Internet    | webapp-manager        | Run websites as if they were apps
+Internet    | filezilla             | Fast and reliable FTP/SFTP client
+Internet    | localsend             | Cross-platform local network file transfer
+Productivity| gimp                  | Image manipulation and painting
 Productivity| pinta                 | Simple drawing/editing tool (Paint.NET clone)
-Productivity| gimp                  | Photoshop alternative for Linux
-Productivity| libreoffice-still     | Microsoft Office alternative (Stable)
-# Productivity| libreoffice-fresh     | Microsoft Office alternative (latest)
-Productivity| calcurse              | Text-based calendar and scheduling application
-Productivity| gnome-calendar        | Simple and beautiful calendar (GNOME)
+Productivity| libreoffice-fresh     | Microsoft Office alternative (latest)
+Productivity| obsidian              | Markdown-based knowledge base and note taking
+Productivity| xournalpp             | Handwriting notetaking software with PDF annotation
 Productivity| blanket               | Ambient noise player for focus and productivity
 Productivity| errands               | Simple to-do list application
-Productivity| obsidian              | Markdown-based knowledge base and note taking
-Productivity| xournalpp             | Handwriting notetaking software with PDF annotation support
-Productivity| opencode              | CLI harness for coding
-Productivity| antigravity           | Google's IDE for coding
-Productivity| speech-dispatcher     | For getting speech to text for firefox to work 1 of 2
-Productivity| espeakup              | For getting speech to text for firefox to work 2 of 2
-Docs        | arch-wiki-lite        | Compressed Wiki reader (Pair with arch-wiki-docs)
-Docs        | arch-wiki-docs        | Arch Wiki data pages (Pair with arch-wiki-lite)
-Media       | pear-desktop-bin      | Youtube Music GUI
-Media       | sonora-bin            | Native music client (Spotify + YouTube Music + local)
-Media       | noto-fonts-cjk        | Asian fonts
-Media       | noto-fonts            | Asian fonts
-Media       | noto-fonts-emoji      | Google Noto Color Emoji font
-Media       | cantarell-fonts       | Humanist sans serif font
-Media       | ttf-bitstream-vera    | Bitstream Vera fonts
-Media       | ttf-dejavu            | Font based on Bitstream Vera (wider range of characters)
-Media       | ttf-liberation        | Font family metric compatibility with Arial, Times New Roman, and Courier New
-Media       | otf-font-awesome      | Iconic font designed for Bootstrap - otf format
-Media       | woff2-font-awesome    | Iconic font designed for Bootstrap - woff2 format
-Media       | ttf-jetbrains-mono-nerd | Patched font JetBrains Mono from nerd fonts library
-Media       | otf-atkinsonhyperlegiblemono-nerd | Atkinson Hyperlegible Mono Nerd Font
-Media       | ttf-atkinson-hyperlegible | Atkinson Hyperlegible TTF Font
-Media       | otf-atkinson-hyperlegible | Atkinson Hyperlegible OTF Font
-Media       | awesome-terminal-fonts| fonts/icons for powerlines
-Media       | papirus-folders       | folder color theming for Papirus (matugen Lab, stable)
-Media       | ttf-opensans          | Sans-serif typeface commissioned by Google
-Media       | ttf-meslo-nerd        | Patched font Meslo LG from nerd fonts library
-Media       | obs-studio            | Software for video recording and live streaming
-Media       | gpu-screen-recorder   | Low-load screen recorder (ShadowPlay alternative)
-Media       | audacity              | Multi-track audio editor and recorder
-Media       | handbrake             | Open source video transcoder
-Media       | guvcview              | Simple GTK interface for capturing video from webcams
-Media       | krita                 | Digital painting and sketching application
-Media       | termusic              | Terminal-based music player (TUI)
-Media       | vlc                   | The ultimate media player for all formats
-Media       | vlc-plugins-all       | Plugins for VLC
-Games       | pipes-rs-bin          | Rust port of the classic pipes screensaver
+Media       | vlc                   | Universal media player
+Media       | audacity              | Audio recording and editing software
+Media       | handbrake             | Video transcoder and converter
+Development | patchelf              | Modify dynamic linker and RPATH of ELF executables
+Development | nix-index             | Files-in-packages indexing tool for Nix
+Development | nixfmt-classic        | Official Nix code formatter
 Games       | 2048.c                | The 2048 sliding tile game in C
-Games       | clidle-bin            | Wordle clone for the command line
-Games       | maze-tui              | Visual maze generator and solver
 Games       | vitetris              | Classic Tetris clone for the terminal
 Games       | ttyper                | Terminal-based typing test and practice
-Security    | wdpass                | Unlock Western Digital MyPassport drives
-Security    | dislocker             | FUSE driver to read BitLocker partitions
-Security    | clamav                | Open source antivirus engine for detecting malware
-Drivers     | b43-firmware          | Legacy Broadcom B43 wireless firmware
-Drivers     | usbmuxd               | Socket daemon to multiplex connections to iOS devices
-Drivers     | cuda                  | NVIDIA's parallel computing architecture toolkit
-Drivers     | cudnn                 | NVIDIA CUDA Deep Neural Network library
-Hardware    | asusctl               | ASUS ROG/TUF control
-Hardware    | fcitx5                | For Non-English Keyboard charactors
-Hardware    | fcitx5-gtk            | GTK-front end For Non-English Keyboard charactors
-Hardware    | fcitx5-qt             | QT-front end For Non-English Keyboard charactors
-Hardware    | broadcom-wl-dkms      | Broadcom 802.11 Linux STA wireless driver
-Hardware    | macbook12-spi-driver-dkms | Driver for the keyboard, touchpad and touchbar found in newer MacBook (Pro) models
 "
 
 # Dimensions & Layout
@@ -678,15 +606,12 @@ main_loop() {
 
 # --- Installation Logic ---
 
-detect_aur_helper() {
+detect_package_manager() {
+    if command -v nix-env &>/dev/null; then printf 'nix-env'; return 0; fi
+    if command -v nix &>/dev/null; then printf 'nix'; return 0; fi
     if command -v paru &>/dev/null; then printf 'paru'; return 0; fi
     if command -v yay &>/dev/null; then printf 'yay'; return 0; fi
     return 1
-}
-
-run_pkg_cmd() {
-    # Run helper command directly without 'script' to avoid block-buffering in pipes
-    "$@"
 }
 
 run_installer() {
@@ -707,62 +632,52 @@ run_installer() {
 
     printf '%s' "$CURSOR_SHOW"
 
-    log_info "Checking installation status for ${#targets[@]} packages..."
+    log_info "Processing installation for ${#targets[@]} packages..."
 
-    local -a to_install
-    if ! mapfile -t to_install < <(pacman -T "${targets[@]}" 2>/dev/null || true); then
-        log_err "Failed to check package status."
-        return 1
+    if [[ "$helper" == "nix-env" ]]; then
+        log_info "Installing selected packages via nix-env..."
+        local -a nix_targets=()
+        for t in "${targets[@]}"; do
+            nix_targets+=("nixpkgs.$t")
+        done
+        nix-env -iA "${nix_targets[@]}" || {
+            log_err "nix-env installation encountered errors."
+            return 1
+        }
+        log_info "Installation complete!"
+        return 0
+    elif [[ "$helper" == "nix" ]]; then
+        log_info "Installing selected packages via nix profile..."
+        local -a nix_targets=()
+        for t in "${targets[@]}"; do
+            nix_targets+=("nixpkgs#$t")
+        done
+        nix profile install "${nix_targets[@]}" || {
+            log_err "nix profile install encountered errors."
+            return 1
+        }
+        log_info "Installation complete!"
+        return 0
     fi
+
+    # Fallback to pacman/aur if running on Arch
+    local -a to_install=()
+    for pkg in "${targets[@]}"; do
+        if command -v pacman >/dev/null 2>&1; then
+            pacman -Qq "$pkg" >/dev/null 2>&1 || to_install+=("$pkg")
+        else
+            to_install+=("$pkg")
+        fi
+    done
 
     if (( ${#to_install[@]} == 0 )); then
         log_info "All selected packages are already installed."
         return 0
     fi
 
-    # Keep sudo credentials alive in the background
-    log_info "Sudo privileges may be required to install packages. Authenticating..."
-    if ! sudo -v; then
-        log_err "Sudo authentication failed."
-        return 1
+    if [[ "$helper" == "paru" || "$helper" == "yay" ]]; then
+        "$helper" -S --needed --noconfirm "${to_install[@]}"
     fi
-
-    (
-        exec 9>&-
-        set +e
-        trap 'exit 0' TERM
-        while kill -0 "$$" 2>/dev/null; do
-            sleep 40 &
-            wait $! 2>/dev/null || true
-            sudo -n -v 2>/dev/null || exit 0
-        done
-    ) &
-    SUDO_KEEP_ALIVE_PID=$!
-
-    log_info "Attempting Batch Installation..."
-    if run_pkg_cmd "$helper" -S --needed --noconfirm "${to_install[@]}"; then
-        log_info "Batch installation successful."
-        return 0
-    fi
-
-    log_err "Batch install failed. Switching to Interactive Granular Mode."
-
-    local -a remaining
-    mapfile -t remaining < <(pacman -T "${to_install[@]}" 2>/dev/null || true)
-    
-    local pkg
-    for pkg in "${remaining[@]}"; do
-        log_info "Processing: $pkg"
-        if run_pkg_cmd "$helper" -S --needed --noconfirm "$pkg"; then
-            log_info "$pkg installed."
-        else
-            log_err "Failed to install $pkg automatically."
-            read -rp "Retry manually? [y/N]: " choice
-            if [[ "${choice,,}" == "y" ]]; then
-                run_pkg_cmd "$helper" -S "$pkg" || log_err "$pkg failed manual install."
-            fi
-        fi
-    done
 }
 
 main() {
@@ -770,8 +685,8 @@ main() {
     if [[ ! -t 0 ]]; then log_err "TTY required"; exit 1; fi
     
     local helper
-    if ! helper=$(detect_aur_helper); then
-        log_err "No AUR helper (paru/yay) found."
+    if ! helper=$(detect_package_manager); then
+        log_err "No supported package manager found."
         exit 1
     fi
 
