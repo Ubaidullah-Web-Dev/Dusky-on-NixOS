@@ -227,10 +227,6 @@ CORE_SYSTEM_DEFS = {
         "Dynamic firewall manager. Provides a D-Bus interface to manage network zones and packet filtering rules.",
     ),
     "tailscaled.service": ("Tailscaled", "Allows remote access"),
-    "dusky_snapshot.timer": (
-        "Root + Home Snapshots",
-        "Creates paired root and home snapshots daily at 8 PM and keeps up to six scheduled pairs.",
-    ),
     "dusky_zram_recompress.timer": (
         "ZRAM Recompression",
         "Recompresses idle ZRAM pages every hour while the timer is enabled.",
@@ -246,14 +242,6 @@ CORE_SYSTEM_DEFS = {
     "ufw.service": (
         "Firewall (UFW)",
         "Uncomplicated Firewall. A user-friendly front-end for iptables to manage network access rules.",
-    ),
-    "linux-modules-cleanup.service": (
-        "Old Kernel Cleanup",
-        "Oneshot boot service provided by kernel-modules-hook. Automatically cleans up orphaned kernel module directories in /usr/lib/modules after a kernel update.",
-    ),
-    "snapper-cleanup.timer": (
-        "Snapper Cleanup Timer",
-        "Runs Snapper's snapshot cleanup service every hour.",
     ),
     "fstrim.timer": (
         "Weekly SSD Trim",
@@ -298,14 +286,6 @@ CORE_SYSTEM_DEFS = {
     "acpid.service": (
         "ACPI Event Daemon",
         "Dispatches Advanced Configuration and Power Interface hardware events, such as laptop lid close/open, power button presses, and AC adapter plug/unplug.",
-    ),
-    "snapper-timeline.timer": (
-        "Snapper Hourly Timeline",
-        "Creates automated hourly Btrfs snapshots of the root and home subvolumes for granular point-in-time rollbacks.",
-    ),
-    "reflector.timer": (
-        "Pacman Mirrorlist Reflector",
-        "Weekly system timer that benchmarks available Arch Linux mirrors by download speed and updates /etc/pacman.d/mirrorlist.",
     ),
     "asusd.service": (
         "ASUS ROG/TUF Daemon (asusd)",
@@ -391,9 +371,7 @@ CORE_SYSTEM_SECTIONS = (
         "tailscaled.service", "sshd.service", "warp-svc.service", "vsftpd.service",
     )),
     ("Storage & Maintenance", (
-        "udisks2.service", "dusky_snapshot.timer", "snapper-timeline.timer",
-        "snapper-cleanup.timer", "fstrim.timer", "systemd-tmpfiles-clean.timer",
-        "reflector.timer", "linux-modules-cleanup.service",
+        "udisks2.service", "fstrim.timer", "systemd-tmpfiles-clean.timer",
     )),
 )
 
