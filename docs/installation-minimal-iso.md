@@ -261,9 +261,10 @@ nixos-enter --root /mnt -c 'chown -R ubaid:users /home/ubaid'
 
 ## 🎉 Step 7: Reboot into Dusky!
 
-Unmount and reboot:
+Turn off swap (if created earlier) and unmount cleanly:
 ```bash
-umount -R /mnt
+swapoff -a
+umount -l -R /mnt
 reboot
 ```
 
