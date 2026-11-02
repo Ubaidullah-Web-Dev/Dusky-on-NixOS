@@ -9,257 +9,126 @@
   ╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝        ╚═╝  ╚═══╝╚═╝╚═╝  ╚═╝
 ```
 
-### The Pure, Declarative & Reproducible Hyprland Desktop for NixOS
+### The clean, snappy Hyprland experience from Dusky — now natively built for NixOS.
 
-[![NixOS](https://img.shields.io/badge/NixOS-26.11%20unstable-blue?logo=nixos&logoColor=white)](https://nixos.org)
+[![NixOS](https://img.shields.io/badge/NixOS-unstable-blue?logo=nixos&logoColor=white)](https://nixos.org)
 [![Hyprland](https://img.shields.io/badge/Hyprland-0.57-teal?logo=hyprland&logoColor=white)](https://hyprland.org)
-[![ORCHESTRA](https://img.shields.io/badge/ORCHESTRA-78%2F78%20Passed-brightgreen)](nix_setup_scripts/ORCHESTRA.sh)
 [![License](https://img.shields.io/badge/License-GPLv3-orange.svg)](LICENSE)
-[![Zero Bloat](https://img.shields.io/badge/Debloated-Zero%20QS%20%2F%20Pure%20Dusky-purple)]()
+[![Zero Compilation](https://img.shields.io/badge/Compiling-None%20%28Prebuilt%20Caches%29-brightgreen)]()
 
-[**Quick Install**](#quick-installation) · [**Features**](#features) · [**Arch vs NixOS**](#dusky-on-arch-vs-dusky-on-nixos) · [**ORCHESTRA**](#master-orchestrator) · [**Directory Structure**](#repository-structure)
+[**Quick Install**](#getting-started) · [**What's Inside**](#what-makes-this-special) · [**Keybinds**](#everyday-shortcuts) · [**Rollbacks & Updates**](#staying-updated--safe)
 
 </div>
 
 ---
 
-## Overview
+## Welcome to Dusky on NixOS
 
-**Dusky on NixOS** is the standalone, reproducible NixOS port of [**Dusky**](https://github.com/dusklinux/dusky). 
+If you like how Dusky looks and feels on Arch — the slick Waybar layouts, instant Material You colors extracted from your wallpapers, smooth Hyprland animations, and the massive collection of terminal tools — but you want it running reliably on NixOS with reproducible configs, atomic updates, and zero compiling from scratch, this setup is for you.
 
-Built from the ground up for purity and performance, this repository combines:
-1. **A Complete NixOS Flake & System Architecture** — Declarative system packages, Gtk4/Libadwaita desktop integration, Greetd display manager, ZRAM memory compression, and automated update/rollback utilities.
-2. **The Dusky Master Orchestrator (`ORCHESTRA.sh`)** — A battle-tested suite of **78 automated setup scripts** completely ported and validated for NixOS.
-3. **Pure Dusky Rice** — Hyprland 0.57, Waybar (20 modular switcher styles), Rofi launcher with 43 Dusky Terminal User Interfaces (TUIs), Hyprlock security, and Matugen wallpaper-adaptive dynamic colors.
-4. **Zero Bloat & Zero Compilation** — 100% pre-compiled packages directly from official binary caches (`cache.nixos.org` and `hyprland.cachix.org`). No Quickshell overhead, no heavy webview layers.
+Everything here is configured declaratively with Nix flakes, uses pre-built binaries directly from official NixOS caches, and replaces traditional Arch tools (like pacman and snapper) with native Nix packages and system generations.
 
 ---
 
-## Features
+## What Makes This Special
 
-- **Hyprland 0.57 Wayland Compositor**: Hardware accelerated, smooth animations, dynamic window rules, and keybinding cheatsheets.
-- **20 Modular Waybar Styles**: Switch dynamically between horizontal, vertical, circular, compact, notch, and minimal themes.
-- **43 Native Dusky TUIs**: System monitor, disk I/O, audio visualizer, wallpaper selector, DNS switcher, clipboard persistence manager, and firewall control integrated right into Rofi.
-- **Hyprlock Lockscreen**: Modern, sleek screen locker integrated with PAM authentication.
-- **Matugen Dynamic Theming**: Real-time extraction of 16-color Material 3 palettes from active wallpapers for Waybar, Rofi, Kitty, Foot, Alacritty, and GTK.
-- **Managed Background Daemons**:
-  - `dusky_clipboard.service`: Seamless persistent clipboard backend with RAM and disk storage modes (`wl-clip-persist`).
-  - `dusky.service`: Fast GTK4 / Libadwaita Dusky Control Center daemon.
-  - `network_meter.service`: Real-time Waybar bandwidth and packet monitoring.
-- **Declarative System Management**:
-  - `dusky-update`: One-command flake update, git sync, and system generation rebuild.
-  - `dusky-rollback`: Instant one-command generation rollback.
-  - `dusky-run`: Cgroup-scoped app launcher with OOM-score protection.
+- **Native Hyprland 0.57**: Ready out of the box with modern syntax, buttery window rules, and custom animations.
+- **Dusky Papers (Wallpaper Picker)**: Hit `Super + W` to browse wallpapers. Selecting one instantly re-themes your desktop (Waybar, Rofi, terminal, borders) using Matugen color extraction.
+- **20 Waybar Styles on Demand**: Don't like the current bar layout? Open the Waybar switcher from Rofi or Control Center and pick between top notch, circular, vertical, minimal, or full status designs in a single click.
+- **Real NixOS Generations & Rollback**: No more dealing with brittle BTRFS snapshot managers or manual GRUB entries. Control Center includes a native generation manager to view, boot into, or delete old system states safely.
+- **Fast & Lightweight**: Zero Quickshell or heavy web layers. It uses lightweight, responsive native utilities (`foot`, `kitty`, `rofi-wayland`, `libadwaita`, `mako`).
+- **Zero Compilation Overhead**: Everything installs from binary caches (`cache.nixos.org`), so setting up takes minutes rather than hours of CPU burning.
 
 ---
 
-## Dusky on Arch vs Dusky on NixOS
+## Getting Started
 
-<table>
-  <thead>
-    <tr>
-      <th width="50%">Dusky on Arch Linux</th>
-      <th width="50%">Dusky on NixOS</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><b>Package Management:</b> Pacman + Paru / Yay AUR helper</td>
-      <td><b>Package Management:</b> Declarative Nix Flakes & Nixpkgs</td>
-    </tr>
-    <tr>
-      <td><b>Stability:</b> Rolling release; susceptible to package drift</td>
-      <td><b>Stability:</b> Atomic generations with instantaneous rollback</td>
-    </tr>
-    <tr>
-      <td><b>Setup Engine:</b> Arch setup scripts targeting root directories</td>
-      <td><b>Setup Engine:</b> NixOS modules + 78/78 passing Nix-adapted scripts</td>
-    </tr>
-    <tr>
-      <td><b>System Services:</b> Imperative systemd unit enabling</td>
-      <td><b>System Services:</b> Declarative systemd & user unit definitions</td>
-    </tr>
-    <tr>
-      <td><b>Desktop Parity:</b> 100% pure Dusky rice</td>
-      <td><b>Desktop Parity:</b> 100% pure Dusky rice, identical visuals & TUIs</td>
-    </tr>
-  </tbody>
-</table>
+### 1. Requirements
+- A fresh or existing installation of **NixOS** (unstable channel recommended).
+- Git installed (`nix-shell -p git`).
 
----
-
-## Quick Installation
-
-### Option 1: Automated Standalone Installer (Recommended)
-
-Run the automated installer on any existing NixOS system:
+### 2. Clone and Run Installer
+Grab the repository and launch the interactive setup script:
 
 ```bash
 git clone https://github.com/Ubaidullah-Web-Dev/Dusky-on-NixOS.git ~/Dusky-on-NixOS
 cd ~/Dusky-on-NixOS
-bash install.sh
+chmod +x install.sh
+./install.sh
 ```
 
-To run non-interactively in Autonomous Mode:
+The installer gives you three options:
+1. **Full Installation (Recommended)**: Deploys the system flake to `/etc/nixos`, builds the environment, copies dotfiles into your home directory, and runs the Dusky setup steps.
+2. **Deploy Dotfiles & Scripts Only**: Best if you already have the flake installed and just want the updated configs.
+3. **Deploy System Flake Only**: Deploys system packages and services to `/etc/nixos` without touching your user dotfiles.
+
+Once the installer finishes, restart your machine to boot right into the new environment:
 ```bash
-bash install.sh --yes
+sudo reboot
 ```
 
 ---
 
-### Option 2: Nix Flake Deployment
+## Everyday Shortcuts
 
-Switch your NixOS system directly to Dusky using flakes:
-
-```bash
-sudo nixos-rebuild switch --flake github:Ubaidullah-Web-Dev/Dusky-on-NixOS#dusky-nix
-```
-
----
-
-### Option 3: Consuming as a Flake Module
-
-If you already manage your system with your own NixOS flake, you can add Dusky as an input:
-
-```nix
-# flake.nix
-{
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    dusky.url = "github:Ubaidullah-Web-Dev/Dusky-on-NixOS";
-  };
-
-  outputs = { self, nixpkgs, dusky, ... }: {
-    nixosConfigurations.myhostname = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        ./hardware-configuration.nix
-        dusky.nixosModules.default
-      ];
-    };
-  };
-}
-```
+| Key Combination | Action |
+| :--- | :--- |
+| <kbd>Super</kbd> + <kbd>Space</kbd> / <kbd>Alt</kbd> + <kbd>Space</kbd> | Open Application Launcher (Rofi) |
+| <kbd>Super</kbd> + <kbd>Return</kbd> | Open Foot Terminal |
+| <kbd>Super</kbd> + <kbd>W</kbd> / <kbd>Alt</kbd> + <kbd>4</kbd> | Open Dusky Papers (Wallpaper & Theme Selector) |
+| <kbd>Super</kbd> + <kbd>E</kbd> | Open Thunar File Manager |
+| <kbd>Super</kbd> + <kbd>Q</kbd> | Close Active Window |
+| <kbd>Super</kbd> + <kbd>F</kbd> | Toggle Fullscreen |
+| <kbd>Super</kbd> + <kbd>V</kbd> | Open Persistent Clipboard History |
+| <kbd>Super</kbd> + <kbd>X</kbd> | Power & Session Menu |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Space</kbd> | Interactive Keybinding Search |
+| <kbd>Super</kbd> + <kbd>1</kbd> - <kbd>9</kbd> | Switch Workspaces |
 
 ---
 
-## Master Orchestrator
+## Staying Updated & Safe
 
-The heart of Dusky's configuration is `nix_setup_scripts/ORCHESTRA.sh`. It sequences 78 setup phases covering everything from font configuration to dynamic theme placement and audio sinks:
+Because this setup runs on NixOS, updating your system or recovering from an issue is painless:
 
-```bash
-cd ~/user_scripts/nix_setup_scripts
-./ORCHESTRA.sh
-```
-
-### Verified Steps Sequence (78 / 78 Passing)
-1. Pre-generated color verification
-2. Network connectivity validation
-3. Dotfiles bootstrap deployment
-4. Hyprland custom configuration setup
-5. Hyprland core Lua generation
-6. Default window animations
-7. Declarative package verification
-8. Matugen state placement
-9. Default Thunar terminal binding
-10. Dusky `.desktop` menu generation (43 TUIs)
-11. Keyboard layout configuration
-12. Sleep & hypridle timeout provisioning
-13–21. Declarative system service & shell verification
-22. PAM keyring greetd integration
-23. Systemd D-Bus service synchronization
-24. Battery notifier service configuration
-25. Btrfs & snapper subvolume isolation
-26. Dusky font configurator (`Atkinson Hyperlegible`, `Liberation Serif`, `JetBrains Mono`)
-27. Matugen smart theming activation
-28. Matugen directories creation
-29. Dusky papers thumbnail cache initialization
-30. Blur, shadow, and opacity presets
-31. Theme control (`theme_ctl.py`)
-32. Qt5 / Qt6 platform theme integration
-33. Udev USB notification service
-34. Terminal defaults selector
-35–44. ZRAM swap configuration, THP optimizer, & systemd accounting
-45–48. Default applications selector (browser, editor, terminal, file manager)
-49–51. Thunar, Mousepad, and bookmarks sidepane configurations
-52. Dusky service toggler
-53. Git global defaults configuration
-54. GTK root symlinking
-55. Systemd resolved DNS configuration
-56. Obsidian / notes configuration
-57. Nix / system cache purge
-58. Installation cleanup
-59. Bibata modern cursor theme
-60. Color generation for current wallpaper
-61–63. GPU hardware acceleration detection & configuration
-64. Dusky Wayland clipboard persistence daemon setup
-65. Intel media SDK acceleration validation
-66. Firefox Dusky sites integration
-67. Waybar modular configuration switcher
-68. MPV hardware video player setup
-69–71. WayClick soundpack installer & key sound setup
-72. Battery notification thresholds
-73. Hyprland dynamic reload
-74. User groups provisioning
-75. Power management and idle recovery
-76. Dusky commands fleet orchestrator
-77. Sudoers passwordless configuration
-78. Wallpaper selector thumbnail cache generator
+- **Update Everything**:
+  Run `dusky-update` in your terminal. It pulls any changes from this repo, updates your flake inputs, and switches to the new generation cleanly.
+- **Rollback If Something Breaks**:
+  Run `dusky-rollback` to immediately switch back to the prior working generation, or select an earlier generation from the boot menu.
+- **Manage Generations**:
+  Open the Dusky Control Center, navigate to **System**, and open **NixOS Generations & Rollback** to prune old builds or optimize disk space.
 
 ---
 
-## Repository Structure
+## How It's Structured
 
 ```
 .
-├── flake.nix                       # Top-level flake exports (nixosConfigurations, nixosModules, apps)
-├── configuration.nix               # System-level configuration
-├── hardware-configuration.nix      # Hardware definitions
-├── install.sh                      # Universal interactive & autonomous installer
-├── modules/                        # Declarative NixOS modules
-│   ├── default.nix                 # Core module aggregating all subsystems
-│   ├── packages.nix                # Complete package manifest, TUIs, & Python environment
-│   ├── desktop.nix                 # Greetd, Hyprland, Polkit, & desktop settings
-│   ├── dusky-run.nix               # Systemd cgroup & slice runner
-│   └── updater.nix                 # Declarative updater and rollback scripts
-├── nix_setup_scripts/              # Ported Dusky Orchestration Suite
-│   ├── ORCHESTRA.sh                # Master orchestrator (78 steps)
-│   ├── deploy_dotfiles.sh          # Dotfiles deployment bootstrap
-│   └── scripts/                    # All 78 modular setup scripts
-├── .config/                        # Dusky user configurations
-│   ├── hypr/                       # Hyprland 0.57 configuration & Lua overlays
-│   ├── waybar/                     # 20 modular Waybar themes
-│   ├── rofi/                       # Rofi launcher, calculator, emoji, & themes
-│   ├── desktop_entries/            # 70 application entries & 43 Dusky TUIs
-│   ├── matugen/                    # Dynamic palette templates & color definitions
-│   └── ...                         # Foot, Kitty, Alacritty, Mako, Kvantum, etc.
-├── user_scripts/                   # Dusky system utilities & background daemons
-│   ├── clipboard/                  # Dusky clipboard persistence daemon
-│   ├── dusky_system/               # Dusky Control Center (GTK4/Libadwaita)
-│   ├── waybar/                     # Waybar swapper & monitoring daemons
-│   └── ...                         # TUIs, soundpacks, & system controls
-├── Pictures/                       # Wallpapers & theme assets
-│   ├── wallpapers/                 # Default wallpapers (dusk_default.jpg)
-│   └── readme_assets/              # Visual preview assets
-└── .zshrc                          # Dusky ZSH interactive prompt
+├── flake.nix                       # System flake entrypoint
+├── configuration.nix               # Base NixOS configuration
+├── install.sh                      # User-friendly installer script
+├── modules/                        # Modular Nix configs
+│   ├── desktop.nix                 # Hyprland, Greetd, session vars, nix-ld
+│   ├── packages.nix                # Desktop applications, TUIs & libraries
+│   ├── updater.nix                 # dusky-update & dusky-rollback commands
+│   └── dusky-run.nix               # Cgroup-isolated app runner
+├── nix_setup_scripts/              # 78 automated setup scripts
+│   └── ORCHESTRA.sh                # Main automated setup pipeline
+├── .config/                        # User configurations
+│   ├── hypr/                       # Hyprland 0.57 window rules & keybinds
+│   ├── waybar/                     # 20 modular Waybar styles
+│   ├── rofi/                       # App menus, emoji, and calculator
+│   ├── desktop_entries/            # Custom application & TUI entries
+│   └── matugen/                    # Material You dynamic palette engine
+├── user_scripts/                   # Background daemons & Dusky utilities
+│   ├── dusky_system/               # Control center & generation manager
+│   ├── clipboard/                  # Persistent clipboard daemon
+│   └── waybar/                     # Dynamic status bar swapper
+└── .zshrc                          # Modular Zsh prompt with Starship & FZF
 ```
-
----
-
-## Built-In Utilities
-
-| Utility | Command | Description |
-| :--- | :--- | :--- |
-| **System Updater** | `dusky-update` | Pulls latest changes, updates flake, and rebuilds the system. |
-| **Instant Rollback** | `dusky-rollback` | Instantly rolls back to the previous NixOS generation. |
-| **Scoped App Runner** | `dusky-run <command>` | Launches processes in dedicated systemd cgroups with OOM-kill protection. |
-| **Clipboard Persist** | `dusky_clipboard_daemon.sh` | Retains Wayland clipboard content across application closures and reboots. |
-| **Waybar Swapper** | `dusky_waybars.desktop` | Live GUI/TUI swapper between all 20 Waybar designs. |
 
 ---
 
 ## License
 
-This project is licensed under the **GNU General Public License v3.0 (GPLv3)**. See [LICENSE](LICENSE) for details.
-
-Developed with passion for the **Dusky Linux** and **NixOS** communities.
+Free and open-source under the [GNU General Public License v3.0](LICENSE).  
+Built with love for the Linux and NixOS communities.
