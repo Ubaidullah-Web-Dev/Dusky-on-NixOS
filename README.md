@@ -9,7 +9,7 @@
   ╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝   ╚═╝        ╚═╝  ╚═══╝╚═╝╚═╝  ╚═╝
 ```
 
-### The clean, snappy Hyprland experience from Dusky — now natively built for NixOS.
+### The clean, snappy Hyprland experience from Dusky now natively built for NixOS.
 
 [![NixOS](https://img.shields.io/badge/NixOS-unstable-blue?logo=nixos&logoColor=white)](https://nixos.org)
 [![Hyprland](https://img.shields.io/badge/Hyprland-0.57-teal?logo=hyprland&logoColor=white)](https://hyprland.org)
@@ -24,7 +24,7 @@
 
 ## Welcome to Dusky on NixOS
 
-If you like how Dusky looks and feels on Arch — the slick Waybar layouts, instant Material You colors extracted from your wallpapers, smooth Hyprland animations, and the massive collection of terminal tools — but you want it running reliably on NixOS with reproducible configs, atomic updates, and zero compiling from scratch, this setup is for you.
+If you like how Dusky looks and feels on Arch the slick Waybar layouts, instant Material You colors extracted from your wallpapers, smooth Hyprland animations, and the massive collection of terminal tools — but you want it running reliably on NixOS with reproducible configs, atomic updates, and zero compiling from scratch, this setup is for you.
 
 Everything here is configured declaratively with Nix flakes, uses pre-built binaries directly from official NixOS caches, and replaces traditional Arch tools (like pacman and snapper) with native Nix packages and system generations.
 
