@@ -16,7 +16,6 @@
     unzip
     zip
     _7zz
-    unrar
     file
     rsync
     bc
@@ -224,8 +223,8 @@
     peaclock
     thunar
     thunar-archive-plugin
-    xfce.thunar-volman
-    xfce.thunar-media-tags-plugin
+    thunar-volman
+    thunar-media-tags-plugin
     networkmanagerapplet
     brightnessctl
     starship
