@@ -48,7 +48,7 @@ fi
 check_deps() {
     local missing=()
     if ! command -v lspci &>/dev/null; then missing+=("pciutils"); fi
-    if ! command -v pacman &>/dev/null; then missing+=("pacman"); fi
+    if ! [ -f /etc/NIXOS ] && ! command -v pacman &>/dev/null; then missing+=("pacman"); fi
     if ! command -v grep &>/dev/null; then missing+=("grep"); fi
     if ! command -v sudo &>/dev/null; then missing+=("sudo"); fi
     
@@ -62,7 +62,7 @@ detect_topology() {
     log_info "Scanning GPU Topology..."
     
     # --- PHASE 1: Sysfs (Preferred - Active GPUs) ---
-    for card_path in /sys/class/drm/card+([0-9]); do
+    for card_path in /sys/class/drm/card[0-9]*; do
         local vendor_file="$card_path/device/vendor"
         [[ ! -r "$vendor_file" ]] && continue
         
@@ -237,6 +237,10 @@ classify_nvidia() {
 
 # --- 9. INSTALLATION ENGINE ---
 get_kernel_headers() {
+    if [ -f /etc/NIXOS ] || ! command -v pacman >/dev/null 2>&1; then
+        echo ""
+        return
+    fi
     local headers=()
     log_info "Scanning installed kernels..." >&2 
     
@@ -295,7 +299,7 @@ get_kernel_headers() {
 }
 
 get_multilib_state() {
-    if grep -qE '^\s*\[multilib\]' /etc/pacman.conf; then echo "1"; else echo "0"; fi
+    if [[ -f /etc/pacman.conf ]] && grep -qE '^\s*\[multilib\]' /etc/pacman.conf; then echo "1"; else echo "0"; fi
 }
 
 install_routine() {
@@ -304,6 +308,11 @@ install_routine() {
     local pkg_list=("$@")
     
     if [[ ${#pkg_list[@]} -eq 0 ]]; then return; fi
+
+    if [[ -f /etc/NIXOS ]]; then
+        log_ok "$vendor GPU detected. On NixOS, graphics drivers are managed declaratively in configuration.nix."
+        return
+    fi
 
     echo ""
     log_info "Preparing ${vendor} Drivers:"

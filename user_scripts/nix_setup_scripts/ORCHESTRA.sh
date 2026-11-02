@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-#  ARCH LINUX MASTER ORCHESTRATOR
+#  DUSKY MASTER ORCHESTRATOR (NixOS)
 # ==============================================================================
 #  INSTRUCTIONS:
 #  1. Configure SCRIPT_SEARCH_DIRS below with directories containing your scripts.
@@ -708,7 +708,7 @@ Options:
 
 Description:
     This script orchestrates the execution of multiple setup scripts
-    for Arch Linux with Hyprland. It tracks completed scripts and
+    for Dusky on NixOS with Hyprland. It tracks completed scripts and
     can resume from where it left off if interrupted.
 
     Scripts are searched in the directories listed in SCRIPT_SEARCH_DIRS
