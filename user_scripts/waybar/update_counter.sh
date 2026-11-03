@@ -78,7 +78,10 @@ if (( SHOW_NIX )); then
     # Declarative NixOS system updates
     printf '0\n' > "$TMP_DIR/nix"
 fi
+wait
 
+# Read the commit snapshot after package queries so resets/checks completed
+# during network I/O are reflected in the cache we are about to publish.
 if (( SHOW_DUSKY )); then
     val=''
     if [[ -f "$STATE_DIR/dusky_update_behind_commit" ]]; then
@@ -86,7 +89,6 @@ if (( SHOW_DUSKY )); then
     fi
     printf '%s\n' "$val" > "$TMP_DIR/dsk"
 fi
-wait
 
 # ---------------------------------------------------------
 # Data Sanitization
