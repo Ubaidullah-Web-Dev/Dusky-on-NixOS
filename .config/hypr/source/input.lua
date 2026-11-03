@@ -114,3 +114,19 @@ hl.config({
         warp_back_after_non_mouse_input = false, -- Warp cursor back after keyboard/tablet input.
     },
 })
+
+-- Additional TUI controls; existing configuration layers keep their load order.
+hl.config({
+    input = {
+        tablet = {
+            enabled = true,
+        },
+        tablettool = {
+            pressure_range_min = -1.0,
+            pressure_range_max = -1.0,
+        },
+    },
+    cursor = {
+        warp_on_monitor_change = -1,
+    },
+})
