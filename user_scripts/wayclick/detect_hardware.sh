@@ -19,7 +19,7 @@ elif command -v python3 &>/dev/null && python3 -c "import evdev" &>/dev/null; th
 else
     printf "\033[1;31m[ERROR]\033[0m evdev module not found.\n"
     printf "  Option 1: \033[1;36m./wayclick.sh --setup\033[0m  (builds native evdev)\n"
-    printf "  Option 2: \033[1;36msudo pacman -S python-evdev\033[0m\n"
+    printf "  Option 2: \033[1;36mnix-shell -p python3Packages.evdev\033[0m\n"
     exit 1
 fi
 

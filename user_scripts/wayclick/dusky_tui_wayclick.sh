@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # Dusky WayClick Configurator - TUI v1.0.0
 # -----------------------------------------------------------------------------
-# Target: Arch Linux / Hyprland / UWSM / Wayland
+# Target: NixOS / Hyprland / Wayland
 # Engine: Dusky TUI Engine v3.9.5 (Hardened)
 #
 # Edits the WayClick Elite launcher script's configuration variables in-place.
