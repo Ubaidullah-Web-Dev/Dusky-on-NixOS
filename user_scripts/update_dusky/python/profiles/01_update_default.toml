@@ -61,6 +61,7 @@ search_dirs = [
 [sequence]
 tasks = [
     # ================= CUSTOM =====================
+    "U | once | 001_ensure_python315.sh",
     "U | once | backup_hyprlang_files.sh",
     "U | once | 480_dusky_commands.py -b",
     # ================= Scripts =====================

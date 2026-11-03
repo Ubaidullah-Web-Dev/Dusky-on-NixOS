@@ -46,6 +46,7 @@ POST_SCRIPT_DELAY=0
 
 INSTALL_SEQUENCE=(
 
+    "U | 001_ensure_python315.sh"
     "U | 002_pre_generated_colors.sh"
     "U | 003_network_connect.sh"
 
