@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Cached NixOS and Dusky counts for Waybar and the quick panel.
+# Cached NixOS and Dusky counts for Waybar and the Dusky Tray.
 
 # FOR Horizontal WAYBARS
 # "custom/updates": {
