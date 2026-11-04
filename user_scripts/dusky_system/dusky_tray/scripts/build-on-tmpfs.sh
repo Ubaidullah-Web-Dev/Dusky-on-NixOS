@@ -2,6 +2,9 @@
 # Install a native binary outside the source tree, or run checks on RAM.
 set -euo pipefail
 readonly PROJECT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+if [[ -z "${PKG_CONFIG_PATH:-}" ]]; then
+    export PKG_CONFIG_PATH="/run/current-system/sw/lib/pkgconfig:$HOME/.nix-profile/lib/pkgconfig"
+fi
 mode="${1:---release}"
 case "$mode" in
     --check|--test|--clippy) ;;

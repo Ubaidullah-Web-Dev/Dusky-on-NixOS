@@ -2,6 +2,9 @@
 # Build and check dusky-center exclusively on tmpfs (RAM) to prevent disk write amplification.
 set -euo pipefail
 readonly PROJECT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+if [[ -z "${PKG_CONFIG_PATH:-}" ]]; then
+    export PKG_CONFIG_PATH="/run/current-system/sw/lib/pkgconfig:$HOME/.nix-profile/lib/pkgconfig"
+fi
 mode="${1:---check}"
 
 CARGO_TARGET_DIR="$(realpath -m -- "${CARGO_TARGET_DIR:-/tmp/dusky-center-target-$UID}")"

@@ -109,6 +109,7 @@
     luajit
     lua5_4
     libxkbcommon
+    libxkbcommon.dev
     wlr-randr
 
     # Compatibility wrappers
@@ -258,5 +259,6 @@
 
   environment.pathsToLink = [ "/share/tlp" "/share/gsettings-schemas" "/share/glib-2.0/schemas" "/lib/girepository-1.0" ];
   environment.sessionVariables.GI_TYPELIB_PATH = "/run/current-system/sw/lib/girepository-1.0";
+  environment.sessionVariables.PKG_CONFIG_PATH = "/run/current-system/sw/lib/pkgconfig";
   environment.etc."tlp.d/.keep".text = "";
 }

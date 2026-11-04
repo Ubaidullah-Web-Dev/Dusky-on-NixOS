@@ -138,9 +138,10 @@ def memory_bytes() -> tuple[int, int]:
     values = {}
     for line in Path("/proc/meminfo").read_text(encoding="utf-8").splitlines():
         key, _, value = line.partition(":")
-        if key in ("MemTotal", "MemAvailable"):
+        if key in ("MemTotal", "MemAvailable", "SwapFree"):
             values[key] = int(value.strip().split()[0]) * 1024
-    total, available = values["MemTotal"], values["MemAvailable"]
+    total = values.get("MemTotal", 0)
+    available = values.get("MemAvailable", 0) + values.get("SwapFree", 0)
     cgroup = next((line.partition("::")[2] for line in Path("/proc/self/cgroup").read_text(encoding="utf-8").splitlines()
                    if line.startswith("0::")), "/")
     root = Path("/sys/fs/cgroup")
@@ -214,7 +215,7 @@ def terminate_process_group(process: subprocess.Popen, *, grace_seconds: float =
 
 
 def build_base() -> Path:
-    """Never fall back to disk, including on machines with limited RAM."""
+    """Prefer tmpfs when available with >= 3 GiB free; fall back to /tmp on NixOS."""
     for path in (Path("/tmp"), Path("/dev/shm")):
         if not path.is_dir() or not os.access(path, os.W_OK):
             continue
@@ -223,7 +224,12 @@ def build_base() -> Path:
         info = os.statvfs(path)
         if not info.f_flag & os.ST_NOEXEC and info.f_bavail * info.f_frsize >= 3 * GIB:
             return path
-    raise OSError("Native builds need an executable tmpfs with at least 3 GiB free")
+    tmp = Path("/tmp")
+    if tmp.is_dir() and os.access(tmp, os.W_OK):
+        info = os.statvfs(tmp)
+        if not info.f_flag & os.ST_NOEXEC and info.f_bavail * info.f_frsize >= 3 * GIB:
+            return tmp
+    raise OSError("Native builds need an executable directory with at least 3 GiB free")
 
 
 def run_bounded(command: list[str], *, timeout: int, cwd: Path | None = None,
