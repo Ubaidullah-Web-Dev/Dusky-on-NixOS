@@ -261,7 +261,7 @@ mod tests {
     #[test]
     fn echo_returns_output() {
         let out = run_command(
-            &["/usr/bin/echo".to_string(), "hi".to_string()],
+            &["echo".to_string(), "hi".to_string()],
             Duration::from_secs(2),
             true,
         )
