@@ -317,6 +317,15 @@ def build_native(project: Path, binary: Path, manifest_path: Path, version: str)
         env["CFLAGS"] = "-march=native -mtune=native -O2"
         env["CXXFLAGS"] = env["CFLAGS"]
         env["CPPFLAGS"] = ""
+        existing_pkg_path = env.get("PKG_CONFIG_PATH", "")
+        nix_pkg_paths = [
+            str(Path.home() / ".nix-profile/lib/pkgconfig"),
+            "/run/current-system/sw/lib/pkgconfig",
+        ]
+        all_pkg_paths = [p for p in nix_pkg_paths if Path(p).is_dir()]
+        if existing_pkg_path:
+            all_pkg_paths.append(existing_pkg_path)
+        env["PKG_CONFIG_PATH"] = ":".join(all_pkg_paths)
         try:
             _, available = memory_bytes()
         except (OSError, KeyError, ValueError):
