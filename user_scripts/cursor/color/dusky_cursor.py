@@ -151,43 +151,26 @@ type RGB = tuple[int, int, int]
 log = logging.getLogger("dusky_cursor")
 
 # ---------------------------------------------------------------------------
-# Prerequisites - official Arch packages, auto-installed like 140_dusky_font_configurator.py
+# Prerequisites - verified at runtime for NixOS
 # ---------------------------------------------------------------------------
 
 
-# Official Arch packages required by the cursor build + apply layers. The
-# Bibata source theme is intentionally excluded: it ships via AUR / the
-# 375_cursor_theme_bibata_classic_modern.sh installer, not pacman.
-REQUIRED_PACKAGES = (
-    "python-pillow", "glib2", "gsettings-desktop-schemas", "dconf", "dbus",
-    "libnotify", "hyprland", "hicolor-icon-theme",
+REQUIRED_COMMANDS = (
+    "hyprctl", "gsettings", "dconf", "dbus-update-activation-environment"
 )
 
 
 def ensure_packages() -> None:
-    query = subprocess.run(
-        ["pacman", "--query", "--quiet", "--", *REQUIRED_PACKAGES],
-        capture_output=True, text=True,
-    )
-    if query.returncode not in (0, 1):
-        raise RuntimeError(f"Cannot query installed packages: {query.stderr.strip()}")
-    installed = set(query.stdout.splitlines())
-    missing = [package for package in REQUIRED_PACKAGES if package not in installed]
-    if not missing:
-        if query.returncode:
-            raise RuntimeError(f"Cannot query installed packages: {query.stderr.strip()}")
+    # Fast path: if all required CLI binaries exist and Pillow is imported,
+    # skip dependency checks completely on theme reloads.
+    if Image is not None and all(
+        shutil.which(cmd) for cmd in REQUIRED_COMMANDS
+    ):
         return
-    log.info("Required packages: %s", ", ".join(missing))
-    command = ["pacman", "--sync", "--needed", "--noconfirm", "--", *missing]
-    if os.geteuid() != 0:
-        # The orchestrator supplies a PTY in a new session without a
-        # controlling terminal. Read authentication from its input stream.
-        command = ["sudo", "--stdin", "--", *command]
-    # Use the installer's existing repository databases and cached packages;
-    # no isolated database refresh or unrelated system upgrade here.
-    subprocess.run(command, check=True)
-    subprocess.run(["pacman", "--query", "--quiet", "--", *REQUIRED_PACKAGES],
-                   check=True, stdout=subprocess.DEVNULL)
+
+    missing_cmds = [cmd for cmd in REQUIRED_COMMANDS if not shutil.which(cmd)]
+    if missing_cmds:
+        log.warning("Required commands missing on NixOS: %s", ", ".join(missing_cmds))
 
 
 def ensure_pillow() -> None:
@@ -198,8 +181,7 @@ def ensure_pillow() -> None:
     try:
         from PIL import Image as _Image, ImageMath as _ImageMath
     except ImportError as e:
-        raise RuntimeError("the 'Pillow' module is required "
-                           "(Arch Linux: pacman -S python-pillow).") from e
+        raise RuntimeError("the 'Pillow' module is required. Ensure python-pillow is in your NixOS configuration.") from e
     Image = _Image  # type: ignore[no-redef]
     ImageMath = _ImageMath  # type: ignore[no-redef]
     _M = _ImageMath.lambda_eval
