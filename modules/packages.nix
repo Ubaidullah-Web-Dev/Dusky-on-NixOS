@@ -86,6 +86,9 @@
     zathura
 
     # Development & Linters
+    cargo
+    rustc
+    pkg-config
     clang
     shellcheck
     shfmt

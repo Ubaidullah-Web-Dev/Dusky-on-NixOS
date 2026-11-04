@@ -62,6 +62,7 @@ search_dirs = [
 tasks = [
     # ================= CUSTOM =====================
     "U | once | 001_ensure_python315.sh",
+    "U | once | 002_ensure_rust.sh",
     "U | once | backup_hyprlang_files.sh",
     "U | once | 480_dusky_commands.py -b",
     # ================= Scripts =====================
@@ -169,6 +170,7 @@ tasks = [
     "U | ignore-fail | wallpaper_selector.py --build-cache",
     "U | once,ignore-fail | wallpaper_selector_to_dusky_paper_rename_cache.py",
     "U | 151_dusky_papers_setup.py --update-cache",
+    "U | 152_dusky_tray_setup.py",
     "U | once,ignore-fail | wallpaper_selector_to_dusky_paper_rename_cache.py --cleanup",
     # "U | once | append_defaults_keybinds_edit_here.sh",
     "U | ignore-fail | tui_matugen.py --smart",

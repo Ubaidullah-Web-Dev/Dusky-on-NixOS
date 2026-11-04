@@ -1,6 +1,6 @@
 [profile]
 name = "Main Setup"
-description = "Full Arch Linux install with all dotfiles"
+description = "Full NixOS install with all dotfiles"
 schema_version = 2
 post_script_delay = 0
 
@@ -40,6 +40,8 @@ dirs = [
 
 [sequence]
 scripts = [
+    "U | 001_ensure_python315.sh",
+    "U | 002_ensure_rust.sh",
     "U | 002_pre_generated_colors.sh",
     "U | 003_network_connect.sh",
     # "U | deploy_dotfiles.sh --force",
@@ -64,6 +66,7 @@ scripts = [
     "U | 145_matugen_directories.py",
     # "U | 150_wallpapers_download.sh",
     "U | 151_dusky_papers_setup.py --update-cache",
+    "U | 152_dusky_tray_setup.py",
     "U | 155_blur_shadow_opacity.sh",
     "U | 160_theme_ctl.py",
     "U | 165_qtct_config.sh",
