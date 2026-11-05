@@ -4,12 +4,41 @@
 
 pkg() {
     emulate -L zsh
-    print -P "\n%F{blue}::%f %BNixOS Installed Profile Packages%b"
-    print -P "%F{238}------------------------------------------------------------%f"
-    if command -v nix &>/dev/null; then
-        nix profile list 2>/dev/null || print "No profile packages installed."
-    else
-        print -u2 -P "%F{red}✖ Error:%f 'nix' command not found."
-    fi
-    print -P "%F{238}------------------------------------------------------------%f\n"
+    local mode="${1:-profile}"
+    case "$mode" in
+        system|sys|all)
+            print -P "\n%F{blue}::%f %BNixOS System Packages%b"
+            print -P "%F{238}------------------------------------------------------------%f"
+            if [[ -d /run/current-system ]]; then
+                nix-store -q --requisites /run/current-system 2>/dev/null | sed 's|/nix/store/[^-]*-||' | sort -u | head -n "${2:-50}"
+            else
+                print "No current-system found."
+            fi
+            print -P "%F{238}------------------------------------------------------------%f\n"
+            ;;
+        help|--help|-h)
+            print -P "\n%F{blue}::%f %BNixOS Package Query Tool%b"
+            print -P "%F{238}------------------------------------------------------------%f"
+            print "Usage: pkg [profile|system|help] [count]"
+            print "  pkg         List installed user profile packages (default)"
+            print "  pkg system  List system packages (top N, default 50)"
+            print -P "%F{238}------------------------------------------------------------%f\n"
+            ;;
+        profile|*)
+            print -P "\n%F{blue}::%f %BNixOS Installed Profile Packages%b"
+            print -P "%F{238}------------------------------------------------------------%f"
+            if command -v nix &>/dev/null; then
+                nix profile list 2>/dev/null || print "No profile packages installed."
+            else
+                print -u2 -P "%F{red}✖ Error:%f 'nix' command not found."
+            fi
+            print -P "%F{238}------------------------------------------------------------%f\n"
+            ;;
+    esac
 }
+
+# Native Zsh tab-completion
+_pkg() {
+    _arguments '*:package query argument:(profile system all help --help -h)'
+}
+(( $+functions[compdef] )) && compdef _pkg pkg
