@@ -5,7 +5,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/home/dusk/user_scripts/networking/network_throttle/netctl daemon
+ExecStart=%h/user_scripts/networking/network_throttle/netctl daemon
 # Process Management
 Restart=always
 RestartSec=3

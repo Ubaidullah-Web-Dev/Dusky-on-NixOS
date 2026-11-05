@@ -147,6 +147,8 @@ main() {
         log_success "Dotfiles checked out successfully."
         if [[ -f /etc/NIXOS ]]; then
             log_info "Applying NixOS post-checkout compatibility patches..."
+            mkdir -p "${HOME}/.local/lib/python3.15/site-packages"
+            printf "%s\n%s\n" "/run/current-system/sw/lib/python3.15/site-packages" "/run/current-system/sw/lib/python3.14/site-packages" > "${HOME}/.local/lib/python3.15/site-packages/nixos_sys_packages.pth"
             if [[ -f "${HOME}/user_scripts/clipboard/dusky_clipboard_daemon.sh" ]]; then
                 sed -i 's|/usr/bin/wl-clip-persist|wl-clip-persist|g' "${HOME}/user_scripts/clipboard/dusky_clipboard_daemon.sh" 2>/dev/null || true
                 sed -i 's|/usr/bin/wl-paste|wl-paste|g' "${HOME}/user_scripts/clipboard/dusky_clipboard_daemon.sh" 2>/dev/null || true

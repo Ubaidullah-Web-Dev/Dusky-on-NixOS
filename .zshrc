@@ -101,6 +101,12 @@ HISTSIZE=50000
 SAVEHIST=25000
 HISTFILE="$HOME/.zsh_history"
 
+# Resilient history auto-recovery (prevents corrupt history warnings on crashes)
+if [[ -f "$HISTFILE" ]] && ! fc -R "$HISTFILE" 2>/dev/null; then
+  cp -p "$HISTFILE" "$HISTFILE.corrupted.$$" 2>/dev/null
+  strings -e S "$HISTFILE.corrupted.$$" > "$HISTFILE" 2>/dev/null || rm -f "$HISTFILE"
+fi
+
 setopt SHARE_HISTORY           # Share history between all concurrent shell sessions.
 setopt HIST_EXPIRE_DUPS_FIRST  # When trimming history, delete duplicates first.
 setopt HIST_IGNORE_ALL_DUPS    # Delete old recorded entry if new entry is a duplicate.

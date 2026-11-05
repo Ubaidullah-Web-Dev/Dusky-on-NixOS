@@ -30,6 +30,13 @@ let
     echo "Building and switching to new NixOS configuration..."
     sudo nixos-rebuild switch --flake "$FLAKE_DIR#dusky-nix"
 
+    # Maintain Python 3.15 package integration for all desktop TUIs
+    TARGET_USER="''${SUDO_USER:-''$USER}"
+    USER_HOME=$(eval echo "~''$TARGET_USER")
+    mkdir -p "''$USER_HOME/.local/lib/python3.15/site-packages"
+    printf "%s\n%s\n" "/run/current-system/sw/lib/python3.15/site-packages" "/run/current-system/sw/lib/python3.14/site-packages" > "''$USER_HOME/.local/lib/python3.15/site-packages/nixos_sys_packages.pth"
+    chown -R "''$TARGET_USER:" "''$USER_HOME/.local/lib" 2>/dev/null || true
+
     echo "=== Dusky on NixOS update complete! ==="
     if command -v notify-send >/dev/null 2>&1; then
       notify-send "Dusky on Nix" "System update completed successfully!" -i system-software-update || true

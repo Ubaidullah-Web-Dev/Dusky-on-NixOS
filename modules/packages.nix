@@ -182,6 +182,7 @@
     cairo
     cairo.dev
     pango
+    pango.out
     pango.dev
     glib
     glib.dev
@@ -194,6 +195,7 @@
     libxkbcommon.dev
     wayland.dev
     harfbuzz
+    harfbuzz.out
     harfbuzz.dev
     fribidi
     fribidi.dev
@@ -203,6 +205,7 @@
     gsettings-desktop-schemas
     gobject-introspection
     librsvg
+    python315Packages.pygobject3
 
     # Audio & Media
     cava
@@ -215,6 +218,7 @@
     mpv
     ffmpeg
     yt-dlp
+    nodejs
     songrec
     sox
     rnnoise
@@ -281,8 +285,26 @@
       uvloop
       numpy
       sounddevice
+      dbus-fast
+      sqlalchemy
+      aiosqlite
+      rapidfuzz
+      prompt-toolkit
+      keyring
+      secretstorage
+      tinycss2
+      pexpect
+      pypdf
     ]))
   ];
+
+  environment.sessionVariables = {
+    PYTHONPATH = "/run/current-system/sw/lib/python3.15/site-packages:/run/current-system/sw/lib/python3.14/site-packages";
+  };
+
+  environment.variables = {
+    PYTHONPATH = "/run/current-system/sw/lib/python3.15/site-packages:/run/current-system/sw/lib/python3.14/site-packages";
+  };
 
   environment.pathsToLink = [ "/include" "/lib/pkgconfig" "/share/pkgconfig" "/share/tlp" "/share/gsettings-schemas" "/share/glib-2.0/schemas" "/lib/girepository-1.0" ];
   environment.sessionVariables.GI_TYPELIB_PATH = "/run/current-system/sw/lib/girepository-1.0";

@@ -7,6 +7,7 @@ let
     export LIBGL_ALWAYS_SOFTWARE=1
     export GI_TYPELIB_PATH="/run/current-system/sw/lib/girepository-1.0"
     export LD_LIBRARY_PATH="/run/current-system/sw/share/nix-ld/lib:/run/current-system/sw/lib''${LD_LIBRARY_PATH:+:''$LD_LIBRARY_PATH}"
+    export PYTHONPATH="/run/current-system/sw/lib/python3.15/site-packages:/run/current-system/sw/lib/python3.14/site-packages''${PYTHONPATH:+:''$PYTHONPATH}"
 
     slice="app.slice"
     score=200
@@ -37,6 +38,7 @@ let
       --setenv=LIBGL_ALWAYS_SOFTWARE=1 \
       --setenv=GI_TYPELIB_PATH="/run/current-system/sw/lib/girepository-1.0" \
       --setenv=LD_LIBRARY_PATH="/run/current-system/sw/share/nix-ld/lib:/run/current-system/sw/lib''${LD_LIBRARY_PATH:+:''$LD_LIBRARY_PATH}" \
+      --setenv=PYTHONPATH="/run/current-system/sw/lib/python3.15/site-packages:/run/current-system/sw/lib/python3.14/site-packages''${PYTHONPATH:+:''$PYTHONPATH}" \
       --property=OOMPolicy=continue \
       --property=ManagedOOMPreference="$preference" \
       --property=MemoryAccounting=yes \

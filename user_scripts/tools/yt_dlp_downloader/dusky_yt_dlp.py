@@ -70,6 +70,11 @@ def bootstrap_dependencies() -> None:
     if not missing:
         return
     packages = sorted(missing)
+    if Path("/etc/NIXOS").exists():
+        nixos_missing = [p for p in packages if p != "yt-dlp-ejs"]
+        if nixos_missing:
+            raise SystemExit(f"NixOS detected: missing dependencies: {', '.join(nixos_missing)}. Please check modules/packages.nix.")
+        return
     command = ["sudo", "pacman", "-S", "--needed", *packages]
     if os.environ.get("DUSKY_BOOTSTRAPPED") == "1":
         raise SystemExit(f"Dependencies still missing after pacman: {', '.join(packages)}. Check /usr/bin/python.")
