@@ -1,216 +1,197 @@
 # =============================================================================
-# Dusky Command Atlas v4.1 — zero-fork environment ledger + fzf router
+# Dusky Command Atlas — builtin environment ledger + fzf router
 #
 #   atlas | cmd_atlas   interactive fuzzy index of the live shell environment
 #   The selection is injected into the ZLE buffer with `print -z`.
 #
-#   Requires zsh 5.9+ and fzf >= 0.61
-#     --ghost        fzf 0.61.0
-#     --accept-nth   fzf 0.60.0
-#     --style/--list-border/--input-border  fzf 0.58.0
-#
-#   Forks: 1 (fzf) + 1 once per session (version probe, memoised).
+#   Requires zsh 5.9+ and the ISO baseline of fzf >= 0.74.4.
+#   External commands: one fzf invocation per selection.
 #   Locale: untouched — fzf needs the user's UTF-8 LC_CTYPE to measure the
 #   widths of │, ❯, ✔ and the Nerd-Font label glyph correctly.
 #
-#   Any module may register documentation at any time:
-#       ZSH_DOCS[myfunc]='what it does'
+# Register docs ANYWHERE in your zshrc modules with:
+#   ZSH_DOCS[<name>]="short description"
 #   `+=` below means a re-source never destroys sibling registrations.
 # =============================================================================
 
-zmodload zsh/parameter 2>/dev/null
-
-typeset -g  DUSKY_ATLAS_MIN_FZF=${DUSKY_ATLAS_MIN_FZF:-0.61.0}
 typeset -gA ZSH_DOCS
 
 ZSH_DOCS+=(
-    # --- DUSKY CUSTOM TOOLS ---
-    "atlas"               "Interactive fuzzy-finder for environment functions and aliases."
-    "cmd_atlas"           "Command Atlas engine behind the 'atlas' alias."
-    "batstat"             "Zero-fork battery monitor with live TUI."
-    "mon_info"            "Mathematical aspect ratio and display info renderer."
-    "pkg"                 "Dusky NixOS package querying tool."
-    "res_mon"             "Live system resource monitor."
-
-    # --- VIRTUALIZATION & KVM ---
-    "win"                 "Windows 10 KVM orchestrator with Looking Glass integration."
-    "nvidia_bind"         "Binds Nvidia GPU to the VFIO driver for VM passthrough."
-    "nvidia_unbind"       "Unbinds Nvidia GPU from the VFIO driver to restore host access."
-
-    # --- DUSKY DOTFILES MANAGEMENT ---
-    "git_dusky"           "Core git wrapper locked to the bare repository."
-    "git_dusky_add_list"  "Stages specific tracked files from the .git_dusky_list payload."
-    "git_dusky_restore"   "Destructive hard reset to revert all local dotfile changes."
-    "git_dusky_push"      "Stage, commit and push a single file into the bare dotfiles repo."
-    "gitdelta"            "Stages list files and computes the repository diff against HEAD."
-    "lazygit_dusky"       "Launches Lazygit scoped to the Dusky bare repository."
-    "dusky"               "Dusky dotfiles manager dashboard."
-
-    # --- DIFF ENGINE ---
-    "d"                   "NeoDiff proxy: diff files, or a file against its Neovim undo state."
-    "di"                  "Interactive fzf picker over the NeoDiff history."
-
-    # --- NAVIGATION ---
-    "z"                   "Jump to the best-scored directory (zoxide frecency)."
-    "zi"                  "Interactive zoxide jump through fzf."
-
-    # --- DEVELOPMENT & EXECUTION ---
-    "logs_old"            "Advanced execution wrapper for robust script testing and tracing."
-    "llm"                 "Dynamically launches the latest LM Studio AppImage build."
-    "mkcd"                "Creates a new directory and immediately shifts the working path into it."
-
-    # --- ENVIRONMENT UTILITIES ---
-    "waydroid_bind"       "Remounts Waydroid pictures directory to ZRAM."
-    "wthr"                "Fetches current weather via wttr.in (optional -s flag for terse)."
-
-    # --- STANDARD GNU COREUTILS & NAVIGATION ---
-    "ls"                  "List directory contents (often overridden by exa/eza)."
-    "ll"                  "List directory contents in long format."
-    "la"                  "List all files, including hidden dotfiles."
-    "lsa"                 "List all files in long format."
-    "grep"                "Search text using regular expressions (with color)."
-    "egrep"               "Search text using extended regular expressions."
-    "fgrep"               "Search text using fixed strings."
-    "cp"                  "Copy files and directories (interactive mode)."
-    "mv"                  "Move or rename files and directories (interactive mode)."
-    "rm"                  "Remove files or directories (interactive mode)."
-    "cat"                 "Concatenate and print files (often overridden by bat)."
-
-    # --- ARCH LINUX / PACMAN / SYSTEM ---
-    "nix"                 "Nix package manager."
-    "update"              "System update alias."
-    "sysctl"              "Kernel parameter configuration."
-    "systemctl"           "Control the systemd system and service manager."
+    "l"                   "Standard directory listing."
+    "la"                  "Listing including hidden entries."
+    "ll"                  "Long listing with permissions and byte sizes."
+    "lla"                 "Full long listing including hidden entries."
+    "lt"                  "Directory tree view."
+    "lt1"                 "Directory tree, 1 level deep."
+    "lt2"                 "Directory tree, 2 levels deep."
+    "lt3"                 "Directory tree, 3 levels deep."
+    "c"                   "Clear terminal display."
+    "cls"                 "Clear terminal display."
+    "q"                   "Close current shell session."
+    "x"                   "Close current shell session."
+    "e"                   "Open preferred visual editor ($EDITOR)."
+    "v"                   "Open preferred visual editor ($EDITOR)."
+    "vi"                  "Open preferred visual editor ($EDITOR)."
+    "vim"                 "Open preferred visual editor ($EDITOR)."
+    "sv"                  "Open preferred editor with root privileges."
+    "untar"               "Extract standard tar.gz archive in place."
+    "unzip"               "Extract zip archive in place."
+    "extract"             "Universal single-call extractor (tar, zip, 7z, bz2, rar...)."
+    "ip"                  "Show network interface IP addresses (brief)."
+    "ports"               "Enumerate listening TCP and UDP sockets with owning PIDs."
+    "openports"           "Enumerate listening TCP and UDP sockets with owning PIDs."
+    "mkcd"                "Create a directory tree and instantly enter it."
+    "path"                "Display $PATH entries line by line for inspection."
+    "weather"             "Fetch ASCII atmospheric conditions via wttr.in."
+    "wttr"                "Fetch ASCII atmospheric conditions via wttr.in."
+    "dusky_zram"          "Activate dynamic dynamic ZRAM swap configuration."
+    "update_dusky"        "Synchronize with upstream Dusky Linux releases."
+    "core"                "System performance and core monitoring."
+    "scripts"             "Browse local Dusky helper scripts."
+    "mon_info"            "Display detailed monitor configuration."
+    "ms"                  "Display detailed monitor configuration."
+    "atlas"               "Command and alias interactive reference index."
+    "cmd_atlas"           "Command and alias interactive reference index."
+    "tree"                "Display directory tree hierarchy."
+    "df"                  "Human-readable disk filesystem free space."
+    "du"                  "Human-readable file space usage."
+    "free"                "Display amount of free and used physical/swap memory."
+    "mem"                 "Display formatted memory metrics via free."
+    "cat"                 "Concatenate and print files."
+    "grep"                "Pattern searching with automatic color highlighting."
+    "diff"                "Compare files line by line."
+    "top"                 "Process activity monitor."
+    "htop"                "Interactive process viewer."
+    "btop"                "Resource monitor with hardware graphs."
     "journalctl"          "Query the systemd journal."
 )
 
 # -----------------------------------------------------------------------------
-# fzf capability gate — exactly one fork per shell session, then memoised.
-# -----------------------------------------------------------------------------
-_atlas_fzf_ok() {
-    emulate -L zsh
-    local v
-
-    if (( ! $+commands[fzf] )); then
-        print -ru2 -- 'atlas: fzf is not installed  (nix profile add nixpkgs#fzf)'
-        return 1
-    fi
-    if [[ -z ${_DUSKY_FZF_VERSION-} ]]; then
-        v=$(fzf --version 2>/dev/null)
-        v=${v%% *}
-        typeset -g _DUSKY_FZF_VERSION=${v:-0}
-    fi
-    (( $+functions[is-at-least] )) || autoload -Uz is-at-least
-    if ! is-at-least $DUSKY_ATLAS_MIN_FZF $_DUSKY_FZF_VERSION; then
-        print -ru2 -- "atlas: fzf $_DUSKY_FZF_VERSION is too old — need >= $DUSKY_ATLAS_MIN_FZF (--ghost, --accept-nth)"
-        return 1
-    fi
-    return 0
-}
-
-# -----------------------------------------------------------------------------
 # The atlas
 # -----------------------------------------------------------------------------
-cmd_atlas() {
+function cmd_atlas() {
     emulate -L zsh
-    setopt localoptions extendedglob no_nomatch
+    setopt extendedglob
 
-    zmodload zsh/parameter 2>/dev/null
-    if (( ! $+aliases )); then
+    if ! zmodload zsh/parameter 2>/dev/null; then
         print -ru2 -- 'atlas: zsh/parameter is unavailable — cannot enumerate the environment.'
         return 1
     fi
-    _atlas_fzf_ok || return 1
+    if (( ! $+commands[fzf] )); then
+        print -ru2 -- 'atlas: fzf is not installed'
+        return 1
+    fi
 
-    local -A kind
-    local -a anames gnames snames fnames rows opts
-    local name desc k choice header
-    local -i pad=7 hpad=0 rc=0
+    local -a names kinds rows opts
+    local name display desc k choice header
+    local -i i width pad=7 hpad=0 rc=0
     local TAB=$'\t' R=$'\e[0m' DIM=$'\e[38;5;242m' BOLD=$'\e[1;37m' TXT=$'\e[38;5;250m'
     local -A col=(
         'Alias' $'\e[38;5;114m'
-        'Glob ' $'\e[38;5;180m'
-        'Sufx ' $'\e[38;5;176m'
-        'Func ' $'\e[1;38;5;39m'
+        'Glob ' $'\e[38;5;174m'
+        'Sufx ' $'\e[38;5;180m'
+        'Func ' $'\e[38;5;111m'
     )
 
     # --- ledger: aliases are STRICT (documented entries only) -----------------
     for name in "${(@ok)aliases}"; do
         [[ -n ${ZSH_DOCS[$name]+x} ]] || continue
-        anames+=( "$name" ); kind[$name]='Alias'
+        names+=( "$name" ); kinds+=( 'Alias' )
     done
     for name in "${(@ok)galiases}"; do
         [[ -n ${ZSH_DOCS[$name]+x} ]] || continue
-        gnames+=( "$name" ); kind[$name]='Glob '
+        names+=( "$name" ); kinds+=( 'Glob ' )
     done
     for name in "${(@ok)saliases}"; do
         [[ -n ${ZSH_DOCS[$name]+x} ]] || continue
-        snames+=( "$name" ); kind[$name]='Sufx '
+        names+=( "$name" ); kinds+=( 'Sufx ' )
     done
 
     # --- ledger: functions, documented OR public ------------------------------
     for name in "${(@ok)functions}"; do
         if [[ -z ${ZSH_DOCS[$name]+x} ]]; then
             [[ $name == [_.+]* ]] && continue
-            [[ $name == (*:zle-*|*zle-*|*-widget|TRAP*|*precmd*|*preexec*|azhw:*|prompt_*|comp*) ]] && continue
-            [[ $name == (chpwd|periodic|zshaddhistory|zshexit|is-at-least|add-zsh-hook|edit-command-line) ]] && continue
+            [[ $name == (*:zle-*|*zle-*|*-widget|TRAP*|*precmd*|*preexec*|azhw:*|prompt_*) ]] && continue
+            [[ $name == (chpwd|periodic|zshaddhistory|zshexit|is-at-least|add-zsh-hook|edit-command-line|compaudit|compdef|compdump|compinit|compinstall) ]] && continue
         fi
-        fnames+=( "$name" ); kind[$name]='Func '
+        names+=( "$name" ); kinds+=( 'Func ' )
     done
 
-    if (( ! $#kind )); then
+    if (( ! $#names )); then
         print -ru2 -- 'atlas: nothing to display (ZSH_DOCS is empty and no public functions exist).'
         return 1
     fi
 
-    for name in "${(@k)kind}"; do (( $#name > pad )) && pad=$#name; done
-    (( pad > 35 )) && pad=35
+    for name in "${names[@]}"; do
+        display=${(V)name}
+        width=${(m)#display}
+        (( width > pad )) && pad=$width
+    done
     (( hpad = pad - 7 ))
 
-    # --- rows: "RAW<TAB>VISUAL"; TAB cannot occur inside a command word -------
-    for name in "${anames[@]}" "${gnames[@]}" "${snames[@]}" "${fnames[@]}"; do
-        k=${kind[$name]}
+    # Numeric identities keep names independent of fzf field/line parsing.
+    # Preserve each category when an alias and function share a name.
+    for (( i=1; i <= $#names; ++i )); do
+        name=$names[i]
+        display=${(V)name}
+        k=$kinds[i]
         desc=${ZSH_DOCS[$name]:-'— no description registered —'}
         desc=${desc//[$'\t\n\r']/ }
-        rows+=( "${name}${TAB}${DIM}[${R}${col[$k]}${k}${R}${DIM}]${R}  ${BOLD}${(r:pad:)${name[1,pad]}}${R}  ${DIM}│${R}  ${TXT}${desc}${R}" )
+        desc=${(V)desc}
+        rows+=( "${i}${TAB}${DIM}[${R}${col[$k]}${k}${R}${DIM}]${R}  ${BOLD}${(mr:pad:)display}${R}  ${DIM}│${R}  ${TXT}${desc}${R}" )
     done
 
     header="   TYPE  COMMAND${(l:hpad:):-}  │  DESCRIPTION"
+
     opts=(
         --ansi
-        --delimiter=$TAB
-        --with-nth='2..'
+        --delimiter="$TAB"
+        --with-nth=2..
         --accept-nth=1
-        --highlight-line
-        --ghost='Filter command atlas...'
-        --prompt="   Search ❯ "
-        --pointer='❯ '
-        --marker='✔ '
+        --header="$header"
         --layout=reverse
+        --inline-info
+        --prompt='❯ '
+        --pointer='❯'
+        --marker='✔ '
         --border=rounded
-        --border-label=' 󰘳 Dusky Command Atlas '
-        --border-label-pos=3
-        --padding=1,2
-        --margin=2%,5%
-        --info=inline-right
-        --header=$header
-        --header-first
-        --tiebreak=begin,index
+        --scrollbar='│'
+        --style=full
+        --ghost='Search commands, aliases, functions...'
+        --info=right
         --color="${DUSKY_FZF_COLORS:-bg+:#1e1e2e,bg:#11111b,fg:#cdd6f4}"
     )
 
-    # print -rl : raw, so a description can never be escape-processed.
-    choice=$(print -rl -- "${rows[@]}" | fzf "${opts[@]}")
+    # This picker owns its output protocol; global fzf defaults may enable
+    # --multi, --print-query, --expect, or a different record separator.
+    choice=$(print -rl -- "${rows[@]}" |
+        FZF_DEFAULT_OPTS= FZF_DEFAULT_OPTS_FILE= command fzf "${opts[@]}")
     rc=$?
     case $rc in
         0)      ;;
         1|130)  return 0 ;;                       # no match / aborted
-        *)      print -ru2 -- "atlas: fzf exited $rc (this module needs fzf >= $DUSKY_ATLAS_MIN_FZF)"
+        *)      print -ru2 -- "atlas: fzf exited $rc"
                 return $rc ;;
     esac
 
-    [[ -n $choice ]] && print -rz -- "$choice"
-    return 0
+    if [[ $choice != <1-> ]] || (( choice > $#names )); then
+        print -ru2 -- 'atlas: fzf returned an invalid selection.'
+        return 1
+    fi
+    name=$names[choice]
+    if [[ $kinds[choice] == 'Func ' ]]; then
+        # Functions need one literal command word. Quote alias collisions and
+        # reserved words too, so the selected function actually gets invoked.
+        if (( $+aliases[$name] || $+galiases[$name] || ${reswords[(Ie)$name]} )); then
+            choice=${(qq)name}
+        else
+            choice=${(q)name}
+        fi
+    else
+        # Quoting an alias token would suppress its expansion.
+        choice=$name
+    fi
+    print -rz -- "$choice"
 }
 
 alias atlas='cmd_atlas'
