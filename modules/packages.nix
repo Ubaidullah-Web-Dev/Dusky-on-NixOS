@@ -200,6 +200,9 @@
     rnnoise
 
     gcc
+    gnumake
+    pkg-config
+    pipewire.dev
     wayland.dev
     wayland-scanner
     wayland-protocols
@@ -259,7 +262,7 @@
     ]))
   ];
 
-  environment.pathsToLink = [ "/include" "/share/tlp" "/share/gsettings-schemas" "/share/glib-2.0/schemas" "/lib/girepository-1.0" ];
+  environment.pathsToLink = [ "/include" "/lib/pkgconfig" "/share/pkgconfig" "/share/tlp" "/share/gsettings-schemas" "/share/glib-2.0/schemas" "/lib/girepository-1.0" ];
   environment.sessionVariables.GI_TYPELIB_PATH = "/run/current-system/sw/lib/girepository-1.0";
   environment.sessionVariables.PKG_CONFIG_PATH = "/run/current-system/sw/lib/pkgconfig";
   environment.sessionVariables.LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib";
