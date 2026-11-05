@@ -157,6 +157,7 @@ declare -agr POWER_MENU=(
 
 declare -agr CONFIGS_MENU=(
     '  Control Center'
+    '  Quick Panel'
     '  Hypr Reload'
     '  Main Config'
     '  Keybinds'
@@ -726,7 +727,14 @@ show_configs_menu() {
 
         case "$choice" in
             '  Control Center')
-                run_app python3 "$CC_DIR/dusky_control_center.py"
+                if [[ -x "$HOME/.local/bin/dusky-center" ]]; then
+                    run_app "$HOME/.local/bin/dusky-center"
+                else
+                    run_app python3 "$CC_DIR/dusky_control_center.py"
+                fi
+                ;;
+            '  Quick Panel')
+                run_app "$HOME/.local/bin/dusky-tray"
                 ;;
             '  Hypr Reload')
                 run_app hyprctl reload

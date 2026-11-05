@@ -49,8 +49,8 @@ if not os.environ.get("WAYLAND_DISPLAY"):
     sys.stderr.write("dusky-control-center: error: WAYLAND_DISPLAY is not set. Cannot run GUI application.\n")
     sys.exit(5)
 
-if sys.version_info < (3, 15):
-    sys.exit("[FATAL] Python 3.15+ is required.")
+if sys.version_info < (3, 14):
+    sys.exit("[FATAL] Python 3.14+ is required.")
 
 # =============================================================================
 # LOGGING CONFIGURATION

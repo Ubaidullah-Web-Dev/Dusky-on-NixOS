@@ -318,7 +318,16 @@ def build_native(project: Path, binary: Path, manifest_path: Path, version: str)
         env["CARGO_NET_RETRY"] = "1"
         env["CARGO_REGISTRIES_CRATES_IO_PROTOCOL"] = "sparse"
         env["RUSTUP_AUTO_INSTALL"] = "0"
-        env["RUSTFLAGS"] = "-C target-cpu=native"
+        nix_lib_paths = [
+            "/run/current-system/sw/share/nix-ld/lib",
+            "/run/current-system/sw/lib",
+            str(Path.home() / ".nix-profile/lib"),
+        ]
+        rpath_arg = ":".join(p for p in nix_lib_paths if Path(p).is_dir())
+        if rpath_arg:
+            env["RUSTFLAGS"] = f"-C target-cpu=native -C link-args=-Wl,-rpath,{rpath_arg}"
+        else:
+            env["RUSTFLAGS"] = "-C target-cpu=native"
         env.pop("CARGO_ENCODED_RUSTFLAGS", None)
         env["CFLAGS"] = "-march=native -mtune=native -O2"
         env["CXXFLAGS"] = env["CFLAGS"]
@@ -378,6 +387,7 @@ def build_native(project: Path, binary: Path, manifest_path: Path, version: str)
         try:
             shutil.copy2(built, temporary_binary)
             temporary_binary.chmod(0o755)
+            patch_nix_rpath(temporary_binary)
             os.replace(temporary_binary, binary)
             manifest = {
                 "version": version,
@@ -396,6 +406,20 @@ def build_native(project: Path, binary: Path, manifest_path: Path, version: str)
             temporary_binary.unlink(missing_ok=True)
             temporary_manifest.unlink(missing_ok=True)
     return True
+
+
+def patch_nix_rpath(binary: Path) -> None:
+    patchelf = shutil.which("patchelf")
+    if not patchelf:
+        return
+    rpaths = [
+        "/run/current-system/sw/share/nix-ld/lib",
+        "/run/current-system/sw/lib",
+        str(Path.home() / ".nix-profile/lib"),
+    ]
+    existing = ":".join(p for p in rpaths if Path(p).is_dir())
+    if existing:
+        subprocess.run([patchelf, "--set-rpath", existing, str(binary)], capture_output=True)
 
 
 def link_system_binary(system_binary: Path, binary: Path) -> bool:

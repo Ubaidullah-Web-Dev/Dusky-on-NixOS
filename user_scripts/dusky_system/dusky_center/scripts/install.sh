@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Use the same package/native selection as the setup profiles; never launch the UI.
 set -euo pipefail
-readonly PROJECT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+PROJECT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+readonly PROJECT_DIR
 for candidate in \
     "$PROJECT_DIR/../../nix_setup_scripts/scripts/153_dusky_center_setup.py" \
     "$PROJECT_DIR/../../user_scripts/nix_setup_scripts/scripts/153_dusky_center_setup.py" \
