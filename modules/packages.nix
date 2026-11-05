@@ -173,13 +173,32 @@
     # GTK / GObject runtime & libs
     gtk3
     gtk4
+    gtk4.dev
     libadwaita
     graphene
+    graphene.dev
     gdk-pixbuf
-    pango.out
-    glib.out
+    gdk-pixbuf.dev
+    cairo
+    cairo.dev
+    pango
+    pango.dev
+    glib
+    glib.dev
     glib.bin
+    gtk4-layer-shell
+    gtk4-layer-shell.dev
+    vulkan-headers
+    vulkan-loader
+    vulkan-loader.dev
+    libxkbcommon.dev
+    wayland.dev
     harfbuzz
+    harfbuzz.dev
+    fribidi
+    fribidi.dev
+    fontconfig.dev
+    freetype.dev
     at-spi2-core
     gsettings-desktop-schemas
     gobject-introspection
@@ -192,6 +211,7 @@
     pavucontrol
     alsa-utils
     pulseaudio
+    portaudio
     mpv
     ffmpeg
     yt-dlp
@@ -259,6 +279,8 @@
       pyudev
       pygame-ce
       uvloop
+      numpy
+      sounddevice
     ]))
   ];
 
