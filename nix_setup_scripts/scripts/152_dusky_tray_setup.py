@@ -69,11 +69,18 @@ def source_digest(project: Path) -> str:
     if src.is_dir():
         files.extend(sorted(path for path in src.rglob("*") if path.is_file()))
 
+    helper = project.parent / "click_away_to_dismiss"
+    files.extend(helper / name for name in (
+        "dusky.c",
+        "hyprland-focus-grab-v1-client-protocol.c",
+        "hyprland-focus-grab-v1-client-protocol.h",
+    ))
+
     digest = hashlib.sha256()
     digest.update(BUILD_RECIPE.encode())
     digest.update(b"\0")
     for path in files:
-        digest.update(str(path.relative_to(project)).encode())
+        digest.update(os.path.relpath(path, project).encode())
         digest.update(b"\0")
         digest.update(bytes.fromhex(sha256(path)))
     return digest.hexdigest()
@@ -323,14 +330,32 @@ def build_native(project: Path, binary: Path, manifest_path: Path, version: str)
             "/run/current-system/sw/lib",
             str(Path.home() / ".nix-profile/lib"),
         ]
-        rpath_arg = ":".join(p for p in nix_lib_paths if Path(p).is_dir())
+        existing_lib_dirs = [p for p in nix_lib_paths if Path(p).is_dir()]
+        rpath_arg = ":".join(existing_lib_dirs)
+        rustflags = ["-C", "target-cpu=native"]
         if rpath_arg:
-            env["RUSTFLAGS"] = f"-C target-cpu=native -C link-args=-Wl,-rpath,{rpath_arg}"
-        else:
-            env["RUSTFLAGS"] = "-C target-cpu=native"
+            rustflags.append(f"-C link-args=-Wl,-rpath,{rpath_arg}")
+        for p in existing_lib_dirs:
+            rustflags.append(f"-L {p}")
+        env["RUSTFLAGS"] = " ".join(rustflags)
+        if existing_lib_dirs:
+            existing_lib = env.get("LIBRARY_PATH", "")
+            env["LIBRARY_PATH"] = f"{rpath_arg}:{existing_lib}".strip(":")
         env.pop("CARGO_ENCODED_RUSTFLAGS", None)
-        env["CFLAGS"] = "-march=native -mtune=native -O2"
+        nix_include_paths = [
+            "/run/current-system/sw/include",
+            str(Path.home() / ".nix-profile/include"),
+        ]
+        inc_flags = " ".join(f"-I{p}" for p in nix_include_paths if Path(p).is_dir())
+        base_cflags = "-march=native -mtune=native -O2"
+        env["CFLAGS"] = f"{base_cflags} {inc_flags}".strip() if inc_flags else base_cflags
         env["CXXFLAGS"] = env["CFLAGS"]
+        include_arg = ":".join(p for p in nix_include_paths if Path(p).is_dir())
+        if include_arg:
+            existing_inc = env.get("C_INCLUDE_PATH", "")
+            env["C_INCLUDE_PATH"] = f"{include_arg}:{existing_inc}".strip(":")
+            existing_cplus = env.get("CPLUS_INCLUDE_PATH", "")
+            env["CPLUS_INCLUDE_PATH"] = f"{include_arg}:{existing_cplus}".strip(":")
         env["CPPFLAGS"] = ""
         existing_pkg_path = env.get("PKG_CONFIG_PATH", "")
         nix_pkg_paths = [
