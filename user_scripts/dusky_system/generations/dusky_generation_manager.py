@@ -74,7 +74,7 @@ def display_menu(gens: list[Generation]):
     print(f"{CLR_CYAN}┌─── Actions ──────────────────────────────────────────────────────────┐{CLR_RESET}")
     print(f"{CLR_CYAN}│{CLR_RESET} [1] {CLR_BOLD}Rollback to Previous Generation{CLR_RESET}                                   {CLR_CYAN}│{CLR_RESET}")
     print(f"{CLR_CYAN}│{CLR_RESET} [2] {CLR_BOLD}Switch to Specific Generation Number{CLR_RESET}                          {CLR_CYAN}│{CLR_RESET}")
-    print(f"{CLR_CYAN}│{CLR_RESET} [3] {CLR_BOLD}Garbage Collect (Delete Generations Older than 14 Days){CLR_RESET}       {CLR_CYAN}│{CLR_RESET}")
+    print(f"{CLR_CYAN}│{CLR_RESET} [3] {CLR_BOLD}Garbage Collect (Delete Generations by Retention Timer){CLR_RESET}   {CLR_CYAN}│{CLR_RESET}")
     print(f"{CLR_CYAN}│{CLR_RESET} [4] {CLR_BOLD}Optimise Nix Store (Deduplicate / Hardlink){CLR_RESET}                   {CLR_CYAN}│{CLR_RESET}")
     print(f"{CLR_CYAN}│{CLR_RESET} [q] {CLR_BOLD}Quit{CLR_RESET}                                                                 {CLR_CYAN}│{CLR_RESET}")
     print(f"{CLR_CYAN}└──────────────────────────────────────────────────────────────────────┘{CLR_RESET}")
@@ -110,9 +110,11 @@ def main():
                 print(f"{CLR_RED}Invalid generation number!{CLR_RESET}")
             input(f"\n{CLR_GREEN}Press Enter to continue...{CLR_RESET}")
         elif choice == "3":
-            print(f"\n{CLR_YELLOW}Running nix-collect-garbage --delete-older-than 14d...{CLR_RESET}")
-            subprocess.run(["sudo", "nix-collect-garbage", "--delete-older-than", "14d"])
-            subprocess.run(["nix-collect-garbage", "--delete-older-than", "14d"])
+            ret = input(f"{CLR_YELLOW}Enter retention period (e.g. 7d, 14d, 30d) [default: 14d]: {CLR_RESET}").strip()
+            ret = ret if ret else "14d"
+            print(f"\n{CLR_YELLOW}Running nix-collect-garbage --delete-older-than {ret}...{CLR_RESET}")
+            subprocess.run(["sudo", "nix-collect-garbage", "--delete-older-than", ret])
+            subprocess.run(["nix-collect-garbage", "--delete-older-than", ret])
             input(f"\n{CLR_GREEN}Press Enter to continue...{CLR_RESET}")
         elif choice == "4":
             print(f"\n{CLR_YELLOW}Running sudo nix-store --optimise...{CLR_RESET}")
