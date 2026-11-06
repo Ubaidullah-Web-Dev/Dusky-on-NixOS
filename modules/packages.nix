@@ -187,6 +187,8 @@
     glib
     glib.dev
     glib.bin
+    gtk-layer-shell
+    gtk-layer-shell.dev
     gtk4-layer-shell
     gtk4-layer-shell.dev
     vulkan-headers
@@ -206,6 +208,8 @@
     gobject-introspection
     librsvg
     python315Packages.pygobject3
+    python315Packages.pycairo
+    python315Packages.pyopengl
 
     # Audio & Media
     cava
