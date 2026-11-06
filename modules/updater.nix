@@ -30,7 +30,7 @@ let
     echo "Building and switching to new NixOS configuration..."
     sudo nixos-rebuild switch --flake "$FLAKE_DIR#dusky-nix"
 
-    # Maintain Python 3.15 package integration for all desktop TUIs
+    # Maintain Python 3.15 package integration (including pyopengl) for all desktop TUIs
     TARGET_USER="''${SUDO_USER:-''$USER}"
     USER_HOME=$(eval echo "~''$TARGET_USER")
     mkdir -p "''$USER_HOME/.local/lib/python3.15/site-packages"
