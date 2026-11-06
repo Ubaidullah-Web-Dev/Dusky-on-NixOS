@@ -138,6 +138,13 @@ choose_python() {
 }
 
 pkg_installed() {
+    if [[ -e /etc/NIXOS ]]; then
+        case "$1" in
+            python|git|sudo) command -v "$1" >/dev/null 2>&1 ;;
+            *) return 0 ;;
+        esac
+        return 0
+    fi
     pacman -Qq "$1" >/dev/null 2>&1
 }
 
@@ -235,7 +242,12 @@ main() {
             sudo -v
         fi
         require_internet
-        "${sudo_cmd[@]}" pacman -Syu --noconfirm python-textual python-rich
+        if [[ -e /etc/NIXOS ]]; then
+            log RUN "NixOS environment detected. Ensuring Python textual and rich packages..."
+            nix profile add nixpkgs#python315Packages.textual nixpkgs#python315Packages.rich 2>/dev/null || true
+        else
+            "${sudo_cmd[@]}" pacman -Syu --noconfirm python-textual python-rich
+        fi
         if ! "$PYTHON_BIN" -c 'import textual, rich, tomllib; from importlib.metadata import version; import re, sys; sys.exit(tuple(map(int, re.findall(r"\d+", version("textual"))[:3])) < (8, 2, 8))' >/dev/null 2>&1; then
             log ERROR "Python dependencies are still unusable."
             exit 1
