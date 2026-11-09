@@ -72,19 +72,25 @@
     ["on_error", "On error"],
     ["error_container", "Error container"],
     ["on_error_container", "On error container"],
+    ["inverse_primary", "Inverse primary"],
+    ["on_primary_fixed", "On primary fixed"],
+    ["on_primary_fixed_variant", "On primary fixed variant"],
+    ["secondary_fixed", "Secondary fixed"],
+    ["on_secondary_fixed", "On secondary fixed"],
+    ["tertiary_fixed", "Tertiary fixed"],
+    ["tertiary_fixed_dim", "Tertiary fixed dim"],
+    ["on_tertiary_fixed", "On tertiary fixed"],
+    ["on_tertiary_fixed_variant", "On tertiary fixed variant"],
+    ["surface_tint", "Surface tint"],
+    ["source_color", "Source color"],
+    ["scrim", "Scrim"],
+    ["shadow", "Shadow"],
   ];
   const TOKEN_NAMES = new Set(TOKENS.map(([t]) => t));
 
   /* Everything Matugen itself injects. Exact names only: a prefix regex also
    * swallows real site tokens such as --error_bg, --surface_alt, --primary_hover. */
-  const PALETTE_OWNED = new Set([
-    ...TOKEN_NAMES,
-    "error_container", "on_error_container", "inverse_primary",
-    "on_primary_fixed", "on_primary_fixed_variant",
-    "secondary_fixed", "on_secondary_fixed",
-    "tertiary_fixed", "tertiary_fixed_dim", "on_tertiary_fixed", "on_tertiary_fixed_variant",
-    "scrim", "shadow", "source_color", "surface_tint",
-  ]);
+  const PALETTE_OWNED = new Set(TOKEN_NAMES);
   const PALETTE_SUFFIX = /_(rgb_comma|rgb|rgba|hex|hsl|raw|strip)$/;
   /* Framework internals that are never site design tokens. --mui-* and --wp--*
    * are deliberately NOT here: those are mappable palettes. */
@@ -474,6 +480,8 @@
 
   let customPropIndex = null;
   let indexWatermark = -1;
+  let variableDumpCache = null;
+  let variableDumpSeq = 0;
 
   function expandNesting(selector, outer) {
     let result = "", quote = "", nested = false;
@@ -765,6 +773,867 @@
     };
   }
 
+  /* ══ VARIABLE DUMP (read-only export for manual theming) ═══════════════
+   * Unlike scan(), this does not try to map colours to the Matugen palette.
+   * It exports every custom property the page exposes, where it is defined,
+   * and how often it is referenced, so the whole token system can be
+   * inspected or handed to an editor/AI without copying a whole DOM dump. */
+  const DUMP_CHUNK = 512 * 1024;
+  const chunkAt = (text, offset) => {
+    let end = Math.min(offset + DUMP_CHUNK, text.length);
+    /* Never split a surrogate pair across two message payloads. */
+    if (end < text.length && /[\uD800-\uDBFF]/.test(text[end - 1]) &&
+        /[\uDC00-\uDFFF]/.test(text[end])) end--;
+    return text.slice(offset, end);
+  };
+
+  function dumpVariables() {
+    dropIndex();
+    const definitions = new Map();  /* name → [{value, selector, condition, kind}] */
+    const seenDefinitions = new Set();
+    const usage = new Map();        /* name → var() reference count */
+    const addDefinition = (name, value, selector, condition = "", kind = "rule") => {
+      if (!name.startsWith("--")) return;
+      const text = String(value ?? "").trim();
+      if (!text) return;
+      const key = `${name}\u001f${text}\u001f${selector || ""}\u001f${condition}\u001f${kind}`;
+      if (seenDefinitions.has(key)) return;
+      seenDefinitions.add(key);
+      const list = definitions.get(name) ?? [];
+      list.push({ value: text, selector: selector || "", condition, kind });
+      definitions.set(name, list);
+    };
+    const conditionOf = (rule) => {
+      const parts = [];
+      for (let parent = rule.parentRule; parent; parent = parent.parentRule) {
+        if (parent instanceof CSSMediaRule && parent.conditionText) {
+          parts.unshift(`@media ${parent.conditionText}`);
+        } else if (parent instanceof CSSSupportsRule && parent.conditionText) {
+          parts.unshift(`@supports ${parent.conditionText}`);
+        } else if (parent instanceof CSSLayerBlockRule && parent.name) {
+          parts.unshift(`@layer ${parent.name}`);
+        } else if (parent instanceof CSSContainerRule && parent.conditionText) {
+          parts.unshift(`@container ${parent.conditionText}`);
+        }
+      }
+      return parts.join(" ");
+    };
+    const countRefs = (value) => {
+      for (const ref of varRefs(value)) usage.set(ref, (usage.get(ref) ?? 0) + 1);
+    };
+
+    /* Every open shadow root, including roots nested inside other shadows. */
+    const shadowRoots = [];
+    const addShadowRoot = (root) => {
+      if (!root || shadowRoots.includes(root)) return;
+      shadowRoots.push(root);
+      for (const el of root.querySelectorAll("*")) addShadowRoot(el.shadowRoot);
+    };
+    for (const el of document.querySelectorAll("*")) addShadowRoot(el.shadowRoot);
+
+    let sheets = 0;
+    let shadowSheets = 0;
+    const addSheets = (list, shadow = false) => {
+      for (const sheet of list) {
+        if (sheet === SHEET) continue;              /* the picker's own preview */
+        if (shadow) shadowSheets++;
+        else sheets++;
+        try {
+          walkRules(sheet.cssRules, (rule) => {
+            const rawSelector = ruleSelector(rule);
+            const selector = shadow ? `shadow ${rawSelector}` : rawSelector;
+            const condition = conditionOf(rule);
+            for (const name of rule.style) {
+              const value = rule.style.getPropertyValue(name);
+              if (name.startsWith("--")) addDefinition(name, value, selector, condition);
+              if (value) countRefs(value);
+            }
+          });
+        } catch { /* cross-origin or opaque sheet */ }
+      }
+    };
+    addSheets([...document.styleSheets, ...document.adoptedStyleSheets]);
+    for (const root of shadowRoots) {
+      addSheets([...root.styleSheets, ...(root.adoptedStyleSheets ?? [])], true);
+    }
+
+    /* Custom properties written directly on elements (often by scripts). */
+    const collectInline = (root, scope = "") => {
+      for (const el of root.querySelectorAll("[style]")) {
+        const selector = `inline <${el.localName}>${scope}`;
+        for (const name of el.style) {
+          const value = el.style.getPropertyValue(name);
+          if (name.startsWith("--")) addDefinition(name, value, selector, "", "inline");
+          if (value) countRefs(value);
+        }
+      }
+    };
+    collectInline(document);
+    for (const root of shadowRoots) collectInline(root, " (shadow DOM)");
+
+    /* Computed values also cover cross-origin sheets and script-set tokens. */
+    const computed = new Map();  /* name → {root?, body?, shadow?} */
+    const collectComputed = (el, key) => {
+      if (!el) return;
+      const cs = getComputedStyle(el);
+      for (const name of cs) {
+        if (!name.startsWith("--")) continue;
+        const value = cs.getPropertyValue(name).trim();
+        if (!value) continue;
+        const entry = computed.get(name) ?? {};
+        entry[key] = value;
+        computed.set(name, entry);
+      }
+    };
+    collectComputed(document.documentElement, "root");
+    collectComputed(document.body, "body");
+
+    for (const root of shadowRoots) {
+      for (const el of root.querySelectorAll("*")) {
+        const cs = getComputedStyle(el);
+        for (const name of cs) {
+          if (!name.startsWith("--")) continue;
+          const value = cs.getPropertyValue(name).trim();
+          if (!value) continue;
+          const entry = computed.get(name) ?? {};
+          entry.shadow ??= value;
+          computed.set(name, entry);
+        }
+      }
+    }
+    for (const values of computed.values()) {
+      for (const value of Object.values(values)) countRefs(value);
+    }
+
+    const names = [...new Set([...definitions.keys(), ...computed.keys()])]
+      .sort((a, b) => a.localeCompare(b));
+    const prefixOf = (name) => {
+      const cut = name.lastIndexOf("--");
+      if (cut > 2) return name.slice(0, cut + 2);
+      const parts = name.slice(2).split("-");
+      return `--${parts.slice(0, 2).join("-")}`;
+    };
+    const prefixCounts = new Map();
+    for (const name of names) {
+      const prefix = prefixOf(name);
+      prefixCounts.set(prefix, (prefixCounts.get(prefix) ?? 0) + 1);
+    }
+    const prefixes = [...prefixCounts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    const code = (value) => "`" + String(value)
+      .replaceAll("`", "\\`").replaceAll("|", "\\|").replaceAll(/\r?\n/g, " ") + "`";
+
+    const lines = [
+      `# CSS custom properties — ${location.hostname || location.href}`,
+      "",
+      `- URL: ${location.href}`,
+      `- Exported: ${new Date().toISOString()}`,
+      `- Variables: ${names.length}`,
+      `- Accessible stylesheets: ${sheets}`,
+      `- Shadow-root stylesheets: ${shadowSheets}`,
+      `- Open shadow roots: ${shadowRoots.length}`,
+      "",
+      "Cross-origin stylesheets cannot be enumerated; their values are represented by computed values below.",
+      "",
+      "## Prefixes",
+      "",
+      "| Prefix | Variables |",
+      "| --- | ---: |",
+    ];
+    for (const [prefix, count] of prefixes) lines.push(`| ${code(prefix)} | ${count} |`);
+    lines.push(
+      "",
+      "## Computed values",
+      "",
+      "| Variable | Value | Scope | Uses |",
+      "| --- | --- | --- | ---: |",
+    );
+    for (const name of names) {
+      const c = computed.get(name);
+      const value = c?.root || c?.body || c?.shadow || definitions.get(name)?.[0]?.value || "";
+      const scope = c?.root ? ":root" : c?.body ? "body" : c?.shadow ? "shadow DOM" : "definition";
+      lines.push(`| ${code(name)} | ${value ? code(value) : ""} | ${scope} | ${usage.get(name) ?? 0} |`);
+    }
+
+    lines.push("", "## Definitions", "", "| Variable | Value | Selector | Condition |", "| --- | --- | --- | --- |");
+    let definitionCount = 0;
+    for (const name of names) {
+      for (const def of definitions.get(name) ?? []) {
+        definitionCount++;
+        lines.push(`| ${code(name)} | ${code(def.value)} | ${code(def.selector)} | ${code(def.condition)} |`);
+      }
+      for (const [key, label] of [["root", ":root"], ["body", "body"], ["shadow", "shadow DOM"]]) {
+        const value = computed.get(name)?.[key];
+        if (!value) continue;
+        lines.push(`| ${code(name)} | ${code(value)} | ${code(`${label} (computed)`)} | ${code("")} |`);
+      }
+    }
+    lines.push("", `- Definitions: ${definitionCount}`, "");
+
+    const text = lines.join("\n");
+    const id = `dump-${Date.now().toString(36)}-${++variableDumpSeq}`;
+    const filename = `${(location.hostname || "page").replace(/^www\./, "").replace(/[^\w.-]+/g, "_")}.variables.md`;
+    variableDumpCache = { id, text, total: text.length, filename };
+    const chunk = chunkAt(text, 0);
+    return {
+      ok: true,
+      id,
+      count: names.length,
+      definitions: definitionCount,
+      sheets,
+      shadowSheets,
+      shadowRoots: shadowRoots.length,
+      total: text.length,
+      chunk,
+      done: chunk.length >= text.length,
+      filename,
+    };
+  }
+
+  function dumpVariablesChunk(msg) {
+    const cache = variableDumpCache;
+    if (!cache || cache.id !== msg.id) {
+      return { ok: false, error: "The variable report expired — run Export variables again." };
+    }
+    const offset = Number.isInteger(msg.offset) ? msg.offset : -1;
+    if (offset < 0 || offset > cache.total) {
+      return { ok: false, error: `Invalid variable report offset: ${msg.offset}` };
+    }
+    const chunk = chunkAt(cache.text, offset);
+    return {
+      ok: true,
+      id: cache.id,
+      offset,
+      chunk,
+      total: cache.total,
+      done: offset + chunk.length >= cache.total,
+    };
+  }
+
+  /* ══ THEME AUDIT (authoring aid) ════════════════════════════════════
+   * Walks visible text and form controls, resolves their composited background
+   * (including gradient stops) and reports low-contrast or off-palette colours. */
+  const AUDIT_SKIP_TAGS = new Set([
+    "script", "style", "noscript", "template", "meta", "link", "title", "head",
+    "svg", "canvas", "video", "audio", "iframe", "object", "embed", "img",
+    "picture", "option", "datalist", "map", "area",
+  ]);
+  const AUDIT_NONTEXT_INPUTS = new Set([
+    "hidden", "checkbox", "radio", "range", "color", "file", "image",
+  ]);
+  const AUDIT_BG_SURFACE_TOKENS = new Set([
+    "surface", "surface_dim", "surface_bright", "surface_variant",
+    "surface_container_lowest", "surface_container_low", "surface_container",
+    "surface_container_high", "surface_container_highest", "background",
+    "inverse_on_surface", "primary_container", "secondary_container",
+    "tertiary_container", "error_container", "scrim", "shadow",
+  ]);
+  const AUDIT_BG_ACCENT_TOKENS = new Set([
+    "primary", "primary_fixed", "primary_fixed_dim",
+    "secondary", "secondary_fixed", "secondary_fixed_dim",
+    "tertiary", "tertiary_fixed", "tertiary_fixed_dim",
+    "error", "inverse_primary", "surface_tint", "source_color",
+  ]);
+  const AUDIT_FG_ON_DARK_TOKENS = new Set([
+    "on_surface", "on_surface_variant", "on_background",
+    "primary", "primary_fixed", "primary_fixed_dim",
+    "secondary", "secondary_fixed", "secondary_fixed_dim",
+    "tertiary", "tertiary_fixed", "tertiary_fixed_dim",
+    "error", "on_primary_container", "on_secondary_container",
+    "on_tertiary_container", "on_error_container", "outline",
+  ]);
+  const AUDIT_FG_ON_LIGHT_TOKENS = new Set([
+    "on_primary", "on_primary_fixed", "on_primary_fixed_variant",
+    "on_secondary", "on_secondary_fixed", "on_secondary_fixed_variant",
+    "on_tertiary", "on_tertiary_fixed", "on_tertiary_fixed_variant",
+    "on_error", "inverse_on_surface", "inverse_primary",
+    "surface", "background", "surface_container_lowest",
+  ]);
+  const AUDIT_SECONDARY_TOKENS = new Set([
+    "background", "surface_dim", "surface_tint", "source_color", "scrim", "shadow",
+    "primary_fixed", "primary_fixed_dim", "on_primary_fixed", "on_primary_fixed_variant",
+    "secondary_fixed", "secondary_fixed_dim", "on_secondary_fixed", "on_secondary_fixed_variant",
+    "tertiary_fixed", "tertiary_fixed_dim", "on_tertiary_fixed", "on_tertiary_fixed_variant",
+  ]);
+  const AUDIT_DELTA_MAX = 14;
+  const AUDIT_ACCENT_BG_DELTA_MAX = 8;
+  const AUDIT_INVERSE_BG_DELTA_MAX = 3.5;
+  const AUDIT_MAX_ELEMENTS = 6000;
+  const AUDIT_MAX_FINDINGS = 100;
+  const AUDIT_SHEET = new CSSStyleSheet();
+  let auditTimer = 0;
+
+  function clearAudit() {
+    clearTimeout(auditTimer);
+    auditTimer = 0;
+    document.adoptedStyleSheets = document.adoptedStyleSheets.filter((s) => s !== AUDIT_SHEET);
+  }
+
+  function showAudit(selectors) {
+    clearAudit();
+    if (!selectors.length) return;
+    try {
+      AUDIT_SHEET.replaceSync(selectors.slice(0, 500)
+        .map((sel) => `${sel}{outline:2px solid var(--primary, #ffb59d) !important;outline-offset:1px !important;}`)
+        .join("\n"));
+      document.adoptedStyleSheets = [...document.adoptedStyleSheets, AUDIT_SHEET];
+      auditTimer = setTimeout(clearAudit, 60_000);
+    } catch { /* an exotic selector must not break the audit */ }
+  }
+
+  const rgbHex = ({ r, g, b }) => "#" + [r, g, b]
+    .map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0"))
+    .join("");
+
+  const contrastRatio = (a, b) => {
+    const la = luminance(a.r, a.g, a.b), lb = luminance(b.r, b.g, b.b);
+    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+  };
+
+  const blendOver = (fg, bg) => ({
+    r: fg.r * fg.a + bg.r * (1 - fg.a),
+    g: fg.g * fg.a + bg.g * (1 - fg.a),
+    b: fg.b * fg.a + bg.b * (1 - fg.a),
+    a: 1,
+  });
+
+  function toLab({ r, g, b }) {
+    const R = srgb(r), G = srgb(g), B = srgb(b);
+    const x = (0.4124 * R + 0.3576 * G + 0.1805 * B) / 0.95047;
+    const y = 0.2126 * R + 0.7152 * G + 0.0722 * B;
+    const z = (0.0193 * R + 0.1192 * G + 0.9505 * B) / 1.08883;
+    const f = (t) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116);
+    const fx = f(x), fy = f(y), fz = f(z);
+    return { L: 116 * fy - 16, a: 500 * (fx - fy), b: 200 * (fy - fz) };
+  }
+
+  const deltaE = (a, b) => Math.hypot(a.L - b.L, a.a - b.a, a.b - b.b);
+
+  function nearestToken(lab, list) {
+    let best = null;
+    for (const p of list) {
+      const d = deltaE(lab, p.lab);
+      if (!best || d < best.delta - 0.5 ||
+          (Math.abs(d - best.delta) <= 0.5 && p.rank < best.rank)) {
+        best = { token: p.token, delta: d, rank: p.rank };
+      }
+    }
+    return best;
+  }
+
+  function auditPalette(given) {
+    const out = [];
+    const rootCs = getComputedStyle(document.documentElement);
+    for (const token of PALETTE_OWNED) {
+      const raw = (given && given[`--${token}`]) || rootCs.getPropertyValue(`--${token}`).trim();
+      if (!raw) continue;
+      const col = parseCssColor(String(raw).trim(), document.documentElement);
+      if (col && col.a > 0.5) {
+        out.push({
+          token, col, lab: toLab(col),
+          rank: AUDIT_SECONDARY_TOKENS.has(token) ? 2 : (token.includes("_container") ? 1 : 0),
+          isBgSurface: AUDIT_BG_SURFACE_TOKENS.has(token),
+          isBgAccent: AUDIT_BG_ACCENT_TOKENS.has(token),
+          isFgDark: AUDIT_FG_ON_DARK_TOKENS.has(token),
+          isFgLight: AUDIT_FG_ON_LIGHT_TOKENS.has(token),
+        });
+      }
+    }
+    return out;
+  }
+
+  const COLOR_STOP_RE = /#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})\b|(?:rgba?|hsla?|hwb|lab|lch|oklab|oklch|color|color-mix)\((?:[^()]|\([^()]*\))+\)|\btransparent\b/gi;
+
+  function parseGradientStops(bgImage, el) {
+    const matches = bgImage.match(COLOR_STOP_RE);
+    if (!matches?.length) return null;
+    const stops = [];
+    for (const raw of matches) {
+      if (/^transparent$/i.test(raw)) {
+        stops.push({ r: 0, g: 0, b: 0, a: 0 });
+        continue;
+      }
+      const c = parseCssColor(raw, el);
+      if (c) stops.push(c);
+    }
+    return stops.length ? stops : null;
+  }
+
+  function defaultCanvasColor() {
+    const rootCs = getComputedStyle(document.documentElement);
+    const bodyCs = document.body ? getComputedStyle(document.body) : rootCs;
+    const scheme = `${rootCs.colorScheme} ${bodyCs.colorScheme}`;
+    if (/\bdark\b/i.test(scheme)) {
+      const surface = parseCssColor(rootCs.getPropertyValue("--surface").trim(), document.documentElement);
+      return surface && surface.a >= 1 ? surface : { r: 26, g: 17, b: 15, a: 1 };
+    }
+    return { r: 255, g: 255, b: 255, a: 1 };
+  }
+
+  /* Author stylesheets cannot override an inline !important background unless
+   * it references a CSS variable. Skip off-palette-background for such owners. */
+  function isInlineLockedBg(el) {
+    const st = el?.style;
+    if (!st) return false;
+    if (st.getPropertyPriority("background-color") === "important") {
+      const raw = st.getPropertyValue("background-color");
+      if (raw && !varRefs(raw).length) {
+        const col = parseCssColor(raw, el);
+        if (col && col.a >= 0.999) return true;
+      }
+    }
+    if (st.getPropertyPriority("background-image") === "important") {
+      const raw = st.getPropertyValue("background-image");
+      if (raw && /gradient\(/i.test(raw) && !varRefs(raw).length) {
+        const stops = parseGradientStops(raw, el);
+        if (stops?.length && stops.every((s) => s.a >= 0.999)) return true;
+      }
+    }
+    return false;
+  }
+
+  function auditBackground(el, fallbackCanvas, skipSelfBg = false) {
+    const allNodes = [];
+    let imageOwner = null, bgOwner = null, opaqueAt = -1;
+    for (let n = el; n && n.nodeType === 1;
+         n = n.parentElement || n.getRootNode?.()?.host || null) {
+      const cs = getComputedStyle(n);
+      const op = Number(cs.opacity);
+      const opacity = Number.isFinite(op) ? Math.max(0, Math.min(1, op)) : 1;
+      if (skipSelfBg && n === el) {
+        if (opacity < 0.999) allNodes.push({ stops: null, opacity });
+        continue;
+      }
+      if (opaqueAt >= 0) {
+        if (opacity < 0.999) opaqueAt = -1;
+        else continue;
+      }
+      const bgi = cs.backgroundImage;
+      const col = parseCssColor(cs.backgroundColor, n);
+      let stops = null;
+      if (bgi && bgi !== "none") {
+        if (/url\(/i.test(bgi) && (!col || col.a < 0.999)) imageOwner ??= n;
+        if (/gradient\(/i.test(bgi)) stops = parseGradientStops(bgi, n);
+      }
+      if (stops) {
+        bgOwner ??= n;
+        const opaqueStops = stops.every((s) => s.a >= 0.999);
+        if (col && col.a > 0 && !opaqueStops) {
+          stops = stops.map((s) => (s.a >= 1 ? s : {
+            ...blendOver(s, col),
+            a: s.a + col.a * (1 - s.a),
+          }));
+        }
+        allNodes.push({ stops, opacity });
+        if ((opaqueStops || (col && col.a >= 0.999)) && opacity >= 0.999) opaqueAt = allNodes.length;
+        continue;
+      }
+      if (col && col.a > 0) {
+        bgOwner ??= n;
+        allNodes.push({ stops: [col], opacity });
+        if (col.a >= 0.999 && opacity >= 0.999) opaqueAt = allNodes.length;
+      } else if (opacity < 0.999) {
+        allNodes.push({ stops: null, opacity });
+      }
+    }
+    const layers = opaqueAt >= 0 ? allNodes.slice(0, opaqueAt) : allNodes;
+    let states = [{
+      rawBg: fallbackCanvas,
+      fgScale: 1,
+      fgOffset: { r: 0, g: 0, b: 0 },
+    }];
+    for (let i = layers.length - 1; i >= 0; i--) {
+      const { stops, opacity } = layers[i];
+      const next = [];
+      for (const st of states) {
+        const fgScale = st.fgScale * opacity;
+        const fgOffset = {
+          r: st.fgScale * (1 - opacity) * st.rawBg.r + st.fgOffset.r,
+          g: st.fgScale * (1 - opacity) * st.rawBg.g + st.fgOffset.g,
+          b: st.fgScale * (1 - opacity) * st.rawBg.b + st.fgOffset.b,
+        };
+        if (!stops) {
+          next.push({ rawBg: st.rawBg, fgScale, fgOffset });
+          continue;
+        }
+        for (const s of stops) {
+          const rawBg = s.a >= 1 ? { r: s.r, g: s.g, b: s.b, a: 1 } : blendOver(s, st.rawBg);
+          next.push({ rawBg, fgScale, fgOffset });
+        }
+      }
+      states = next.slice(0, 8);
+    }
+    const bgs = states.map((st) => ({
+      rawBg: st.rawBg,
+      screenBg: {
+        r: st.fgScale * st.rawBg.r + st.fgOffset.r,
+        g: st.fgScale * st.rawBg.g + st.fgOffset.g,
+        b: st.fgScale * st.rawBg.b + st.fgOffset.b,
+        a: 1,
+      },
+      fgScale: st.fgScale,
+      fgOffset: st.fgOffset,
+    }));
+    return {
+      bgs,
+      imageOwner,
+      bgOwner: bgOwner || document.body || document.documentElement,
+    };
+  }
+
+  function auditTextOf(el) {
+    const tag = el.localName;
+    if (tag === "input") {
+      const type = (el.getAttribute("type") || "text").toLowerCase();
+      if (AUDIT_NONTEXT_INPUTS.has(type)) return "";
+      const val = String(el.value || "").replace(/\s+/g, " ").trim();
+      if (val) return val;
+      return String(el.placeholder || "").replace(/\s+/g, " ").trim();
+    }
+    if (tag === "textarea") {
+      const val = String(el.value || "").replace(/\s+/g, " ").trim();
+      if (val) return val;
+      return String(el.placeholder || "").replace(/\s+/g, " ").trim();
+    }
+    if (tag === "select") return String(el.selectedOptions?.[0]?.textContent || "").replace(/\s+/g, " ").trim();
+    let text = "";
+    for (const n of el.childNodes) if (n.nodeType === 3) text += n.textContent;
+    text = text.replace(/\s+/g, " ").trim();
+    if (text || el.childElementCount > 0) return text;
+    for (const pseudo of ["::before", "::after"]) {
+      const content = getComputedStyle(el, pseudo).content;
+      if (content && content !== "none" && content !== "normal" && /^["']/.test(content)) {
+        const cleaned = content.slice(1, -1).replace(/\s+/g, " ").trim();
+        if (cleaned) return cleaned;
+      }
+    }
+    return "";
+  }
+
+  /* Screen-reader-only (.sr-only) elements remain display:block and 1×1px so
+   * checkVisibility() and getClientRects() pass. Skip only clipped/1×1 nodes. */
+  function isVisuallyHidden(cs, rects) {
+    if (!rects.length) return true;
+    if ((parseFloat(cs.fontSize) || 0) < 1) return true;
+    const r = rects[0];
+    if (r.width <= 2 && r.height <= 2 &&
+        (cs.overflowX === "hidden" || cs.overflowX === "clip") &&
+        (cs.overflowY === "hidden" || cs.overflowY === "clip")) {
+      return true;
+    }
+    const cp = cs.clipPath;
+    if (cp && cp !== "none" &&
+        /^(?:inset\(\s*(?:[5-9]\d|\d{3,})%|circle\(\s*0(?:px|%)?\b)/i.test(cp)) {
+      return true;
+    }
+    const clip = cs.clip;
+    if (clip && clip !== "auto" &&
+        /^rect\(\s*(?:0|1)px,\s*(?:0|1)px,\s*(?:0|1)px,\s*(?:0|1)px\s*\)$/i.test(clip)) {
+      return true;
+    }
+    return false;
+  }
+
+  /* Prefer a unique ID or bounded class selector so equal offenders highlight together. */
+  function auditSelector(el) {
+    let targetEl = el;
+    while (targetEl?.getRootNode?.() instanceof ShadowRoot) {
+      targetEl = targetEl.getRootNode().host;
+    }
+    if (!targetEl || targetEl.nodeType !== 1) return "";
+    const list = candidates(targetEl);
+    return list.find((c) => c.sel.startsWith("#") && !c.sel.includes(" ") && c.n === 1)?.sel
+      ?? list.find((c) => c.sel.includes(".") && c.n <= 80)?.sel
+      ?? list[0]?.sel ?? nthPath(targetEl);
+  }
+
+  function audit(msg) {
+    clearAudit();
+    const palette = auditPalette(msg?.palette);
+    const bgSurfacePalette = palette.filter((p) => p.isBgSurface);
+    const bgAccentPalette = palette.filter((p) => p.isBgAccent);
+    const bgAllValid = [...bgSurfacePalette, ...bgAccentPalette];
+    const fgDarkPalette = palette.filter((p) => p.isFgDark);
+    const fgLightPalette = palette.filter((p) => p.isFgLight);
+    const inverseSurface = palette.find((p) => p.token === "inverse_surface") ?? null;
+    const root = document.body || document.documentElement;
+    if (!root) return { ok: false, error: "The page has no body to audit." };
+
+    const fallbackCanvas = defaultCanvasColor();
+    const seen = new Map();
+    const surfaceState = new WeakMap();
+    const skippedImages = new WeakSet();
+    const roots = [root];
+    let scanned = 0, textCount = 0, imageSkipped = 0, lockedBgSkipped = 0, shadowRoots = 0;
+
+    const filter = {
+      acceptNode(node) {
+        if (node === hostEl || node.localName === "dusky-picker") return NodeFilter.FILTER_REJECT;
+        if (AUDIT_SKIP_TAGS.has(node.localName)) return NodeFilter.FILTER_REJECT;
+        if (node.matches?.(':disabled, [disabled], [aria-disabled="true"]')) return NodeFilter.FILTER_REJECT;
+        if (!node.checkVisibility({ checkOpacity: true })) return NodeFilter.FILTER_REJECT;
+        return NodeFilter.FILTER_ACCEPT;
+      },
+    };
+
+    const classifyBgStop = (col) => {
+      const lab = toLab(col);
+      const surfMatch = nearestToken(lab, bgSurfacePalette);
+      if (surfMatch && surfMatch.delta <= AUDIT_DELTA_MAX) {
+        return { off: false, match: surfMatch, lab };
+      }
+      const accMatch = nearestToken(lab, bgAccentPalette);
+      if (accMatch && accMatch.delta <= AUDIT_ACCENT_BG_DELTA_MAX) {
+        return { off: false, match: accMatch, lab };
+      }
+      if (inverseSurface && deltaE(lab, inverseSurface.lab) <= AUDIT_INVERSE_BG_DELTA_MAX) {
+        return {
+          off: false,
+          match: { token: "inverse_surface", delta: deltaE(lab, inverseSurface.lab), rank: 1 },
+          lab,
+        };
+      }
+      const fallbackMatch = nearestToken(lab, bgSurfacePalette.length ? bgSurfacePalette : palette);
+      return { off: true, match: fallbackMatch, lab };
+    };
+
+    for (let rIdx = 0; rIdx < roots.length && scanned < AUDIT_MAX_ELEMENTS; rIdx++) {
+      const walker = document.createTreeWalker(roots[rIdx], NodeFilter.SHOW_ELEMENT, filter);
+      for (let el = walker.nextNode();
+           el && scanned < AUDIT_MAX_ELEMENTS;
+           el = walker.nextNode()) {
+        scanned++;
+        if (el.shadowRoot && !roots.includes(el.shadowRoot)) {
+          roots.push(el.shadowRoot);
+          shadowRoots++;
+        }
+
+        const text = auditTextOf(el);
+        if (!text) continue;
+
+        const cs = getComputedStyle(el);
+        if (cs.visibility !== "visible") continue;
+        const rects = el.getClientRects();
+        if (isVisuallyHidden(cs, rects)) continue;
+
+        const isPlaceholder = (el.localName === "input" || el.localName === "textarea") &&
+          !String(el.value || "").trim() && !!el.placeholder;
+        let fgStops = null;
+        let skipSelfBg = false;
+
+        if (isPlaceholder) {
+          const pcs = getComputedStyle(el, "::placeholder");
+          const pCol = parseCssColor(pcs.color, el);
+          const pOp = Number(pcs.opacity);
+          if (pCol) {
+            fgStops = [{
+              ...pCol,
+              a: pCol.a * (Number.isFinite(pOp) ? Math.max(0, Math.min(1, pOp)) : 1),
+            }];
+          }
+        } else {
+          const fillRaw = cs.webkitTextFillColor;
+          const fillCol = fillRaw ? parseCssColor(fillRaw, el) : null;
+          const rawFg = (fillCol && fillCol.a > 0) ? fillCol : parseCssColor(cs.color, el);
+          const bgClip = cs.backgroundClip || cs.webkitBackgroundClip || "";
+          if ((!rawFg || rawFg.a < 0.05) && bgClip === "text") {
+            const clipStops = cs.backgroundImage && cs.backgroundImage !== "none"
+              ? parseGradientStops(cs.backgroundImage, el)
+              : null;
+            const clipBg = parseCssColor(cs.backgroundColor, el);
+            fgStops = clipStops || (clipBg && clipBg.a >= 0.05 ? [clipBg] : null);
+            skipSelfBg = true;
+          } else if (rawFg) {
+            fgStops = [rawFg];
+          }
+        }
+
+        if (!fgStops || !fgStops.some((s) => s.a >= 0.05)) continue;
+        textCount++;
+
+        const { bgs, imageOwner, bgOwner } = auditBackground(el, fallbackCanvas, skipSelfBg);
+        let bg = bgs[0].screenBg, rawBg = bgs[0].rawBg;
+        let rawInk = fgStops[0], ink = fgStops[0], ratio = Infinity;
+
+        for (const st of bgs) {
+          for (const fStop of fgStops) {
+            if (fStop.a < 0.05) continue;
+            const candRawInk = fStop.a >= 1 ? fStop : blendOver(fStop, st.rawBg);
+            const candScreenInk = {
+              r: st.fgScale * candRawInk.r + st.fgOffset.r,
+              g: st.fgScale * candRawInk.g + st.fgOffset.g,
+              b: st.fgScale * candRawInk.b + st.fgOffset.b,
+              a: 1,
+            };
+            const candRatio = contrastRatio(candScreenInk, st.screenBg);
+            if (candRatio < ratio) {
+              ratio = candRatio;
+              bg = st.screenBg;
+              rawBg = st.rawBg;
+              rawInk = candRawInk;
+              ink = candScreenInk;
+            }
+          }
+        }
+
+        const size = parseFloat(cs.fontSize) || 16;
+        const weight = cs.fontWeight === "bold" ? 700 : (parseInt(cs.fontWeight, 10) || 400);
+        const large = size >= 24 || (size >= 18.66 && weight >= 700);
+        const need = large ? 3 : 4.5;
+        const reasons = [];
+
+        if (imageOwner) {
+          if (!skippedImages.has(imageOwner)) {
+            skippedImages.add(imageOwner);
+            imageSkipped++;
+          }
+        } else if (ratio < need) {
+          reasons.push("low-contrast");
+        }
+
+        let surfInfo = bgOwner ? surfaceState.get(bgOwner) : null;
+        if (!surfInfo && !imageOwner && bgAllValid.length && bgOwner) {
+          let worstStop = null;
+          for (const st of bgs) {
+            const res = classifyBgStop(st.rawBg);
+            if (!worstStop || (res.off && !worstStop.off) ||
+                (res.off === worstStop.off && (res.match?.delta ?? 0) > (worstStop.match?.delta ?? 0))) {
+              worstStop = res;
+            }
+          }
+          const off = !!worstStop?.off;
+          const locked = off && isInlineLockedBg(bgOwner);
+          if (locked) lockedBgSkipped++;
+          surfInfo = {
+            off,
+            locked,
+            bgNearest: worstStop?.match ?? null,
+            reported: false,
+          };
+          surfaceState.set(bgOwner, surfInfo);
+        }
+
+        let bgNearest = surfInfo?.bgNearest ?? null;
+        if (surfInfo?.off && !surfInfo.locked && !surfInfo.reported) {
+          surfInfo.reported = true;
+          reasons.push("off-palette-background");
+        }
+
+        const bgLab = toLab(rawBg);
+        const activeFgPool = bgLab.L > 45
+          ? (fgLightPalette.length ? fgLightPalette : palette)
+          : (fgDarkPalette.length ? fgDarkPalette : palette);
+        const fgLab = toLab(rawInk);
+        const nearest = nearestToken(fgLab, activeFgPool);
+        if (!imageOwner && !surfInfo?.off && nearest && nearest.delta > AUDIT_DELTA_MAX) {
+          reasons.push("off-palette-text");
+        }
+
+        if (!reasons.length) continue;
+
+        const sig = `${el.localName}.${[...el.classList].sort().join(".")}` +
+          `|${rgbHex(ink)}|${rgbHex(bg)}|${reasons.join(",")}`;
+        const selector = auditSelector(el);
+        const ownerSel = (reasons.includes("off-palette-background") && bgOwner && bgOwner !== el)
+          ? auditSelector(bgOwner) : "";
+        const hit = seen.get(sig);
+        if (hit) {
+          hit.count++;
+          if (selector && hit.selectors.size < 5) hit.selectors.add(selector);
+          if (ownerSel && hit.selectors.size < 5) hit.selectors.add(ownerSel);
+          continue;
+        }
+        if (!selector) continue;
+        const selectors = new Set([selector]);
+        if (ownerSel) selectors.add(ownerSel);
+        seen.set(sig, {
+          selector,
+          selectors,
+          text: text.slice(0, 140),
+          count: 1,
+          reasons,
+          fg: rgbHex(ink),
+          bg: rgbHex(bg),
+          ratio: Math.round(ratio * 100) / 100,
+          need,
+          nearest: nearest?.token ?? "",
+          delta: Math.round(nearest?.delta ?? 0),
+          bgToken: bgNearest?.token ?? "",
+          bgDelta: Math.round(bgNearest?.delta ?? 0),
+          html: el.outerHTML.replace(/\s+/g, " ").slice(0, 360),
+        });
+      }
+    }
+
+    dropProbe();
+    const allIssues = [...seen.values()].sort((a, b) => {
+      const rank = (x) => (x.reasons.includes("low-contrast") ? 0 : 1);
+      return rank(a) - rank(b) || b.count - a.count || a.ratio - b.ratio;
+    });
+    let shown;
+    if (allIssues.length <= AUDIT_MAX_FINDINGS) {
+      shown = allIssues;
+    } else {
+      const lowList = allIssues.filter((i) => i.reasons.includes("low-contrast"));
+      const offList = allIssues.filter((i) => !i.reasons.includes("low-contrast"));
+      const lowQuota = Math.min(lowList.length, Math.max(75, AUDIT_MAX_FINDINGS - offList.length));
+      const offQuota = Math.min(offList.length, AUDIT_MAX_FINDINGS - lowQuota);
+      shown = [...lowList.slice(0, lowQuota), ...offList.slice(0, offQuota)];
+    }
+    showAudit([...new Set(shown.flatMap((i) => [...i.selectors]))]);
+
+    const low = allIssues.filter((i) => i.reasons.includes("low-contrast")).length;
+    const off = allIssues.filter((i) => i.reasons.some((r) => r.startsWith("off-palette"))).length;
+    const capHit = scanned >= AUDIT_MAX_ELEMENTS;
+    const host = (location.hostname || "page").replace(/^www\./, "");
+    const lines = [
+      `# Dusky theme audit — ${host}`,
+      "",
+      `- URL: ${location.href}`,
+      `- Palette: ${palette.length} token(s) loaded` +
+        (palette.length ? "" : " — palette variables were not found on this page"),
+      `- Scanned: ${scanned}${capHit ? ` (cap ${AUDIT_MAX_ELEMENTS} reached)` : ""} elements` +
+        (shadowRoots ? ` across ${shadowRoots} shadow root(s)` : "") +
+        `, ${textCount} with visible text` +
+        (imageSkipped ? `, ${imageSkipped} url-image background(s) skipped` : "") +
+        (lockedBgSkipped ? `, ${lockedBgSkipped} inline-!important background(s) skipped` : ""),
+      `- Findings: ${allIssues.length} (${low} low contrast, ${off} off-palette)` +
+        (allIssues.length > shown.length ? ` — showing the first ${shown.length}` : ""),
+      "",
+    ];
+
+    if (!shown.length) {
+      lines.push("No problems found. 🎉", "");
+    } else {
+      shown.forEach((it, i) => {
+        lines.push(
+          `## ${i + 1}. \`${it.selector}\`${it.count > 1 ? ` ×${it.count}` : ""}`,
+          `- ${it.reasons.join(", ")}`,
+          `- contrast ${it.ratio}:1 (needs ${it.need}:1) · fg ${it.fg} · bg ${it.bg}`,
+          `- nearest text token: ${it.nearest || "none"} (ΔE ${it.delta})` +
+            (it.bgToken ? ` · nearest bg token: ${it.bgToken} (ΔE ${it.bgDelta})` : ""),
+          `- text: “${it.text}”`,
+          "```html",
+          it.html,
+          "```",
+          "",
+        );
+      });
+    }
+
+    return {
+      ok: true,
+      scanned,
+      textCount,
+      imageSkipped,
+      lockedBgSkipped,
+      issues: allIssues.length,
+      lowContrast: low,
+      offPalette: off,
+      truncated: allIssues.length > shown.length || capHit,
+      text: lines.join("\n"),
+    };
+  }
+
   /* ══ VISUAL PICKER ══════════════════════════════════════════════════ */
   const LIMITS = { RULES: 600, DECL: 4096, SEL: 512, BODY: 512 * 1024 };
 
@@ -943,9 +1812,15 @@
 
   const PAIRED_ON = {
     primary: "on_primary", primary_container: "on_primary_container",
+    primary_fixed: "on_primary_fixed", primary_fixed_dim: "on_primary_fixed",
     secondary: "on_secondary", secondary_container: "on_secondary_container",
+    secondary_fixed: "on_secondary_fixed", secondary_fixed_dim: "on_secondary_fixed",
     tertiary: "on_tertiary", tertiary_container: "on_tertiary_container",
-    error: "on_error", error_container: "on_error_container", background: "on_background",
+    tertiary_fixed: "on_tertiary_fixed", tertiary_fixed_dim: "on_tertiary_fixed",
+    error: "on_error", error_container: "on_error_container",
+    background: "on_background", inverse_surface: "inverse_on_surface",
+    inverse_primary: "on_primary_container", surface_tint: "on_primary",
+    source_color: "on_primary", scrim: "on_surface", shadow: "on_surface",
   };
 
   function declFor(group, token) {
@@ -1021,6 +1896,7 @@
     if (elm?.nodeType !== 1) return [];
     const cs = getComputedStyle(elm);
     const rootCs = getComputedStyle(document.documentElement);
+    const bodyCs = document.body ? getComputedStyle(document.body) : rootCs;
     const out = new Map();
     const index = propIndex();
     const owners = new Map();
@@ -1034,18 +1910,16 @@
       for (const name of node.style) {
         if (own && name.startsWith("--") && !/^(?:inherit|unset)$/i.test(node.style.getPropertyValue(name).trim()) && !owners.has(name)) owners.set(name, node);
       }
-      if (node !== elm) for (const name of colorRefs(node.style, true)) inheritedRefs.add(name);
+      if (node !== elm) for (const name of colorRefs(node.style)) inheritedRefs.add(name);
     }
     for (const r of index) {
       if (r.refs.length && ruleMatches(elm, r)) for (const name of r.refs) directRefs.add(name);
-      // closest() performs the selector search in Gecko; scope checks can skip
-      // a nearer match excluded by a limit without losing the inherited owner.
       let owner, ancestor;
       try {
         if (r.props.length) owner = closestRule(elm, r);
-        if (r.inheritedRefs.length) ancestor = closestRule(elm.parentElement, r);
+        if (r.refs.length) ancestor = closestRule(elm.parentElement, r);
       } catch { continue; }
-      if (ancestor) for (const name of r.inheritedRefs) inheritedRefs.add(name);
+      if (ancestor) for (const name of r.refs) inheritedRefs.add(name);
       if (!owner || owner === document.documentElement) continue;
       for (const name of r.props) {
         if (/^(?:inherit|unset)$/i.test(r.rule.style.getPropertyValue(name).trim())) continue;
@@ -1057,38 +1931,59 @@
       if (!scopes.has(node)) scopes.set(node, candidates(node).at(0)?.sel || selected());
       return scopes.get(node);
     };
-    const add = (name, used = false) => {
+    const add = (name, used = false, direct = false) => {
       if (skipVar(name)) return;
-      if (out.has(name)) { out.get(name).used ||= used; return; }
-      const value = cs.getPropertyValue(name).trim();
-      const col = parseCssColor(value, elm);
-      if (!col || col.a === 0) return;
+      if (out.has(name)) {
+        const entry = out.get(name);
+        entry.used ||= used;
+        entry.direct ||= direct;
+        return;
+      }
+      const value = cs.getPropertyValue(name).trim() ||
+        rootCs.getPropertyValue(name).trim() ||
+        bodyCs.getPropertyValue(name).trim();
+      let col = parseCssColor(value, elm);
+      if (!col || col.a === 0) {
+        if (!used || !(col?.a === 0 || /^transparent$/i.test(value))) return;
+        col = { r: 0, g: 0, b: 0, a: 1, shape: "color" };
+      }
       /* A child declaration beats an inherited root declaration, regardless
        * of the root selector's specificity. Suggest the nearest owner. */
       const owner = owners.get(name);
       const global = !owner && rootCs.getPropertyValue(name).trim() === value;
       const scope = global ? rootScope : scopeFor(owner ?? elm);
-      out.set(name, { name, value: value.length > 44 ? value.slice(0, 41) + "…" : value,
-        used, scope: scope || selected(), global, local: owner === elm,
+      const label = value || "transparent";
+      out.set(name, { name, value: label.length > 44 ? label.slice(0, 41) + "…" : label,
+        used, direct, scope: scope || selected(), global, local: owner === elm,
         col });
     };
     /* Read authored declarations: computed colours have lost their var() references. */
-    for (const name of directRefs) add(name, true);
-    // Text and SVG colours can be inherited without a declaration on the clicked node.
-    for (const name of inheritedRefs) add(name, true);
+    for (const name of directRefs) add(name, true, true);
     for (const cls of elm.classList) {
       const name = /^[a-z-]+-\((--[\w-]+)\)$/.exec(cls)?.[1];
-      if (name) add(name, true);
+      if (name) add(name, true, true);
       const tok = /^[a-z-]+-token-([\w-]+)$/.exec(cls)?.[1];
-      if (tok) add("--" + tok, true);
+      if (tok) add("--" + tok, true, true);
     }
-    /* Computed custom properties remain available even for opaque CDN sheets.
-     * Offer their colour tokens after directly referenced ones. */
+    // Text, SVG and background colours can be inherited without a declaration on the clicked node.
+    for (const name of inheritedRefs) add(name, true, false);
+    /* Gecko does not enumerate --* on getComputedStyle(); list owners and prop references instead. */
+    for (const name of owners.keys()) add(name);
+    for (const node of [document.documentElement, document.body]) {
+      if (node?.style) for (const name of node.style) if (name.startsWith("--")) add(name);
+    }
+    for (const r of index) {
+      for (const name of r.props) add(name);
+      for (const name of r.refs) add(name);
+    }
     for (const name of cs) if (name.startsWith("--")) add(name);
     verifyVariableInheritance([...out.values()], () => scopeFor(elm));
     dropProbe();
-    return [...out.values()].sort((a, b) => Number(b.used) - Number(a.used) ||
-      Number(isSemanticThemeVar(b.name)) - Number(isSemanticThemeVar(a.name)) || a.name.localeCompare(b.name));
+    return [...out.values()].sort((a, b) =>
+      Number(b.direct) - Number(a.direct) ||
+      Number(b.used) - Number(a.used) ||
+      Number(isSemanticThemeVar(b.name)) - Number(isSemanticThemeVar(a.name)) ||
+      a.name.localeCompare(b.name));
   }
 
   function resetVarSelection() {
@@ -1190,6 +2085,7 @@
           const value = palette.getPropertyValue(`--${token}${suffix}`).trim();
           if (value && !/[;{}]/.test(value)) {
             declarations.push(`--dusky-picker-${token}${suffix}:${value} !important;`);
+            hostEl.style.setProperty(`--dusky-picker-${token}${suffix}`, value, "important");
             colors[`--${token}${suffix}`] = value;
           }
         }
@@ -1204,6 +2100,7 @@
       if (!/^--[\w-]+$/.test(name) || typeof value !== "string" || /[;{}]/.test(value)) continue;
       if (!PALETTE_OWNED.has(name.slice(2).replace(PALETTE_SUFFIX, ""))) continue;
       declarations.push(`--dusky-picker-${name.slice(2)}:${value} !important;`);
+      hostEl.style.setProperty(`--dusky-picker-${name.slice(2)}`, value, "important");
     }
     paletteCss = `:root{${declarations.join("")}}`;
     theme.apply(hostEl, reply.colors);
@@ -1246,10 +2143,8 @@
       return { highlight: useSel, css: `${useSel}{display:revert !important;${OUTLINE}}` };
     }
     if (k.group?.startsWith("custom:")) {
-      /* Substitute the token into the existing var() if the rule has one,
-       * otherwise just highlight — never lie with an unrelated background. */
       const swapped = remapPalette(decl, token);
-      return { highlight: useSel, css: swapped === decl ? "" : `${useSel}{${swapped}}` };
+      return { highlight: useSel, css: `${useSel}{${swapped === decl ? declFor(colourGroup(k.group), token) : swapped}}` };
     }
     return { highlight: useSel, css: `${useSel}{${declFor(colourGroup(k.group), token)}}` };
   }
@@ -1643,7 +2538,7 @@ button,input,select,textarea{font:inherit;color:inherit;background:none;border:0
           el("i", { class: "chip", style: { background: `var(--dusky-picker-${token}, var(--dusky-ui-control))` } }),
           el("span", { class: "swatch-name", text: label }),
         );
-        b.addEventListener("pointerenter", () => { if (!b.disabled) this.onHover?.(token); });
+        b.addEventListener("pointerenter", () => this.onHover?.(token));
         b.addEventListener("pointerleave", () => this.onLeave?.());
         b.addEventListener("focus", () => this.onHover?.(token));
         b.addEventListener("blur", () => this.onLeave?.());
@@ -1655,12 +2550,10 @@ button,input,select,textarea{font:inherit;color:inherit;background:none;border:0
       this.refreshAvailability();
     }
     refreshAvailability() {
-      const palette = getComputedStyle(document.documentElement);
       for (const b of this.buttons) {
         const token = b.dataset.token, label = b.getAttribute("aria-label");
-        b.disabled = !CSS.supports("color", palette.getPropertyValue(`--dusky-picker-${token}`).trim());
-        b.title = b.disabled ? `${label} — palette color unavailable; regenerate Matugen and Resync`
-          : `${label} — var(--${token})`;
+        const val = hostEl.style.getPropertyValue(`--dusky-picker-${token}`).trim();
+        b.title = val ? `${label} — var(--${token}) (${val})` : `${label} — var(--${token})`;
       }
     }
     setActive(token) {
@@ -1741,8 +2634,6 @@ button,input,select,textarea{font:inherit;color:inherit;background:none;border:0
         el("span", { class: "name", text: value }), el("span", { class: "detail", text: detail }));
       const preview = () => {
         if (S.pickStep !== "target") return;
-        const primary = getComputedStyle(document.documentElement).getPropertyValue("--dusky-picker-primary").trim();
-        if (!CSS.supports("color", primary)) { flash("Primary is unavailable — regenerate the palette and Resync", "warn"); return; }
         Preview.show(variable
           ? { highlight: "", css: `${variableScope(choice)}{${CSS.escape(value)}:${paletteValue("primary", choice.col)} !important;}` }
           : { highlight: value, css: `${value}{${declFor(colourGroup(S.group), "primary")}}` });
@@ -2061,9 +2952,8 @@ button,input,select,textarea{font:inherit;color:inherit;background:none;border:0
     }
     if (r.raw !== undefined || k.kind === "raw") return;
     if (k.group === "display") return;
-    if (k.kind === "sel" && typeof k.group === "string" && k.group.startsWith("custom:")) {
+    if (k.kind === "sel" && typeof k.group === "string" && k.group.startsWith("custom:") && tokenOf(r.decl)) {
       const swapped = remapPalette(r.decl, token);
-      if (swapped === r.decl) return;
       writeRule(r.key, {
         sel: r.sel,
         decl: important(swapped),
@@ -2135,8 +3025,7 @@ button,input,select,textarea{font:inherit;color:inherit;background:none;border:0
     if (isRaw && q("eraw") !== root.activeElement) q("eraw").value = r.raw;
     q("ecustom-row").hidden = isRaw;
     if (!isRaw && q("ecustom") !== root.activeElement) q("ecustom").value = r.decl;
-    q("egrid").hidden = isRaw || k.group === "display" ||
-      (k.group?.startsWith("custom:") && !tokenOf(r.decl));
+    q("egrid").hidden = isRaw || k.group === "display";
 
     const group = k.kind === "sel" ? colourGroup(k.group) : "";
     for (const b of q("eseg").children) b.setAttribute("aria-pressed", String(b.dataset.group === group));
@@ -2530,6 +3419,7 @@ button,input,select,textarea{font:inherit;color:inherit;background:none;border:0
     if (on === S.active) return;
     S.active = on;
     if (on) {
+      clearAudit();
       dropIndex();
       await saveInFlight;
       if (S.note) await recover();
@@ -2575,6 +3465,18 @@ button,input,select,textarea{font:inherit;color:inherit;background:none;border:0
       case "scan":
         try { return Promise.resolve(scan()); }
         catch (e) { return Promise.resolve({ ok: false, error: `Scan failed: ${e?.message ?? e}` }); }
+      case "dumpVariables":
+        try { return Promise.resolve(dumpVariables()); }
+        catch (e) { return Promise.resolve({ ok: false, error: `Variable dump failed: ${e?.message ?? e}` }); }
+      case "dumpVariablesChunk":
+        try { return Promise.resolve(dumpVariablesChunk(msg)); }
+        catch (e) { return Promise.resolve({ ok: false, error: `Variable dump failed: ${e?.message ?? e}` }); }
+      case "audit":
+        try { return Promise.resolve(audit(msg)); }
+        catch (e) { return Promise.resolve({ ok: false, error: `Audit failed: ${e?.message ?? e}` }); }
+      case "auditClear":
+        clearAudit();
+        return Promise.resolve({ ok: true });
       case "picker":
         return setActive(msg.enable).then(() => ({ ok: true, active: S.active }));
       case "reset":

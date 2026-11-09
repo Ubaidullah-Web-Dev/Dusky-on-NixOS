@@ -26,16 +26,16 @@ theme.apply(document.documentElement);
 const $ = (id) => document.getElementById(id);
 const ui = {
   domain: $("domain"), css: $("css"), path: $("path"), status: $("status"),
-  auto: $("auto"), pick: $("pick"), save: $("save"),
-  copy: $("copy"), reload: $("reload"), del: $("delete"),
+  auto: $("auto"), pick: $("pick"), save: $("save"), vars: $("vars"),
+  audit: $("audit"), copy: $("copy"), reload: $("reload"), del: $("delete"),
 };
-const BUTTONS = [ui.auto, ui.pick, ui.save, ui.copy, ui.reload, ui.del];
+const BUTTONS = [ui.auto, ui.pick, ui.save, ui.vars, ui.audit, ui.copy, ui.reload, ui.del];
 const ORIGIN = crypto.randomUUID();
 
 const view = {
   tab: null, domain: "", saved: "", exists: false, path: "", rev: 0,
   busy: false, pickerOn: false, delArm: 0, autoArm: 0, delTimer: 0, autoTimer: 0,
-  force: false, timer: 0, ready: false, docEpoch: 0,
+  force: false, timer: 0, ready: false, docEpoch: 0, palette: {},
 };
 
 function domainOf(url) {
@@ -208,6 +208,60 @@ ui.auto.addEventListener("click", () => run(async () => {
   say(`Mapped ${how} → saved ${fileName()}${scan.palette ? "" : "  (palette variables not visible on this page)"}`, "ok");
 }));
 
+/* ── Export every CSS variable ───────────────────────────────────────── */
+ui.vars.addEventListener("click", () => run(async () => {
+  say("Collecting every CSS custom property…", "busy");
+  const dump = await pg({ type: "dumpVariables" });
+  if (!dump?.ok) throw new Error(dump?.error ?? "Variable dump failed");
+  let text = dump.chunk ?? "";
+  while (!dump.done) {
+    const next = await pg({ type: "dumpVariablesChunk", id: dump.id, offset: text.length });
+    if (!next?.ok) throw new Error(next?.error ?? "Variable dump could not be completed");
+    if (!next.chunk) throw new Error("The variable report ended unexpectedly");
+    text += next.chunk;
+    dump.done = next.done;
+    if (text.length > next.total) throw new Error("The variable report was inconsistent");
+  }
+  const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = dump.filename || "css-variables.md";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30_000);
+  const copied = await navigator.clipboard.writeText(text).then(() => true, () => false);
+  say(`Exported ${dump.count} variables (${dump.definitions} definitions, ` +
+    `${Math.ceil(text.length / 1024)} KiB) — downloaded${copied ? " and copied" : ""}` +
+    `${dump.truncated ? " — truncated" : ""}`, "ok");
+}));
+
+/* ── Audit page ───────────────────────────────────────────────────────── */
+ui.audit.addEventListener("click", () => run(async () => {
+  say("Auditing visible elements against the palette…", "busy");
+  const report = await pg({ type: "audit", palette: view.palette });
+  if (!report?.ok) throw new Error(report?.error ?? "Audit failed");
+  const text = report.text ?? "";
+  const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `audit-${view.domain || "page"}.md`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30_000);
+  const copied = await navigator.clipboard.writeText(text).then(() => true, () => false);
+  const findings = report.issues ?? 0;
+  say(findings
+    ? `Audit: ${findings} finding${findings === 1 ? "" : "s"} on ${report.textCount ?? 0} text ` +
+      `element${report.textCount === 1 ? "" : "s"} — outlined on page, ` +
+      `report ${copied ? "copied and downloaded" : "downloaded"}.`
+    : `Audit: no problems found in ${report.textCount ?? 0} text elements.`,
+  findings ? "warn" : "ok");
+}));
+
 /* ── Picker ───────────────────────────────────────────────────────────── */
 ui.pick.addEventListener("click", () => run(async () => {
   if (view.pickerOn) {
@@ -290,8 +344,10 @@ browser.runtime.onMessage.addListener((msg) => {
 
 /* ── Init ─────────────────────────────────────────────────────────────── */
 (async function init() {
-  void bg({ type: "palette" }).then((reply) => theme.apply(document.documentElement, reply.colors))
-    .catch(() => {}); // Neutral, readable defaults remain available when the host is offline.
+  void bg({ type: "palette" }).then((reply) => {
+    view.palette = reply.colors ?? {};
+    theme.apply(document.documentElement, view.palette);
+  }).catch(() => {}); // Neutral, readable defaults remain available when the host is offline.
   busy(true);
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   view.tab = tab;
