@@ -33,3 +33,11 @@ result-*
 .config/hypr/hyprland-057-backup-*
 .config/hypr/edit_here/source/backups/
 .config/obsidian/
+
+# Compiled vivid theme cache
+/.config/matugen/prebaked/
+/.config/matugen/.prebaked.lock
+
+# Legacy generated locations retained during migration
+/user_scripts/theme_matugen/vivid/packs/
+/user_scripts/theme_matugen/vivid/catalog.json

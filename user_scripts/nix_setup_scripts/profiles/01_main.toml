@@ -118,6 +118,7 @@ scripts = [
     "U | 365_cache_purge.sh",
     "U | 375_cursor_theme_bibata_classic_modern.sh",
     "U | 376_generate_colorfiles_for_current_wallpaer.sh",
+    "U | always,on_failure:abort | ~/user_scripts/theme_matugen/vivid/vivid_bake.py --all",
     "U | dusky_cursor.py --apply",
     "U | 380_nvidia_open_source.sh --auto",
     "S | 381_nvidia_services.sh",
