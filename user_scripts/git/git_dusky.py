@@ -159,6 +159,23 @@ def handle_diff_preview(target: str, cur: str, selected: list[str]) -> None:
     if not files:
         return
 
+    resolved_files: list[str] = []
+    for f in files:
+        if (WORK_TREE / f).exists() or (WORK_TREE / f).is_symlink():
+            resolved_files.append(f)
+        else:
+            found = False
+            code, out, _ = run_git("diff", "--name-only", "-z", target if target else "HEAD")
+            if code == 0:
+                for real_p in out.split("\0"):
+                    if real_p and strip_ansi(real_p) == f:
+                        resolved_files.append(real_p)
+                        found = True
+                        break
+            if not found:
+                resolved_files.append(f)
+    files = resolved_files
+
     def new_file_diff(path: str) -> str:
         full_path = WORK_TREE / path
         # --no-index treats a directory symlink as a directory and tries to
@@ -592,6 +609,7 @@ def get_stash_preview_cmd() -> str:
 
 def get_numstat_map() -> dict[str, str]:
     """Returns a mapping of relative file paths to colorized (+a, -d) diff badges."""
+    run_git("update-index", "--refresh", "-q")
     base = ["HEAD"] if run_git("rev-parse", "--verify", "HEAD")[0] == 0 else ["--cached"]
     _, numstat_out, _ = run_git("diff", "--numstat", "-z", *base, check=True)
     res: dict[str, str] = {}
@@ -618,6 +636,29 @@ def get_numstat_map() -> dict[str, str]:
 
 def sync_single() -> bool | None:
     """Stage and commit selected changes."""
+    # When launched from terminal after gitdelta or manual edits, re-sync any
+    # already-staged entries that were subsequently modified or reverted on disk.
+    run_git("update-index", "--refresh", "-q")
+    _, pre_out, _ = run_git("status", "--porcelain=v1", "-z", "--renames",
+                            "--untracked-files=no", check=True)
+    stale_staged: list[str] = []
+    pre_it = iter(pre_out.split("\0"))
+    for entry in pre_it:
+        if not entry:
+            continue
+        st, p = entry[:2], entry[3:]
+        old_p = next(pre_it) if "R" in st or "C" in st else None
+        if st in {"DD", "AU", "UD", "UA", "DU", "AA", "UU"}:
+            continue
+        if st[0] not in (" ", "?", "!") and st[1] != " ":
+            stale_staged.append(p)
+            if old_p and st[1] == "R":
+                stale_staged.append(old_p)
+    if stale_staged:
+        payload = os.fsencode("\0".join(sorted(set(stale_staged))) + "\0")
+        run_git("add", "--all", "--pathspec-from-file=-", "--pathspec-file-nul",
+                input_data=payload, literal_pathspecs=True, check=True)
+
     entries = scoped_entries()
     if not entries:
         console.print("[green]No matching changes to commit.[/green]")

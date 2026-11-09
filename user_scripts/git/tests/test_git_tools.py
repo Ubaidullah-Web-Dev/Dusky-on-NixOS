@@ -8,6 +8,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -365,7 +366,7 @@ class AuditTests(BareRepoCase):
         self.git('mv', 'a', ' spaced ')
         self.git('commit', '-qm', 'rename')
         result = subprocess.run(['zsh', '-fc',
-            'source "$1"; function fzf() { printf "enter\\0"; /usr/bin/cat; }; function _gitdelta_show() { printf "%s\\0" "$@"; }; _gitdelta_select 1',
+            'source "$1"; function fzf() { printf "enter\\0"; cat; }; function _gitdelta_show() { printf "%s\\0" "$@"; }; _gitdelta_select 1',
             'audit', str(config)], env=self.env | {'HOME': str(self.w), 'DUSKY_GIT_DIR': str(self.g)}, capture_output=True, check=True)
         self.assertIn(b' spaced ', result.stdout.split(b'\0'))
 
@@ -429,7 +430,7 @@ class SecondPassTests(BareRepoCase):
         bindir = self.root / 'bin'
         bindir.mkdir()
         renderer = bindir / 'delta'
-        renderer.write_text('#!/bin/sh\n/usr/bin/cat >/dev/null\nexit "$TEST_RENDERER"\n')
+        renderer.write_text('#!/bin/sh\ncat >/dev/null\nexit "$TEST_RENDERER"\n')
         renderer.chmod(0o755)
         for producer, consumer, expected in [(7, 0, 7), (0, 9, 9), (141, 0, 0), (0, 141, 141)]:
             with self.subTest(producer=producer, consumer=consumer):
@@ -448,7 +449,7 @@ class SecondPassTests(BareRepoCase):
         output = self.root / 'editor-args'
         editor.write_text('#!/bin/sh\nprintf "%s\\0" "$@" > "$EDITOR_OUTPUT"\n')
         editor.chmod(0o755)
-        result = self.shell('function fzf() { printf "ctrl-e\\0"; /usr/bin/cat; }; _gitdelta_select',
+        result = self.shell('function fzf() { printf "ctrl-e\\0"; cat; }; _gitdelta_select',
             env={'EDITOR': f'"{editor}" --flag', 'EDITOR_OUTPUT': str(output)})
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(output.read_bytes().split(b'\0')[:-1],
@@ -614,8 +615,11 @@ class SecondPassTerminalTests(BareRepoCase):
         child.expect_exact('q:quit')
         child.send('/')
         child.expect_exact('search ❯')
-        child.send('alpha\x1b')
+        child.send('alpha')
+        time.sleep(0.1)
+        child.send('\x1b')
         child.expect_exact('q:quit')
+        time.sleep(0.1)
         child.send('\x1b')
         child.expect_exact('RESULT []')
         child.expect(pexpect.EOF)
@@ -744,10 +748,10 @@ class TimeMachineTests(BareRepoCase):
         self.run_tm(f'if _dusky_git_checkout {old}; then exit 22; fi\n')
         self.assertEqual((self.w / 'collision').read_text(), 'private')
 
-    def test_tm_edits_in_past_block_return(self):
+    def test_tm_edits_in_past_discarded_on_return(self):
         old = self.history()
-        self.run_tm(f'_dusky_git_checkout {old} || exit 10\nprintf changed > a\nif _dusky_git_return; then exit 23; fi\n')
-        self.assertEqual((self.w / 'a').read_text(), 'changed')
+        self.run_tm(f'_dusky_git_checkout {old} || exit 10\nprintf changed > a\n_dusky_git_return || exit 23\n')
+        self.assertEqual((self.w / 'a').read_text(), 'present\n')
 
     def test_tm_relaunch_restores_stash(self):
         old = self.history()
