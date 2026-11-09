@@ -314,5 +314,12 @@
   environment.sessionVariables.GI_TYPELIB_PATH = "/run/current-system/sw/lib/girepository-1.0";
   environment.sessionVariables.PKG_CONFIG_PATH = "/run/current-system/sw/lib/pkgconfig";
   environment.sessionVariables.LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib";
+  environment.extraInit = ''
+    for schema_dir in /run/current-system/sw/share/gsettings-schemas/*; do
+      if [ -d "$schema_dir" ]; then
+        export XDG_DATA_DIRS="$schema_dir''${XDG_DATA_DIRS:+:''${XDG_DATA_DIRS}}"
+      fi
+    done
+  '';
   environment.etc."tlp.d/.keep".text = "";
 }

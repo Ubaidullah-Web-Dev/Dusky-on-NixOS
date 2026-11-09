@@ -36,6 +36,16 @@ _CLI_STRING_ESCAPES = frozendict(str.maketrans({
 }))
 
 
+def _ensure_nixos_schema_dirs() -> None:
+    import glob
+    nixos_schemas = glob.glob("/run/current-system/sw/share/gsettings-schemas/*")
+    if nixos_schemas:
+        current = os.environ.get("XDG_DATA_DIRS", "")
+        missing = [d for d in nixos_schemas if d not in current.split(":")]
+        if missing:
+            os.environ["XDG_DATA_DIRS"] = ":".join(missing) + (":" + current if current else "")
+
+
 @dataclass(frozen=True, slots=True)
 class SettingWriteResult:
     ok: bool
@@ -67,6 +77,7 @@ class GSettingsEngine(BaseEngine):
     @staticmethod
     def _check_gio_available() -> bool:
         try:
+            _ensure_nixos_schema_dirs()
             import gi
             gi.require_version("Gio", "2.0")
             from gi.repository import Gio, GLib
@@ -76,6 +87,7 @@ class GSettingsEngine(BaseEngine):
 
     @staticmethod
     def _cli(*args: str) -> subprocess.CompletedProcess[str]:
+        _ensure_nixos_schema_dirs()
         result = subprocess.run(
             ["gsettings", *args], capture_output=True, text=True,
             encoding="utf-8", timeout=5,
