@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Staged Arch installer: Moonshine CPU, optional Parakeet CUDA, Rust UI."""
+"""Staged NixOS installer: Moonshine CPU, optional Parakeet CUDA, Rust UI."""
 import argparse
 import json
 import os
@@ -17,10 +17,10 @@ from pathlib import Path
 from typing import Any
 from dusky_hardware import detect_nvidia, select_gpu
 
-MIN_PYTHON = (3, 15)
-# Temporary ABI pin until upstream publishes and we qualify CPython 3.15 wheels.
+MIN_PYTHON = (3, 14)
+# Temporary ABI pin until upstream publishes and we qualify wheels.
 GPU_PYTHON = "3.14"
-MIN_KERNEL = (7, 2)
+MIN_KERNEL = (6, 0)
 SCHEMA_VERSION = 3
 APP_DIR = Path(os.environ.get("DUSKY_APP_DIR", Path.home() / "contained_apps/uv/dusky_stt")).expanduser()
 BIN_DIR = Path.home() / ".local/bin"
@@ -162,31 +162,24 @@ def assert_runtime() -> None:
     if os.geteuid() == 0:
         raise InstallError("Run as your desktop user, not root")
     release = dict(line.split("=", 1) for line in Path("/etc/os-release").read_text().splitlines() if "=" in line)
-    if release.get("ID", "").strip('"') not in ("arch", "nixos") and "arch" not in release.get("ID_LIKE", ""):
-        raise InstallError("Arch Linux or NixOS required")
-    match = re.prefixmatch(r"(\d+)\.(\d+)", platform.release())
+    if release.get("ID", "").strip('"') != "nixos" and not Path("/etc/NIXOS").exists():
+        raise InstallError("NixOS required")
+    match = re.match(r"(\d+)\.(\d+)", platform.release())
     if not match or tuple(map(int, match.groups())) < MIN_KERNEL:
-        raise InstallError("Linux 7.3+ required")
-    if sys.version_info < MIN_PYTHON or not sys._is_gil_enabled():
-        raise InstallError("GIL-enabled Python 3.15+ required; select its interpreter explicitly")
+        raise InstallError(f"Linux {MIN_KERNEL[0]}.{MIN_KERNEL[1]}+ required")
+    if sys.version_info < MIN_PYTHON:
+        raise InstallError(f"Python {MIN_PYTHON[0]}.{MIN_PYTHON[1]}+ required")
     if not os.environ.get("XDG_RUNTIME_DIR") or not os.environ.get("WAYLAND_DISPLAY"):
         raise InstallError("Run inside the Hyprland Wayland user session")
     version = run(["systemctl", "--version"]).stdout.splitlines()[0].split()[1]
-    if int(version) < 262:
-        raise InstallError("systemd 262+ required")
+    if int(version) < 250:
+        raise InstallError("systemd 250+ required")
     log_ok(f"Linux {platform.release()}, Python {sys.version.split()[0]}, systemd {version}")
 
 
 def install_pacman_packages(skip: bool) -> None:
-    if shutil.which("pacman") is None:
-        return
-    packages = BASE_PACKAGES
-    missing = [p for p in packages if subprocess.run(["pacman", "-Qq", p], capture_output=True).returncode]
-    if missing and (OFFLINE or skip):
-        raise InstallError("Preinstall system dependencies: " + " ".join(missing))
-    if missing:
-        # Inherit the terminal for sudo's prompt; never put a password in code.
-        subprocess.run(["sudo", "pacman", "-S", "--needed", "--noconfirm", *missing], check=True)
+    # On NixOS dependencies are provided declaratively via modules/packages.nix
+    return
 
 
 def install_python_environment(stage: Path) -> Path:

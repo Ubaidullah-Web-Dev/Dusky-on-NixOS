@@ -28,6 +28,9 @@ def _bootstrap() -> None:
             missing.append(pkg)
     if not missing:
         return
+    if Path("/etc/NIXOS").exists() or shutil.which("pacman") is None:
+        print(f"[bootstrap] Missing dependencies: {' '.join(missing)}. Please add them to modules/packages.nix.")
+        sys.exit(1)
     if os.geteuid() != 0:
         print("[bootstrap] Root required to install missing Python dependencies. Escalating via sudo...")
         try:
@@ -41,7 +44,6 @@ def _bootstrap() -> None:
     except subprocess.CalledProcessError as e:
         print(f"[bootstrap] ERROR: pacman failed to install {missing}. Exit code {e.returncode}")
         print("Please install manually: sudo pacman -S " + " ".join(missing))
-        print("Arch policy: never use pip --break-system-packages as root.")
         sys.exit(1)
     # Re-exec to load newly installed modules
     os.execv(sys.executable, [sys.executable] + sys.argv)
@@ -112,6 +114,8 @@ def run(cmd: list[str], check: bool = True, capture: bool = True) -> subprocess.
         return subprocess.run(cmd, check=check)
 
 def pacman_installed(pkg: str) -> bool:
+    if Path("/etc/NIXOS").exists() or shutil.which("pacman") is None:
+        return shutil.which(pkg) is not None
     return subprocess.run(["pacman", "-Qq", pkg], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
 
 def ensure_root_or_escalate() -> None:
@@ -229,7 +233,10 @@ class Deployer:
         console.print(f"Active: [magenta]{self.active_mode.upper()}[/magenta]")
 
     def install_system_deps(self) -> None:
-        console.rule("[bold cyan]Stage 2 — System Dependencies (pacman, no AUR)")
+        console.rule("[bold cyan]Stage 2 — System Dependencies")
+        if Path("/etc/NIXOS").exists():
+            console.print("[green]System dependencies managed declaratively via NixOS modules[/green]")
+            return
         missing = [p for p in SYSTEM_PKGS if not pacman_installed(p)]
         if not missing:
             console.print("[green]All system packages installed[/green]")

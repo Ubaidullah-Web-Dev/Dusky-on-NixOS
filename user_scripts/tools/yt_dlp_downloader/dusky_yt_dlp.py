@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dusky Universal Media Downloader: Arch Linux / Python 3.14.7+ TUI."""
+"""Dusky Universal Media Downloader: Python 3.12+ TUI."""
 
 from __future__ import annotations
 
@@ -32,10 +32,10 @@ from typing import Any, Final
 from urllib.parse import parse_qs, unquote, urlsplit
 
 
-MIN_PYTHON: Final = (3, 14, 7)
-MIN_YTDLP: Final = (2026, 8, 19)
-MIN_FFMPEG: Final = (9, 0)
-MIN_KERNEL: Final = (7, 3)
+MIN_PYTHON: Final = (3, 12, 0)
+MIN_YTDLP: Final = (2024, 1, 1)
+MIN_FFMPEG: Final = (6, 0)
+MIN_KERNEL: Final = (6, 0)
 MAX_INTERACTIVE_WORKERS: Final = 8
 DEFAULT_WORKERS: Final = 3
 ZRAM_MOUNT: Final = Path("/mnt/zram1")
@@ -45,7 +45,6 @@ MODULE_PACKAGES: Final = {
     "rich": "python-rich",
     "prompt_toolkit": "python-prompt_toolkit",
     "yt_dlp": "yt-dlp",
-    "yt_dlp_ejs": "yt-dlp-ejs",
 }
 BINARY_PACKAGES: Final = {
     "ffmpeg": "ffmpeg", "ffprobe": "ffmpeg", "yt-dlp": "yt-dlp", "node": "nodejs",
@@ -53,13 +52,10 @@ BINARY_PACKAGES: Final = {
 
 
 def bootstrap_dependencies() -> None:
-    if (sys.platform != "linux" or platform.python_implementation() != "CPython"
-            or sys.version_info[:3] < MIN_PYTHON):
-        raise SystemExit("Requires Linux and CPython 3.14.7 or newer.")
+    if sys.platform != "linux" or platform.python_implementation() != "CPython":
+        raise SystemExit("Requires Linux and CPython.")
     if os.geteuid() == 0:
-        raise SystemExit("Run as your regular user, not root. Only pacman needs sudo.")
-    if sys.prefix != sys.base_prefix:
-        raise SystemExit("Use the Arch system Python, not a virtual environment.")
+        raise SystemExit("Run as your regular user, not root.")
     missing = set()
     for executable, package in BINARY_PACKAGES.items():
         if shutil.which(executable) is None:
@@ -70,24 +66,7 @@ def bootstrap_dependencies() -> None:
     if not missing:
         return
     packages = sorted(missing)
-    if Path("/etc/NIXOS").exists():
-        nixos_missing = [p for p in packages if p != "yt-dlp-ejs"]
-        if nixos_missing:
-            raise SystemExit(f"NixOS detected: missing dependencies: {', '.join(nixos_missing)}. Please check modules/packages.nix.")
-        return
-    command = ["sudo", "pacman", "-S", "--needed", *packages]
-    if os.environ.get("DUSKY_BOOTSTRAPPED") == "1":
-        raise SystemExit(f"Dependencies still missing after pacman: {', '.join(packages)}. Check /usr/bin/python.")
-    if not Path("/etc/arch-release").exists() or shutil.which("pacman") is None:
-        raise SystemExit("Arch Linux/pacman is required. Missing: " + ", ".join(packages))
-    if not sys.stdin.isatty() or shutil.which("sudo") is None:
-        raise SystemExit("Install first: " + " ".join(command))
-    print("Missing Arch packages: " + ", ".join(packages), file=sys.stderr)
-    result = subprocess.run(command, check=False)
-    if result.returncode:
-        raise SystemExit(f"pacman failed with exit status {result.returncode}")
-    environment = dict(os.environ, DUSKY_BOOTSTRAPPED="1")
-    os.execve(sys.executable, [sys.executable, *sys.argv], environment)
+    raise SystemExit(f"Missing dependencies: {', '.join(packages)}. Please add them to modules/packages.nix.")
 
 
 bootstrap_dependencies()
@@ -111,27 +90,27 @@ def version_line(command: list[str]) -> str:
 
 
 def check_versions() -> None:
+    if Path("/etc/NIXOS").exists():
+        return
     release = platform.release()
     kernel = re.match(r"^(\d+)\.(\d+)", release)
     if kernel is None or tuple(map(int, kernel.groups())) < MIN_KERNEL:
-        raise ValueError(f"Booted kernel {release} is below 7.3; boot a current Arch kernel.")
+        raise ValueError(f"Booted kernel {release} is below minimum requirement.")
     ytdlp = version_line(["yt-dlp", "--version"])
     if not re.fullmatch(r"\d{4}\.\d{2}\.\d{2}", ytdlp) or tuple(map(int, ytdlp.split("."))) < MIN_YTDLP:
-        raise ValueError(f"yt-dlp {ytdlp} is too old; update the whole system with sudo pacman -Syu.")
-    if ytdlp != YTDLP_API_VERSION:
-        raise ValueError(f"yt-dlp CLI {ytdlp} differs from Python package {YTDLP_API_VERSION}; use /usr/bin/python.")
+        raise ValueError(f"yt-dlp {ytdlp} is too old; please update your packages.")
     ffmpeg = version_line(["ffmpeg", "-version"])
     match = re.search(r"^ffmpeg version n?(\d+)\.(\d+)", ffmpeg)
     if match is None or tuple(map(int, match.groups())) < MIN_FFMPEG:
-        raise ValueError(f"FFmpeg 9.0+ required; found: {ffmpeg}. Update with sudo pacman -Syu.")
+        raise ValueError(f"FFmpeg {MIN_FFMPEG[0]}.0+ required; found: {ffmpeg}.")
     probe_version = version_line(["ffprobe", "-version"])
     probe_match = re.search(r"^ffprobe version n?(\d+)\.(\d+)", probe_version)
     if probe_match is None or tuple(map(int, probe_match.groups())) < MIN_FFMPEG:
-        raise ValueError(f"FFprobe 9.0+ required; found: {probe_version}.")
+        raise ValueError(f"FFprobe {MIN_FFMPEG[0]}.0+ required; found: {probe_version}.")
     node = version_line(["node", "--version"])
     major = re.match(r"^v(\d+)", node)
-    if major is None or int(major.group(1)) < 22:
-        raise ValueError(f"Node.js 22+ required for yt-dlp EJS; found {node}.")
+    if major is None or int(major.group(1)) < 18:
+        raise ValueError(f"Node.js 18+ required; found {node}.")
 
 
 def private_dir(path: Path) -> Path:
@@ -1139,7 +1118,7 @@ def translate_error(message: str, mode: TargetFormat) -> str:
         ("not a bot", "Bot challenge: retry later or supply authorized cookies."),
         ("http error 429", "Rate limited: wait before retrying."),
         ("http error 403", "Access denied: check cookies, region, or link permissions."),
-        ("no supported javascript runtime", "Node/EJS unavailable: check node --version and pacman -Q yt-dlp-ejs."),
+        ("no supported javascript runtime", "Node/EJS unavailable: check node --version."),
         ("signature solving failed", "YouTube challenge solver failed: check Node and yt-dlp-ejs."),
         ("unable to obtain file audio codec", "Source has no audio track; try a video format."),
     )
@@ -1908,7 +1887,7 @@ def self_test() -> None:
 
 
 def argument_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Dusky Universal Media Downloader (Arch / memory pool only).")
+    parser = argparse.ArgumentParser(description="Dusky Universal Media Downloader (memory pool only).")
     parser.add_argument("target", nargs="*", help="HTTP(S) links, playlists, or batch files in input order")
     parser.add_argument("-f", "--format", choices=[mode.value for mode in TargetFormat])
     parser.add_argument("-q", "--quality", choices=["best", *(str(cap) for cap in QUALITY_CAPS)])

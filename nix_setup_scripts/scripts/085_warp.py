@@ -30,7 +30,7 @@ try:
     from rich.prompt import Confirm
     from rich.table import Table
 except ImportError:
-    sys.stderr.write("Error: python-rich is required. Install: pacman -S python-rich\n")
+    sys.stderr.write("Error: python-rich is required. Please add rich to modules/packages.nix\n")
     sys.exit(1)
 
 # ─── Version Guard ───────────────────────────────────────────────────────
@@ -173,7 +173,7 @@ def elevate_privileges() -> None:
         return
 
     if not shutil.which("sudo"):
-        die("sudo is required but not found. Install: pacman -S sudo")
+        die("sudo is required but not found.")
 
     log_warn("Root privileges required — re-executing via sudo...")
     script = os.path.abspath(sys.argv[0])
@@ -1259,9 +1259,9 @@ def main() -> None:
     if args.user:
         set_real_user(args.user)
 
-    # Arch Linux guard
-    if not pathlib.Path("/etc/arch-release").exists():
-        die("This script is designed for Arch Linux only.")
+    # System guard
+    if not pathlib.Path("/etc/NIXOS").exists() and not pathlib.Path("/etc/arch-release").exists():
+        die("Unsupported Linux distribution.")
 
     with acquire_lock():
         match args.command:

@@ -206,6 +206,12 @@ fi
 fi
 
 if (( ${#NEEDED_DEPS[@]} > 0 )); then
+    if [[ -f /etc/NIXOS ]]; then
+        printf "%b[SETUP]%b Missing dependencies:%b %s%b\n" \
+            "${C_YELLOW}" "${C_RESET}" "${C_CYAN}" "${NEEDED_DEPS[*]}" "${C_RESET}"
+        printf "       Please ensure they are declared in modules/packages.nix\n"
+        exit 1
+    fi
     if $INTERACTIVE; then
         clear || true
         printf "%b

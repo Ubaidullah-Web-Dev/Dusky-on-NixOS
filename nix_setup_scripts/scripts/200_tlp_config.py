@@ -197,24 +197,27 @@ def main():
     elevate_privileges()
     confirm_target_machine()
 
-    # Install dependencies (pacman -S --needed --noconfirm tlp tlp-rdw)
-    pkgs = ["tlp", "tlp-rdw"]
-    log_info(f"Ensuring required packages are installed: {', '.join(pkgs)}")
+    # Dependencies check
+    pkgs = ["tlp"]
+    log_info(f"Checking required packages: {', '.join(pkgs)}")
     
-    if HAS_RICH:
-        with console.status("[bold green]Running pacman dependency synchronization...[/bold green]"):
+    if Path("/etc/NIXOS").exists() or shutil.which("pacman") is None:
+        log_success("Running on NixOS: TLP managed via system configuration.")
+    else:
+        if HAS_RICH:
+            with console.status("[bold green]Running dependency synchronization...[/bold green]"):
+                res = subprocess.run(["pacman", "-S", "--needed", "--noconfirm"] + pkgs, capture_output=True)
+        else:
             res = subprocess.run(["pacman", "-S", "--needed", "--noconfirm"] + pkgs, capture_output=True)
-    else:
-        res = subprocess.run(["pacman", "-S", "--needed", "--noconfirm"] + pkgs, capture_output=True)
 
-    if res.returncode == 0:
-        log_success("Packages are installed and up-to-date.")
-    else:
-        log_error("Failed to install required packages via pacman.")
-        sys.exit(1)
+        if res.returncode == 0:
+            log_success("Packages are installed and up-to-date.")
+        else:
+            log_error("Failed to install required packages.")
+            sys.exit(1)
 
     # Backup logic
-    real_user = os.environ.get("SUDO_USER") or os.environ.get("USER") or "dusk"
+    real_user = os.environ.get("SUDO_USER") or os.environ.get("USER") or "ubaid"
     try:
         pw = pwd.getpwnam(real_user)
         real_home = Path(pw.pw_dir)

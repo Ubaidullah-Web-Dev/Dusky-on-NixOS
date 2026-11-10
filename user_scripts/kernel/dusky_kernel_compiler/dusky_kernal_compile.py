@@ -56,8 +56,8 @@ type Json = dict[str, Any]
 # ---------------------------------------------------------------------------------------------------
 APP_NAME: Final = "Dusky Kernel Compiler"
 APP_VERSION: Final = "7.0.0"
-APP_TAGLINE: Final = "Tailored Arch Linux kernels (stock Linux 7.3+)"
-MIN_KERNEL: Final = (7, 3)
+APP_TAGLINE: Final = "Tailored Linux kernels"
+MIN_KERNEL: Final = (6, 0)
 SCRIPT_DIR: Final = Path(__file__).resolve().parent
 XDG_CONFIG: Final = Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
 XDG_CACHE: Final = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")

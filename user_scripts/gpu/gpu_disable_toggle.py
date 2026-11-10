@@ -52,16 +52,16 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import NoReturn
 
-MIN_PY = (3, 15, 0)
-MIN_KERNEL = (7, 0)
+MIN_PY = (3, 12, 0)
+MIN_KERNEL = (6, 0)
 
 
 def check_versions() -> None:
     if Path("/etc/NIXOS").exists():
         return
-    m = re.prefixmatch(r"(\d+)\.(\d+)", Path("/proc/sys/kernel/osrelease").read_text(encoding="utf-8").strip())
+    m = re.match(r"(\d+)\.(\d+)", Path("/proc/sys/kernel/osrelease").read_text(encoding="utf-8").strip())
     if not m or (int(m.group(1)), int(m.group(2))) < MIN_KERNEL:
-        sys.stderr.write("[FATAL] Kernel 7.3+ required.\n")
+        sys.stderr.write(f"[FATAL] Kernel {MIN_KERNEL[0]}.{MIN_KERNEL[1]}+ required.\n")
         raise SystemExit(1)
 
 
@@ -79,7 +79,7 @@ try:
     from rich.prompt import Confirm, IntPrompt
     from rich.table import Table
 except ModuleNotFoundError:
-    sys.stderr.write("[FATAL] 'python-rich' is missing: pacman -S python-rich\n")
+    sys.stderr.write("[FATAL] 'python-rich' is missing. Please add rich to modules/packages.nix\n")
     raise SystemExit(1)
 
 console = Console()

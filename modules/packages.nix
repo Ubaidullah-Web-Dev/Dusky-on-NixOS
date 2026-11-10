@@ -207,10 +207,6 @@
     gsettings-desktop-schemas
     gobject-introspection
     librsvg
-    python315Packages.pygobject3
-    python315Packages.pycairo
-    python315Packages.pyopengl
-
     # Audio & Media
     cava
     playerctl
@@ -266,8 +262,12 @@
     brightnessctl
     starship
 
-    # Python runtime with Dusky dependencies
+    # Python runtime with Dusky dependencies (Python 3.15 with C-extensions and packages)
     python315
+    python315Packages.pygobject3
+    python315Packages.pycairo
+    python315Packages.pyopengl
+    python315Packages.evdev
     (python3.withPackages (ps: with ps; [
       pygobject3
       pillow
@@ -279,10 +279,7 @@
       tomlkit
       questionary
       regex
-      evdev
       packaging
-      pycairo
-      pyopengl
       pyquery
       pyudev
       pygame-ce
@@ -290,6 +287,7 @@
       numpy
       sounddevice
       dbus-fast
+      dbus-python
       sqlalchemy
       aiosqlite
       rapidfuzz
@@ -299,6 +297,18 @@
       tinycss2
       pexpect
       pypdf
+      pynput
+      mpv
+      pulsectl
+      pulsectl-asyncio
+      inotify-simple
+      pywayland
+      setproctitle
+      websockets
+      watchdog
+      cryptography
+      yt-dlp
+      mutagen
     ]))
   ];
 

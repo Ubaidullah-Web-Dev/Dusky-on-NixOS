@@ -279,17 +279,18 @@ def find_game_dir(guess):
 
 
 def distro_supports_pacman():
-    return shutil.which("pacman") is not None
+    return shutil.which("pacman") is not None or os.path.exists("/etc/NIXOS")
 
 
 def package_installed(pkg):
+    if os.path.exists("/etc/NIXOS"):
+        return True
     r = run(["pacman", "-Q", pkg])
     return r.returncode == 0
 
 
 def install_packages(pkgs, skip):
-    if skip:
-        log("--skip-packages: skipping package installation")
+    if skip or os.path.exists("/etc/NIXOS"):
         return
     missing = [p for p in pkgs if not package_installed(p)]
     if not missing:
@@ -821,8 +822,7 @@ def main():
 
     log("Factorio native-Wayland fix installer")
     if not distro_supports_pacman():
-        raise SystemExit("ERROR: pacman not found. This installer targets Arch Linux "
-                         "(the jc141 repack + Mesa/EGL setup this fix was developed on).")
+        raise SystemExit("ERROR: Unsupported package manager. Packages must be available.")
 
     # Diagnostic/reset modes work even without a game dir (e.g. after the game
     # was deleted) -- the shim lives in $HOME, not in the game dir. Only the

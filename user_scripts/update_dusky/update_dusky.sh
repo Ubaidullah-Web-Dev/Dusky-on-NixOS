@@ -204,9 +204,6 @@ declare -ra UPDATE_SEQUENCE=(
     "U | 010_package_removal.sh --auto"
 
 
-#================= CUSTOM=====================
-    "S | pacman_packages.sh"
-    "U | paru_packages.sh"
 #================= Scripts =====================
 
     "U | 015_set_thunar_terminal.py -t foot"
@@ -215,7 +212,7 @@ declare -ra UPDATE_SEQUENCE=(
 #    "U | 040_long_sleep_timeout.sh"
 #    "S | 045_battery_limiter.sh"
 #    "S | 050_pacman_config.sh --auto"
-    "S | 051_pacman_hooks.sh --auto"
+#    "S | 051_pacman_hooks.sh --auto"
 #    "S | 055_pacman_reflector.sh"
 #    "S | 058_aur_paru_fallback_yay.sh"
 #    "S | 070_openssh_setup.sh"
@@ -1346,7 +1343,7 @@ resolve_and_validate_manifest() {
             done
         done
         if [[ "$_has_py" == false ]] && ! command -v python3 >/dev/null 2>&1 && ! command -v python >/dev/null 2>&1; then
-            log ERROR "Python interpreter required by UPDATE_SEQUENCE but not found. Install python (sudo pacman -S python) and re-run."
+            log ERROR "Python interpreter required by UPDATE_SEQUENCE but not found. Ensure python3 is in modules/packages.nix and re-run."
             return 1
         fi
     fi
@@ -1446,7 +1443,7 @@ check_dependencies() {
 
     if ((${#missing[@]} > 0)); then
         printf 'Error: Missing required commands: %s\n' "${missing[*]}" >&2
-        printf 'Install with: sudo pacman -S bash coreutils findutils git\n' >&2
+        printf 'Ensure required packages are declared in modules/packages.nix\n' >&2
         exit 1
     fi
 }

@@ -42,6 +42,9 @@ expand_user_path() {
 }
 
 ensure_packages() {
+    if [[ -f /etc/NIXOS ]]; then
+        return 0
+    fi
     local package
     local -a missing=()
     for package in "$@"; do

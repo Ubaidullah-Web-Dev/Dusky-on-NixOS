@@ -58,7 +58,7 @@ export TERMINAL='kitty'
 export EDITOR='nvim'
 export VISUAL='nvim'
 
-# Compilation Optimization: Moved to ~/.config/pacman/makepkg.conf
+# Compilation Optimization: Configured in NixOS modules
 
 # Clipboard DB path: refresh at startup and at each interactive prompt.
 # Read the toggler's file as literal data, using the daemon's path/fallback rules.

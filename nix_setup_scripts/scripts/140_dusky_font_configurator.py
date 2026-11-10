@@ -2,7 +2,7 @@
 #d: Install prerequisites, deploy and verify the Dusky font configuration
 """Deploy schema defaults through the same engine used by the font TUI.
 
-Run as the desktop user; missing required packages are installed with pacman.
+Run as the desktop user; fonts and packages are configured in modules/packages.nix.
 --font-family (or DUSKY_DEFAULT_SANS) overrides the sans-serif default. Missing fonts,
 cache errors, toolkit sync errors, and incorrect aliases exit nonzero.
 """
@@ -18,8 +18,7 @@ DUSKY_TUI_ROOT = USER_SCRIPTS / "dusky_tui"
 SCHEMA_PATH = USER_SCRIPTS / "fonts/tui_fonts.py"
 
 
-# Official Arch packages required by the default font deployment. Install before
-# schema discovery or D-Bus startup so a fresh system can bootstrap both.
+# Packages required by the default font deployment.
 FONT_PACKAGES = frozendict({
     "Atkinson Hyperlegible": "ttf-atkinson-hyperlegible",
     "JetBrainsMono Nerd Font Mono": "ttf-jetbrains-mono-nerd",

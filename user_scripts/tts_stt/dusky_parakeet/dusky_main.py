@@ -24,16 +24,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-MIN_PYTHON = (3, 15)
+MIN_PYTHON = (3, 12)
 SAMPLE_RATE = 16000
 BYTES_PER_SAMPLE = 2
 MAX_PACKET = 65536
 
 if sys.version_info < MIN_PYTHON:
-    raise SystemExit("Dusky STT requires CPython 3.15+")
-_gil = getattr(sys, "_is_gil_enabled", None)
-if _gil is None or not _gil():
-    raise SystemExit("Dusky STT requires GIL-enabled CPython")
+    raise SystemExit("Dusky STT requires CPython 3.12+")
 
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"

@@ -106,6 +106,8 @@ fi
 # --- 7. Package Installation ---
 if command -v sshd &>/dev/null; then
     success "OpenSSH is already installed."
+elif [[ -f /etc/NIXOS ]]; then
+    success "OpenSSH is managed via NixOS system configuration."
 elif ! pacman -Qi openssh &>/dev/null; then
     info "Installing OpenSSH..."
 

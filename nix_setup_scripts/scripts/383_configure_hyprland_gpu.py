@@ -9,16 +9,8 @@ import os, sys, shutil, subprocess
 try:
     import rich # noqa: F401
 except ImportError:
-    pm = shutil.which("pacman")
-    if not pm:
-        print("pacman not found, install python-rich manually"); sys.exit(1)
-    cmd = [pm, "-S", "--needed", "--noconfirm", "python-rich"]
-    if os.geteuid() != 0 and shutil.which("sudo"):
-        subprocess.run(["sudo", "-v"], check=False) # prompts password
-        cmd = ["sudo"] + cmd
-    print(f"[BOOTSTRAP] Installing python-rich: {' '.join(cmd)}")
-    subprocess.run(cmd, check=True)
-    os.execv(sys.executable, [sys.executable] + sys.argv)
+    print("Error: python-rich is required. Please ensure rich is in modules/packages.nix")
+    sys.exit(1)
 
 import argparse, glob, pwd, re, tempfile
 from dataclasses import dataclass
@@ -59,7 +51,7 @@ def ensure_sudo() -> bool:
         return False
 
 def pacman_install(pkgs: List[str]) -> bool:
-    if not pkgs: return True
+    if not pkgs or Path("/etc/NIXOS").exists(): return True
     pm = shutil.which("pacman")
     if not pm:
         console.print("[red]pacman not found[/]"); return False
@@ -455,7 +447,7 @@ def main():
         ensure_py_module("pyudev", "python-pyudev")
 
     out = args.output or (real_home() / ".config" / "hypr" / "gpu.lua")
-    console.print(Panel.fit(f"Hyprland GPU Configurator\nPython {'.'.join(map(str, sys.version_info[:3]))} | {Path('/etc/arch-release').exists() and 'Arch' or 'Linux'} | Hyprland 0.55.4+ | systemd 261+", style="bold cyan"))
+    console.print(Panel.fit(f"Hyprland GPU Configurator\nPython {'.'.join(map(str, sys.version_info[:3]))} | NixOS | Hyprland 0.55.4+ | systemd 261+", style="bold cyan"))
 
     ensure_privilege(out)        # clean error (no traceback) for unwritable --output targets
     check_hyprland_version()     # warn if Hyprland < 0.55 (no Lua config support)

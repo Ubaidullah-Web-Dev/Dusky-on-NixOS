@@ -48,30 +48,16 @@ from typing import Any
 DEPENDENCY_HINT = """
 Missing required dependencies.
 
-On Arch Linux, install at least:
+On NixOS, ensure the following are declared in modules/packages.nix:
 
-    python
-    python-gobject
-    python-cairo
+    python3.withPackages (ps: [ ps.pygobject3 ps.pycairo ps.pyopengl ])
     gtk3
     gtk-layer-shell
-    glib2
+    glib
     cairo
     pango
-    gdk-pixbuf2
-    libepoxy
-    wayland
-    wayland-protocols
+    gdk-pixbuf
     cava
-    pipewire
-    wireplumber
-    pipewire-alsa
-    pipewire-pulse
-
-For GPU acceleration also install:
-
-    python-opengl
-    mesa
 
 or the appropriate OpenGL 3.3+ driver for your GPU.
 """
@@ -97,7 +83,7 @@ os.environ["GDK_BACKEND"] = "wayland"
 try:
     import gi
 except ImportError:
-    msg = "python-gobject is missing. Install with: sudo pacman -S python-gobject"
+    msg = "python-gobject is missing. Add pygobject3 to modules/packages.nix"
     sys.stderr.write(f"{msg}\n")
     sys.stderr.write(DEPENDENCY_HINT)
     notify_user("Dusky Visualizer Error", msg)
@@ -109,7 +95,7 @@ try:
     gi.require_version("GtkLayerShell", "0.1")
     gi.require_version("Gio", "2.0")
 except ValueError as exc:
-    msg = f"GTK / Layer Shell typelib missing ({exc}). Install with: sudo pacman -S gtk3 gtk-layer-shell"
+    msg = f"GTK / Layer Shell typelib missing ({exc}). Add gtk3 and gtk-layer-shell to modules/packages.nix"
     sys.stderr.write(f"{msg}\n")
     sys.stderr.write(DEPENDENCY_HINT)
     notify_user("Dusky Visualizer Error", msg)
@@ -118,7 +104,7 @@ except ValueError as exc:
 try:
     import cairo
 except ImportError:
-    msg = "python-cairo is missing. Install with: sudo pacman -S python-cairo"
+    msg = "python-cairo is missing. Add pycairo to modules/packages.nix"
     sys.stderr.write(f"{msg}\n")
     sys.stderr.write(DEPENDENCY_HINT)
     notify_user("Dusky Visualizer Error", msg)
@@ -1903,7 +1889,7 @@ noise_reduction = {noise}
         self.cava_available = cava_path is not None
 
         if not self.cava_available or cava_path is None:
-            msg = "cava package is missing. Install with: sudo pacman -S cava"
+            msg = "cava package is missing. Add cava to modules/packages.nix"
             self.log.error(msg)
             notify_user("Dusky Visualizer Warning", msg, urgency="normal")
             return False
@@ -3095,7 +3081,7 @@ noise_reduction = {noise}
                 self.log.warning("python-opengl is missing. Falling back to Cairo CPU rendering.")
                 notify_user(
                     "Dusky Visualizer Notice",
-                    "python-opengl is missing. GPU acceleration disabled, using Cairo CPU rendering. Install with: sudo pacman -S python-opengl",
+                    "python-opengl is missing. GPU acceleration disabled, using Cairo CPU rendering. Add pyopengl to modules/packages.nix",
                     urgency="normal",
                 )
 

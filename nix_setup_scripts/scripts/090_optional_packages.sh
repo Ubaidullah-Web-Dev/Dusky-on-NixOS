@@ -147,17 +147,17 @@ trim() {
 
 parse_data() {
     # Pre-cache installed packages for O(1) rendering checks
-    if command -v pacman >/dev/null 2>&1; then
-        while read -r _inst_pkg; do
-            [[ -n "$_inst_pkg" ]] && INSTALLED_PKGS["$_inst_pkg"]=1
-        done < <(pacman -Qq 2>/dev/null || true)
-    elif command -v nix >/dev/null 2>&1; then
+    if [[ -f /etc/NIXOS ]] || command -v nix >/dev/null 2>&1; then
         while read -r _inst_pkg; do
             [[ -n "$_inst_pkg" ]] && INSTALLED_PKGS["$_inst_pkg"]=1
         done < <(nix-store -q --references /run/current-system/sw 2>/dev/null | sed -E 's|/nix/store/[a-z0-9]+-||; s|-[0-9].*||' || true)
         while read -r _inst_pkg; do
             [[ -n "$_inst_pkg" ]] && INSTALLED_PKGS["$_inst_pkg"]=1
         done < <(nix profile list 2>/dev/null | awk '/^Name:[[:space:]]*/ {print $2}' || true)
+    elif command -v pacman >/dev/null 2>&1; then
+        while read -r _inst_pkg; do
+            [[ -n "$_inst_pkg" ]] && INSTALLED_PKGS["$_inst_pkg"]=1
+        done < <(pacman -Qq 2>/dev/null || true)
     fi
 
     local line category pkg desc

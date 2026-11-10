@@ -53,10 +53,14 @@ def resolve_user() -> tuple[str, Path]:
 
 
 def is_package_installed(name: str) -> bool:
-    """Checks if a pacman package is installed."""
-    return subprocess.run(
-        ["pacman", "-Qq", name], capture_output=True
-    ).returncode == 0
+    """Checks if a command or package is available."""
+    if shutil.which(name) is not None:
+        return True
+    if shutil.which("pacman") is not None:
+        return subprocess.run(
+            ["pacman", "-Qq", name], capture_output=True
+        ).returncode == 0
+    return False
 
 
 def run_privileged(cmd: list[str]) -> None:
@@ -73,11 +77,15 @@ def run_privileged(cmd: list[str]) -> None:
 
 
 def install_packages(packages: list[str]) -> None:
-    """Idempotently installs packages via pacman --needed."""
+    """Checks for required packages."""
     missing = [p for p in packages if not is_package_installed(p)]
 
     if not missing:
         print(f"  {C_GREEN}✔{C_RESET} All required packages already installed: {', '.join(packages)}")
+        return
+
+    if Path("/etc/NIXOS").exists() or shutil.which("pacman") is None:
+        print(f"  {C_YELLOW}•{C_RESET} Missing packages on NixOS: {', '.join(missing)}. Please add them to modules/packages.nix")
         return
 
     print(f"  {C_YELLOW}•{C_RESET} Installing missing packages: {', '.join(missing)}")
@@ -85,7 +93,7 @@ def install_packages(packages: list[str]) -> None:
         run_privileged(["pacman", "-S", "--needed", "--noconfirm"] + missing)
         print(f"  {C_GREEN}✔{C_RESET} Package installation complete.")
     except subprocess.CalledProcessError as e:
-        print(f"  {C_RED}✖ pacman failed: {e}{C_RESET}", file=sys.stderr)
+        print(f"  {C_RED}✖ Package installation failed: {e}{C_RESET}", file=sys.stderr)
         sys.exit(1)
 
 

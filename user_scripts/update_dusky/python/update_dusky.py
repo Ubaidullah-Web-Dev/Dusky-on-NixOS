@@ -3140,8 +3140,7 @@ def bootstrap_dependencies() -> bool:
         if missing:
             sys.stdout.write(
                 "\033[1;33m[DUSKY BOOTSTRAP]\033[0m Dry-run: missing UI packages "
-                f"({', '.join(missing)}) would be installed via: sudo pacman -S --noconfirm "
-                f"{' '.join(missing)} — refusing to install in dry-run.\n"
+                f"({', '.join(missing)}) — please ensure they are in modules/packages.nix.\n"
             )
         return False
 
@@ -3153,9 +3152,7 @@ def bootstrap_dependencies() -> bool:
         sys.stderr.write(
             "\033[1;31m[FATAL]\033[0m Missing UI dependencies: "
             f"{', '.join(missing)}.\n"
-            f"Install them explicitly before running the updater: "
-            f"sudo pacman -S --noconfirm {' '.join(missing)}\n"
-            "No packages were installed automatically; re-run after installing.\n"
+            f"Please ensure textual and rich are declared in modules/packages.nix\n"
         )
         sys.exit(1)
     return False

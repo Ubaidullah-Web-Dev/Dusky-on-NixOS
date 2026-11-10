@@ -118,6 +118,11 @@ detect_and_install() {
             fi
         fi
 
+        if [[ -f /etc/NIXOS ]]; then
+            printf "%s[INFO]%s On NixOS, hardware acceleration packages are managed via hardware configuration.\n" "${BLUE}" "${RESET}"
+            return 0
+        fi
+
         printf "%s[RUN]%s Deploying pacman targets...\n" "${YELLOW}" "${RESET}"
         pacman -S --needed --noconfirm "${target_pkgs[@]}"
 

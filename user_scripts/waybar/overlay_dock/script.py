@@ -3,9 +3,7 @@
 hypr-ws-overlay — click-through workspace indicator for Hyprland
 
 DEPENDENCIES
-  Arch:    sudo pacman -S python-gobject gtk3 gtk-layer-shell
-  Fedora:  sudo dnf install python3-gobject gtk3 gtk-layer-shell
-  Ubuntu:  sudo apt install python3-gi gir1.2-gtk-3.0 gir1.2-gtklayershell-0.1
+  NixOS:   modules/packages.nix (pygobject3, gtk3, gtk-layer-shell)
 
 ADD TO ~/.config/hypr/hyprland.conf
   exec-once = python3 ~/.config/hypr/hypr-ws-overlay.py

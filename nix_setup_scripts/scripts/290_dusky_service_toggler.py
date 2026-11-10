@@ -36,7 +36,7 @@ def check_ui_deps(is_json: bool) -> None:
     """Enforces Rich UI requirement only if not running in JSON mode."""
     if not RICH_AVAILABLE and not is_json:
         print("ERROR: The 'rich' python library is required for interactive/UI mode.", file=sys.stderr)
-        print("Install it via: sudo pacman -S python-rich", file=sys.stderr)
+        print("Please ensure rich is in modules/packages.nix", file=sys.stderr)
         sys.exit(1)
 
 
